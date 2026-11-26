@@ -99,14 +99,16 @@ class MechanicFactory:
         target_cls = cls.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
 
-    @staticmethod
-    def backend(implementation: str) -> Backend:
-        if implementation == Translators.COMPILER:
-            return Compiler()
-        if implementation == Translators.LAMBDA:
-            return Lambda()
-        raise ValueError(f"Unsupported translator implementation: '{implementation}'")
-
+    @classmethod
+    def backend(cls, implementation: str) -> Backend:
+        """Instantiates the configured ISL condition Backend via TRANSLATOR_MAP."""
+        target_cls = cls.TRANSLATOR_MAP.get(implementation)
+        if target_cls is None:
+            raise ValueError(
+                f"Unsupported translator implementation: '{implementation}'"
+            )
+        return target_cls()
+    
     @staticmethod
     def transitions(implementation: str) -> TransitionTranslator:
         return TransitionTranslator(backend=MechanicFactory.backend(implementation))

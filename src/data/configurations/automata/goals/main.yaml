@@ -26,7 +26,7 @@ goals:
       reflexes: []
       responses: [ forget ]
       conditions:
-        - not target or target.mutators.triggers.dead
+        - not sprites.get(sprite.goal.name) or sprites.get(sprite.goal.name).mutators.triggers.dead
     layered:
       reflexes: []
       responses: [ push ]
@@ -87,13 +87,15 @@ goals:
       reflexes: []
       responses: [ forget, unwind ]
       conditions:
-        - not target or sprite.trajectory.stalled
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name) or sprite.trajectory.stalled
   object:
     complete:
       reflexes: []
       responses: [ forget ]
       conditions:
-        - not target or sprite.mutators.triggers.interacted
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name) or sprite.mutators.triggers.interacted
     layered:
       reflexes: []
       responses: [ push ]
@@ -127,7 +129,8 @@ goals:
       reflexes: []
       responses: [ forget ]
       conditions:
-        - not target
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name)
     layered:
       reflexes: []
       responses: [ push ]

@@ -5,7 +5,7 @@
 @modality.intention
 @workflow.cognition
 
-# Ontology: Source - app.services.translators.executors.resolutions
+# Ontology: Source - app.services.automaton.executors.resolutions
 
 Executors for the Goal Resolution Matrix.
 """
@@ -84,11 +84,8 @@ class GoalEvaluator:
         if not category_rules:
             return None
 
-        # Ensure uniform 'target' binding across AST and Lambda backends when omitted
-        eval_locals = locals if 'target' in locals else {**locals, 'target': None}
-
         for rule in category_rules:
-            if self.backend.evaluate(rule.conditions, eval_locals):
+            if self.backend.evaluate(rule.conditions, locals):
                 return rule
 
         return None

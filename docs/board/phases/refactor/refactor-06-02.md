@@ -424,7 +424,7 @@ So:
 
 **NOTE**: Implementation has been paused because the User would like to re-evaluate the architecture. Now that code has been committed, please step back and examine whether or not the phase is on track to complete the [Goals](#goals)
 
-#### Architectural Analysis V
+##### Architectural Analysis V
 
 1. **Eliminating `target` via Layer-Scoped `assets` (`board.states(layer)`):**
    * `target` collides semantically with `Goals.TARGET`, forces a defensive multi-fallback switchboard (`GoalResolver._target()`), and leaks a `'target': None` special case into `GoalEvaluator.evaluate()` and `settings.LAMBDA_SIGNATURE`.
@@ -434,6 +434,50 @@ So:
 3. **Bidirectional `Memory.doors` & Stabilization (B076–B081):**
    * Fix committed boot/import crashes in `builder.py`, `resolutions.py`, `transition.py`, `cognition.py`, and `cognition/base.py` (B076–B079) before extending the pipeline.
    * Upgrade `Memory.doors` from `Dict[str, str]` to `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`) so reciprocal `IN`/`OUT` Door projections do not overwrite each other (B080), and restrict cross-layer dormant Goal waking to layer transitions, newly mapped doors, or newly discovered non-stalled doors (B081).
+
+###### Additional Architectural Gaps Discovered in Audit
+
+1. **Stage 4 (`Sync`) Must Cover Stage 2 Substitutions and Reuse `GoalResolver`:**
+   The current Stage 4 spec only runs when *Acquisition (Stage 3)* introduces a new Goal. However, Stage 2 (`LayeredOutcome`) can also substitute an active Goal with a new `Goals.DOOR` Goal on the same tick, leaving `triggers.vision` stale from the replaced Goal. Stage 4 should refresh `Perception.track` whenever `sprite.state.goal` changed during Stage 2 or Stage 3, and run `GoalResolver.resolve` for newly acquired Stage 3 Goals (eliminating any duplicate cross-layer Door logic outside `GoalResolver`).
+
+2. **Frightened `speak` Softlock & `escape -> return` Hub Violation (Task 6):**
+   * In `intentions/main.yaml`, `speak` only exits on `PLAYER` or `not sprite.psyche.expression`. If a Sprite becomes `frightened` while displaying a `loquacity` bubble, Survival preemption clears `sprite.goal`, yet `speak` traps the Sprite until `expression.ttl` decays to zero. Add `sprite.mutators.triggers.frightened -> idle` to `speak`.
+   * `escape` currently exits to `return` when `not sprite.goal`, which immediately bounces `return -> idle` on the next tick. Route `escape` exit directly to `idle` (`not sprite.goal or sprite.goal.category != constants.Goals.POSITION -> idle`) to preserve the `idle` hub invariant.
+   * Also note `FleeInstinct`: since Stage 2 Survival preemption sets `sprite.state.goal = None` before `IDLE`, `FleeInstinct` cannot derive flee direction from `sprite.state.goal` (unlike legacy `_project`). It must compute the threat centroid from visible living `FOE`/attacking characters on the Sprite's Layer, with a safe fallback when frightened solely by low health with no threat in sight (and tangential deflection when clamped into a map corner within `action.radius`).
+
+3. **Constructor / `set_executor` Wiring for `CognitionMechanics` & YAML `null` Audit for Task 5:**
+   * `MechanicFactory.mechanics()` instantiates `CognitionMechanics()` with no arguments and injects `Executors.GOAL` afterward via `set_executor()`. `CognitionMechanics` must override `set_executor` (and its `executor` setter) to bind/rebuild `self.resolver = GoalResolver(evaluator=executor)` when `Executors.GOAL` is attached.
+   * Existing state YAMLs contain explicit `null` values for empty `Memory` collections (e.g., `prices: null`, `property: null`, `rumors: null`). Task 5 must audit and normalize all `/src/data/state/**/*.yaml` files when tightening `Memory` fields to non-nullable `default_factory` types per **Guideline: Models**, and must add `FrameRecipe.CHARACTER` / `AnimationRecipe.CHARACTER` in `semantics.py` and `AssetFactory`.
+
+##### Bug Reports
+
+###### Bug Report: B079 — Unwired `LocatorOperator` & `None` `LayeredOutcome.locator` Crash
+
+* **Severity:** Critical (Runtime Crash)
+* **Location:** `src/app/game/logic/modules/cognition/{outcomes.py, locators.py, core.py}`
+* **Root Cause:**
+  1. `OutcomeOperator.defaults()` constructs `LayeredOutcome()` with `locator=None`, causing `self.locator.locate(sprite, board)` to raise `AttributeError`.
+  2. `GoalResolver.locators` is stored in `__init__` and never passed to `OutcomeOperator.resolve()`.
+  3. `GoalResolver.door()` is a `@classmethod` calling nonexistent `cls.locator.locate()`.
+  4. `LocatorOperator` lacks a `resolve()` dispatch method (and carries copy-pasted docstrings from `outcomes.py`).
+* **Impact:** First cross-layer Goal resolution crashes the engine loop.
+* **Remediation:** Add `LocatorOperator.resolve(key, sprite, board)`, bundle operators into `ResolutionContext` passed to `OutcomeOperator.resolve()`, key `LayeredOutcome` by `Locators.DOOR`, and delete `GoalResolver.door()`.
+
+###### Bug Report: B080 — `Memory.doors` Flat Dict Breaks Bidirectional Door Return Routing
+
+* **Severity:** High (Navigation / Cross-Layer Regression)
+* **Location:** `src/app/models/state/assets/sheets.py` (`Memory.doors`), `src/app/game/logic/modules/cognition/locators.py` (`DoorLocator`)
+* **Root Cause:** Reciprocal `IN` and `OUT` Door projections share the same `door.name` across two Layers. Storing a single `door_name -> outlayer` string overwrites the return edge on transit; `DoorLocator` then fails to recognize the traversed Door as leading back to the origin Layer once the Sprite moves outside `vision.radius`.
+* **Impact:** Sprites that enter an interior Layer forget which Door returns to the outer Layer as soon as they move away from the threshold.
+* **Remediation:** Type `Memory.doors` as `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`), record both directions on traversal when a reciprocal projection exists, and query `memory.doors.get(sprite.state.layer, {})` (with optional BFS for multi-hop paths) in `DoorLocator`.
+
+###### Bug Report: B081 — Potential Infinite Stall–Unwind–Wake Loop on Blocked Unmapped Doors (Design Defect in Task 4 Spec)
+
+* **Severity:** High (Infinite Loop)
+* **Location:** Task 4 Subtask 1 (`Perception.scan` cross-layer dormancy wake rule)
+* **Root Cause:** Waking cross-layer dormant Goals whenever an unmapped door lies within `vision.radius` immediately re-wakes a Goal that was just unwound by `door.lost` due to stalling on that very same door.
+* **Impact:** Infinite per-tick oscillation (`door.lost` $\to$ `unwind` $\to$ `scan` wakes $\to$ `Recall` pops $\to$ `Sync` re-picks blocked door $\to$ stall).
+* **Remediation:** Trigger cross-layer Goal waking only on layer change, new `memory.doors` mapping matching `goal.layer`, or newly observed (non-stalled) unmapped doors.
 
 ##### Goals
 
@@ -493,10 +537,10 @@ Separate `SheetState` (`Pixies`), `CharacterState(SheetState)` (`Players`), and 
 
 *Objective*: Resolve committed import/boot breakages (B076–B079), eliminate the ambiguous `target` local and `GoalResolver._target()` fallbacks (User Review III), wire `LocatorOperator` symmetrically into `OutcomeOperator` and `GoalResolver` (User Review III), and fix bidirectional Door memory (B080).
 
-* [ ] Subtask: Fix committed boot/import breakages: compile `plots` with `transitions.compile(...)` in `src/app/services/orchestration/builder.py` (**B076**); update `resolutions.py` to import `Backend` from `app.services.translators.base`, `transition.py` (plus audit `PlotMechanics` and `SeasonMechanics`) to import `TransitionExecutor`, and `cognition.py` to import `GoalEvaluator` from `app.services.translators` (**B077**); move `ResponseOperator`/`ReflexOperator` imports in `cognition/base.py` under `if TYPE_CHECKING:` (**B078**); clean up `MechanicFactory.backend()` to use `TRANSLATOR_MAP`.
-* [ ] Subtask: Add $O(1)$ per-layer state indexing (`board.states(layer) -> Dict[str, AssetState]`) on `Board._cache` (maintained in `index_batch`, `evict_batch`, `relayer`, `clear`), swap `target=None` for `assets=None` in `settings.LAMBDA_SIGNATURE`, remove the `eval_locals` `'target'` fallback from `GoalEvaluator.evaluate()`, delete `GoalResolver._target()`, update `GoalResolver.evaluate(state, sprites, assets)` to pass `{'sprite': state, 'sprites': sprites, 'assets': assets}`, and update `/src/data/configurations/automata/goals/main.yaml` to use `sprites.get(sprite.goal.name)` (`target.complete`) and layer-guarded `assets.get(sprite.goal.name)` (`door.lost`, `object.complete`, `resource.complete`).
-* [ ] Subtask: Complete `LocatorOperator` wiring (**B079**): add `LocatorOperator.resolve(key, sprite, board) -> Optional[Asset]` and fix docstrings in `cognition/locators.py`; add frozen `ResolutionContext(responses, reflexes, locators, spawn)` in `cognition/base.py`; pass `context` through `OutcomeOperator.resolve(...)` and `Outcome.apply(...)`; update `LayeredOutcome` to hold `locator: Locators = Locators.DOOR` and call `context.locators.resolve(self.locator, sprite, board)`; remove `GoalResolver.door` classmethod and default all four operators in `GoalResolver.__init__`.
-* [ ] Subtask: Upgrade `Memory.doors` in `src/app/models/state/assets/sheets.py` to `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`) (**B080**), audit any state YAML fixtures referencing `memory.doors`, and update `DoorLocator.locate()` to query `memory.doors.get(sprite.state.layer, {})` (with optional BFS over `memory.doors` for multi-hop layer paths) and unmapped doors within `vision.radius`.
+* [x] Subtask: Fix committed boot/import breakages: compile `plots` with `transitions.compile(...)` in `src/app/services/orchestration/builder.py` (**B076**); update `resolutions.py` to import `Backend` from `app.services.translators.base`, `transition.py` (plus audit `PlotMechanics` and `SeasonMechanics`) to import `TransitionExecutor`, and `cognition.py` to import `GoalEvaluator` from `app.services.translators` (**B077**); move `ResponseOperator`/`ReflexOperator` imports in `cognition/base.py` under `if TYPE_CHECKING:` (**B078**); clean up `MechanicFactory.backend()` to use `TRANSLATOR_MAP`.
+* [x] Subtask: Add $O(1)$ per-layer state indexing (`board.states(layer) -> Dict[str, AssetState]`) on `Board._cache` (maintained in `index_batch`, `evict_batch`, `relayer`, `clear`), swap `target=None` for `assets=None` in `settings.LAMBDA_SIGNATURE`, remove the `eval_locals` `'target'` fallback from `GoalEvaluator.evaluate()`, delete `GoalResolver._target()`, update `GoalResolver.evaluate(state, sprites, assets)` to pass `{'sprite': state, 'sprites': sprites, 'assets': assets}`, and update `/src/data/configurations/automata/goals/main.yaml` to use `sprites.get(sprite.goal.name)` (`target.complete`) and layer-guarded `assets.get(sprite.goal.name)` (`door.lost`, `object.complete`, `resource.complete`).
+* [x] Subtask: Complete `LocatorOperator` wiring (**B079**): add `LocatorOperator.resolve(key, sprite, board) -> Optional[Asset]` and fix docstrings in `cognition/locators.py`; add frozen `ResolutionContext(responses, reflexes, locators, spawn)` in `cognition/base.py`; pass `context` through `OutcomeOperator.resolve(...)` and `Outcome.apply(...)`; update `LayeredOutcome` to hold `locator: Locators = Locators.DOOR` and call `context.locators.resolve(self.locator, sprite, board)`; remove `GoalResolver.door` classmethod and default all four operators in `GoalResolver.__init__`.
+* [x] Subtask: Upgrade `Memory.doors` in `src/app/models/state/assets/sheets.py` to `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`) (**B080**), audit any state YAML fixtures referencing `memory.doors`, and update `DoorLocator.locate()` to query `memory.doors.get(sprite.state.layer, {})` (with optional BFS over `memory.doors` for multi-hop layer paths) and unmapped doors within `vision.radius`.
 
 **5. Task: Decompose `CognitionMechanics`, Build `Instincts` Subsystem & Fix Cognitive / Navigation / Interaction Coupling**
 
@@ -539,140 +583,3 @@ Separate `SheetState` (`Pixies`), `CharacterState(SheetState)` (`Players`), and 
 * [!: Dependent on User Acceptance Tests] Subtask: Add unit tests verifying shared ISL `Backend` compilation, fail-fast syntax rejection (**B069**), `Builder.build_executors` compiling `plots` via `TransitionTranslator` (**B076**), and `GoalEvaluator` evaluation parity across `Compiler` and `Lambda` backends using `sprite`, `sprites`, and layer-scoped `assets`.
 * [!: Dependent on User Acceptance Tests] Subtask: Add unit tests for `ResponseOperator` (`forget`/`store`/`push`/`unwind`), `ReflexOperator` (`confusion`), `LocatorOperator` (`DoorLocator` bidirectional `memory.doors` **B080**, `IN`/`OUT` Door lookup, multi-hop routing), `GoalResolver` (`complete > layered > lost` precedence; unreachable `layered` demotion; `door.lost` stack unwinding; **B079**), `IDLE`-only `Recall` (LIFO resume and explicit `Goal.dormant`, **B019**/**B059**), `Instincts` (`Flee`, `Hostility`, `Converse`, `Wander` + `wander -> idle` reachability **B075**), `Perception` epistemic isolation, position copying (**B074**), non-looping cross-layer dormancy wake (**B081**), `any_memories_visible` dead-target filtering (**B070**), and `ESCAPE` flee steering through `NavigationMechanics` (**B072**).
 * [!: Dependent on User Acceptance Tests] Subtask: Add static automaton verification tests checking `intentions/main.yaml` for strict `idle` hub reachability, non-deadlocking exit coverage per `(Intention, GoalCategory)`, frightened exit from `speak`, safe missing-key evaluation in `barter`/`mine` (**B071**), and `SheetState`/`CharacterState`/`SpriteState` hydration and stationary `SpriteAnimation` TTL decay (**B058**, **B066**).
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Phase 06.02 Re-Evaluation & Grooming
-
-### Eliminating `target` and `GoalResolver._target()` in Favor of Layer-Scoped `assets`
-
-**Audit of what `goals/main.yaml` actually needs:**
-
-| Goal Category | Current `target` Usage | Actual Domain Query Needed |
-| --- | --- | --- |
-| `subject` | None | `not sprite.psyche.dialogue` |
-| `position` | None | `functions.is_near(...)` / `triggers.frightened` |
-| `property` | None | `sprite.goal.name in sprite.memory.property` |
-| `target` | `not target or target.mutators.triggers.dead` | Character state in `sprites` — identical to `intentions/main.yaml` |
-| `door` (`lost`) | `not target or sprite.trajectory.stalled` | Existence of Door on `sprite.layer` (`complete` already guarantees `sprite.layer == goal.layer`) |
-| `object` (`complete`) | `not target or sprite.mutators.triggers.interacted` | Existence of Object on `sprite.layer` (once on `goal.layer`) or `triggers.interacted` |
-| `resource` (`complete`) | `not target` | Existence of Resource on `sprite.layer` (once on `goal.layer`) |
-
-**Recommended Architecture:** Remove `target` and `GoalResolver._target()` completely. Expose an $O(1)$, zero-allocation per-layer state map `board.states(layer) -> Dict[str, AssetState]` (maintained incrementally in `Board._cache` right alongside `board.characters()`), and pass it into ISL as **`assets`** alongside `sprite` and `sprites`:
-
-$$\text{locals} = \{\,\texttt{sprite}: \text{SpriteState},\;\; \texttt{sprites}: \text{Dict}[\text{str}, \text{CharacterState}],\;\; \texttt{assets}: \text{Dict}[\text{str}, \text{AssetState}]\,\}$$
-
-
-```yaml
-  target:
-    complete:
-      reflexes: []
-      responses: [ forget ]
-      conditions:
-        - not sprites.get(sprite.goal.name) or sprites.get(sprite.goal.name).mutators.triggers.dead
-  door:
-    complete:
-      reflexes: []
-      responses: [ forget ]
-      conditions:
-        - sprite.layer != sprite.goal.layer
-    lost:
-      reflexes: []
-      responses: [ forget, unwind ]
-      conditions:
-        - not assets.get(sprite.goal.name) or sprite.trajectory.stalled
-  object:
-    complete:
-      reflexes: []
-      responses: [ forget ]
-      conditions:
-        - sprite.layer == sprite.goal.layer
-        - not assets.get(sprite.goal.name) or sprite.mutators.triggers.interacted
-  resource:
-    complete:
-      reflexes: []
-      responses: [ forget ]
-      conditions:
-        - sprite.layer == sprite.goal.layer
-        - not assets.get(sprite.goal.name)
-```
-
-### Additional Architectural Gaps Discovered in Audit
-
-1. **Stage 4 (`Sync`) Must Cover Stage 2 Substitutions and Reuse `GoalResolver`:**
-   The current Stage 4 spec only runs when *Acquisition (Stage 3)* introduces a new Goal. However, Stage 2 (`LayeredOutcome`) can also substitute an active Goal with a new `Goals.DOOR` Goal on the same tick, leaving `triggers.vision` stale from the replaced Goal. Stage 4 should refresh `Perception.track` whenever `sprite.state.goal` changed during Stage 2 or Stage 3, and run `GoalResolver.resolve` for newly acquired Stage 3 Goals (eliminating any duplicate cross-layer Door logic outside `GoalResolver`).
-
-2. **Frightened `speak` Softlock & `escape -> return` Hub Violation (Task 6):**
-   * In `intentions/main.yaml`, `speak` only exits on `PLAYER` or `not sprite.psyche.expression`. If a Sprite becomes `frightened` while displaying a `loquacity` bubble, Survival preemption clears `sprite.goal`, yet `speak` traps the Sprite until `expression.ttl` decays to zero. Add `sprite.mutators.triggers.frightened -> idle` to `speak`.
-   * `escape` currently exits to `return` when `not sprite.goal`, which immediately bounces `return -> idle` on the next tick. Route `escape` exit directly to `idle` (`not sprite.goal or sprite.goal.category != constants.Goals.POSITION -> idle`) to preserve the `idle` hub invariant.
-   * Also note `FleeInstinct`: since Stage 2 Survival preemption sets `sprite.state.goal = None` before `IDLE`, `FleeInstinct` cannot derive flee direction from `sprite.state.goal` (unlike legacy `_project`). It must compute the threat centroid from visible living `FOE`/attacking characters on the Sprite's Layer, with a safe fallback when frightened solely by low health with no threat in sight (and tangential deflection when clamped into a map corner within `action.radius`).
-
-3. **Constructor / `set_executor` Wiring for `CognitionMechanics` & YAML `null` Audit for Task 5:**
-   * `MechanicFactory.mechanics()` instantiates `CognitionMechanics()` with no arguments and injects `Executors.GOAL` afterward via `set_executor()`. `CognitionMechanics` must override `set_executor` (and its `executor` setter) to bind/rebuild `self.resolver = GoalResolver(evaluator=executor)` when `Executors.GOAL` is attached.
-   * Existing state YAMLs contain explicit `null` values for empty `Memory` collections (e.g., `prices: null`, `property: null`, `rumors: null`). Task 5 must audit and normalize all `/src/data/state/**/*.yaml` files when tightening `Memory` fields to non-nullable `default_factory` types per **Guideline: Models**, and must add `FrameRecipe.CHARACTER` / `AnimationRecipe.CHARACTER` in `semantics.py` and `AssetFactory`.
-
----
-
-## Bug Reports
-
-### Bug Report: B079 — Unwired `LocatorOperator` & `None` `LayeredOutcome.locator` Crash
-
-* **Severity:** Critical (Runtime Crash)
-* **Location:** `src/app/game/logic/modules/cognition/{outcomes.py, locators.py, core.py}`
-* **Root Cause:**
-  1. `OutcomeOperator.defaults()` constructs `LayeredOutcome()` with `locator=None`, causing `self.locator.locate(sprite, board)` to raise `AttributeError`.
-  2. `GoalResolver.locators` is stored in `__init__` and never passed to `OutcomeOperator.resolve()`.
-  3. `GoalResolver.door()` is a `@classmethod` calling nonexistent `cls.locator.locate()`.
-  4. `LocatorOperator` lacks a `resolve()` dispatch method (and carries copy-pasted docstrings from `outcomes.py`).
-* **Impact:** First cross-layer Goal resolution crashes the engine loop.
-* **Remediation:** Add `LocatorOperator.resolve(key, sprite, board)`, bundle operators into `ResolutionContext` passed to `OutcomeOperator.resolve()`, key `LayeredOutcome` by `Locators.DOOR`, and delete `GoalResolver.door()`.
-
-### Bug Report: B080 — `Memory.doors` Flat Dict Breaks Bidirectional Door Return Routing
-
-* **Severity:** High (Navigation / Cross-Layer Regression)
-* **Location:** `src/app/models/state/assets/sheets.py` (`Memory.doors`), `src/app/game/logic/modules/cognition/locators.py` (`DoorLocator`)
-* **Root Cause:** Reciprocal `IN` and `OUT` Door projections share the same `door.name` across two Layers. Storing a single `door_name -> outlayer` string overwrites the return edge on transit; `DoorLocator` then fails to recognize the traversed Door as leading back to the origin Layer once the Sprite moves outside `vision.radius`.
-* **Impact:** Sprites that enter an interior Layer forget which Door returns to the outer Layer as soon as they move away from the threshold.
-* **Remediation:** Type `Memory.doors` as `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`), record both directions on traversal when a reciprocal projection exists, and query `memory.doors.get(sprite.state.layer, {})` (with optional BFS for multi-hop paths) in `DoorLocator`.
-
-### Bug Report: B081 — Potential Infinite Stall–Unwind–Wake Loop on Blocked Unmapped Doors (Design Defect in Task 4 Spec)
-
-* **Severity:** High (Infinite Loop)
-* **Location:** Task 4 Subtask 1 (`Perception.scan` cross-layer dormancy wake rule)
-* **Root Cause:** Waking cross-layer dormant Goals whenever an unmapped door lies within `vision.radius` immediately re-wakes a Goal that was just unwound by `door.lost` due to stalling on that very same door.
-* **Impact:** Infinite per-tick oscillation (`door.lost` $\to$ `unwind` $\to$ `scan` wakes $\to$ `Recall` pops $\to$ `Sync` re-picks blocked door $\to$ stall).
-* **Remediation:** Trigger cross-layer Goal waking only on layer change, new `memory.doors` mapping matching `goal.layer`, or newly observed (non-stalled) unmapped doors.
-
----
-
-## Documentation Updates
-
-### 4.2 `docs/04-intentions.md`
-
-#### Update `Environment: Variables` (add `assets` and align examples):
-
-*Also remove the stale `attack -> hunt` (`sprite.memory.goal.category`) and `attack -> scavenge` examples under **Concept: Intentional Propositions**, replacing them with active rules from the reconciled Intention Transition Matrix (such as `idle -> hunt` and `find -> interact`).*
-
-
-### 4.3 `docs/05-mechanics.md`
-
-#### Update `Spatial Mechanic: InteractionMechanics`:
-
-```markdown
-For Players, `InteractionMechanics` resolves intersections between the Player and interactive Objects. For Sprites in the `interact` Intention, `InteractionMechanics` evaluates Objects within the Sprite's Action radius, prioritizing the Asset named by the Sprite's active Goal.
-
-* Traversing a Door moves the Sprite to the Door's destination Layer and destination Position, and records the Layer transition in `memory.doors`.
-* Interacting with a non-Door Object sets the `interacted` Trigger on the Sprite, which clears once the Sprite leaves the `interact` Intention.
-```

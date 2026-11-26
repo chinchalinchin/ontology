@@ -15,7 +15,6 @@ from __future__ import annotations
 import logging
 from typing import (
     Dict,
-    Optional,
     Tuple,
     TYPE_CHECKING
 )
@@ -26,21 +25,18 @@ if TYPE_CHECKING:
 # Application Libraries
 from app.assets.base import Asset
 from app.game.logic.modules.cognition.base import (
-    Locator,
     Operator,
     Outcome,
-    ExpressionSpawner
+    ResolutionContext
 )
-from app.game.logic.modules.cognition.reflexes import ReflexOperator
-from app.game.logic.modules.cognition.responses import ResponseOperator
 from app.models.state.assets.sheets import Goal
 from app.static.semantics import (
     Goals,
+    Locators,
     Outcomes,
     Responses
 )
 from app.services.automaton import GoalRule
-
 
 # Cython Libraries
 from libs.core.models import Position
@@ -62,13 +58,16 @@ class TerminalOutcome(Outcome):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseOperator,
-        reflex: ReflexOperator,
-        spawn: ExpressionSpawner
+        context: ResolutionContext
     ) -> None:
         goal = sprite.state.goal
-        response.resolve(rule.responses, goal, sprite.state.memory)
-        reflex.resolve(rule.reflexes, goal, sprite.state.psyche, spawn)
+        context.responses.resolve(rule.responses, goal, sprite.state.memory)
+        context.reflexes.resolve(
+            rule.reflexes,
+            goal,
+            sprite.state.psyche,
+            context.spawn
+        )
         sprite.state.goal = None
         logger.info(
             f"{sprite.name} resolved Goal("
@@ -83,12 +82,12 @@ class LayeredOutcome(Outcome):
     Goals.DOOR Goal when a portal is located, or demoting it directly to
     dormant episodic memory (Responses.STORE) when unreachable.
     """
-    locator: Locator
+    locator: Locators
     fallback_responses: Tuple[Responses, ...]
 
     def __init__(
         self,
-        locator: Optional[Locator] = None,
+        locator: Locators = Locators.DOOR,
         fallback_responses: Tuple[Responses, ...] = (Responses.STORE,)
     ):
         self.locator = locator
@@ -99,16 +98,19 @@ class LayeredOutcome(Outcome):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseOperator,
-        reflex: ReflexOperator,
-        spawn: ExpressionSpawner
+        context: ResolutionContext
     ) -> None:
         goal = sprite.state.goal
-        target_door = self.locator.locate(sprite, board)
+        target_door = context.locators.resolve(self.locator, sprite, board)
 
         if target_door is not None:
-            response.resolve(rule.responses, goal, sprite.state.memory)
-            reflex.resolve(rule.reflexes, goal, sprite.state.psyche, spawn)
+            context.responses.resolve(rule.responses, goal, sprite.state.memory)
+            context.reflexes.resolve(
+                rule.reflexes,
+                goal,
+                sprite.state.psyche,
+                context.spawn
+            )
             sprite.state.goal = Goal(
                 name=target_door.name,
                 category=Goals.DOOR,
@@ -127,8 +129,17 @@ class LayeredOutcome(Outcome):
 
         # Unreachable portal: demote directly to dormant episodic memory
         # without pushing onto memory.stack to prevent Recall -> Sync loops
-        response.resolve(self.fallback_responses, goal, sprite.state.memory)
-        reflex.resolve(rule.reflexes, goal, sprite.state.psyche, spawn)
+        context.responses.resolve(
+            self.fallback_responses,
+            goal,
+            sprite.state.memory
+        )
+        context.reflexes.resolve(
+            rule.reflexes,
+            goal,
+            sprite.state.psyche,
+            context.spawn
+        )
         sprite.state.goal = None
         logger.info(
             f"{sprite.name} demoted unreachable layered Goal("
@@ -141,7 +152,7 @@ class LayeredOutcome(Outcome):
 
 class OutcomeOperator(Operator[Outcomes, Outcome]):
     """
-    Dispatches matched GoalRule outcomes to registered OutcomeHandler objects.
+    Dispatches matched GoalRule outcomes to registered Outcome objects.
     """
 
     @classmethod
@@ -157,20 +168,16 @@ class OutcomeOperator(Operator[Outcomes, Outcome]):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseOperator,
-        reflex: ReflexOperator,
-        spawn: ExpressionSpawner
+        context: ResolutionContext
     ) -> Outcomes:
         """
-        Executes the OutcomeHandler registered for rule.outcome and returns
+        Executes the Outcome registered for rule.outcome and returns
         the matched Outcome.
         """
         self.get(rule.outcome).apply(
             rule=rule,
             sprite=sprite,
             board=board,
-            response=response,
-            reflex=reflex,
-            spawn=spawn
+            context=context
         )
         return rule.outcome

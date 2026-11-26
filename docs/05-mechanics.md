@@ -228,6 +228,11 @@ This class serves to unpack the Application data structures into raw primitives 
     * `if target.instance == AssetInstances.SIGNS`: 
         * `bus.append(MenuEvent('dialogue'))`
 
+For Players, InteractionMechanics resolves intersections between the Player and interactive Objects. For Sprites in the `interact` Intention, InteractionMechanics evaluates Objects within the Sprite's Action radius, prioritizing the Asset named by the Sprite's active Goal.
+
+* Traversing a Door moves the Sprite to the Door's destination Layer and destination Position, and records the Layer transition in `memory.doors`.
+* Interacting with a non-Door Object sets the `interacted` Trigger on the Sprite, which clears once the Sprite leaves the `interact` Intention.
+
 #### Spatial Mechanic: CollisionMechanics
 
 * Address: `app.game.logic.mechanics.spatial.collision`

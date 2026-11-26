@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.logic.modules.cognition.base import ResolutionContext
 from app.game.logic.modules.cognition.locators import LocatorOperator
 from app.game.logic.modules.cognition.reflexes import ReflexOperator
 from app.game.logic.modules.cognition.responses import ResponseOperator
@@ -31,7 +32,6 @@ from app.models.state.core import AssetState
 from app.static.semantics import (
     Expressions,
     ExpressionsPalette,
-    Goals,
     Outcomes
 )
 from app.services.automaton import (
@@ -46,76 +46,35 @@ from app.services.automaton import (
 class GoalResolver:
     """
     Declarative Goal lifecycle resolver composing compiled GoalEvaluator
-    classification with extensible ResponseResolver (Memory), ReflexResolver
-    (Psyche), and OutcomeResolver (Goal lifecycle) operators.
+    classification with extensible ResponseOperator (Memory), ReflexOperator
+    (Psyche), OutcomeOperator (Goal lifecycle), and LocatorOperator (spatial
+    search) operators.
     """
     evaluator: GoalEvaluator
-    response: ResponseOperator
-    reflex: ReflexOperator
+    responses: ResponseOperator
+    reflexes: ReflexOperator
     outcomes: OutcomeOperator
     locators: LocatorOperator
 
     def __init__(
         self,
         evaluator: GoalEvaluator,
-        response: ResponseOperator,
-        reflex: ReflexOperator,
-        outcomes: OutcomeOperator,
-        locators: LocatorOperator
+        responses: Optional[ResponseOperator] = None,
+        reflexes: Optional[ReflexOperator] = None,
+        outcomes: Optional[OutcomeOperator] = None,
+        locators: Optional[LocatorOperator] = None
     ):
         self.evaluator = evaluator
-        self.response = response
-        self.reflex = reflex
-        self.outcomes = outcomes
-        self.locators = locators
-
-    @classmethod
-    def door(cls, sprite: Asset, board: Board) -> Optional[Asset]:
-        """
-        - todo: improper abstraction of locator interface, i.e. does not have to be door.
-
-        Locates a bidirectional portal Door (LayerProjections.IN or OUT) on
-        the Sprite's active Layer using the configured PortalLocator strategy.
-        """
-        return cls.locator.locate(sprite, board)
-
-    @staticmethod
-    def _target(
-        sprite: Asset,
-        board: Board,
-        sprites: Dict[str, Any]
-    ) -> Optional[AssetState]:
-        """
-        - todo: what is this? why is this a thing?
-
-        Resolves the active Goal's target AssetState in O(1) for ISL evaluation.
-        """
-        goal = sprite.state.goal
-        if not goal or not goal.name or goal.category == Goals.POSITION:
-            return None
-
-        if goal.category == Goals.DOOR:
-            layer = goal.layer if goal.layer is not None else sprite.state.layer
-            target_asset = board.asset(goal.name, layer)
-            return target_asset.state if target_asset is not None else None
-
-        target_asset = (
-            board.asset(goal.name, sprite.state.layer)
-            or board.asset(goal.name)
-        )
-        if target_asset is not None:
-            return target_asset.state
-
-        if goal.category in (Goals.TARGET, Goals.SUBJECT):
-            return sprites.get(goal.name)
-
-        return None
+        self.responses = responses if responses is not None else ResponseOperator()
+        self.reflexes = reflexes if reflexes is not None else ReflexOperator()
+        self.outcomes = outcomes if outcomes is not None else OutcomeOperator()
+        self.locators = locators if locators is not None else LocatorOperator()
 
     def evaluate(
         self,
         state: SpriteState,
         sprites: Dict[str, Any],
-        target: Optional[AssetState] = None
+        assets: Dict[str, AssetState]
     ) -> Optional[GoalRule]:
         """
         Pure predicate classifying a Sprite's active Goal against the compiled
@@ -129,14 +88,14 @@ class GoalResolver:
             locals={
                 'sprite': state,
                 'sprites': sprites,
-                'target': target,
+                'assets': assets,
             }
         )
 
     def resolve(self, sprite: Asset, board: Board) -> Optional[Outcomes]:
         """
         Evaluates the Sprite's active Goal and dispatches the matched
-        OutcomeHandler, Memory Responses, and Psyche Reflexes.
+        Outcome, Memory Responses, and Psyche Reflexes.
         Returns the matched Outcome, or None if no Goal is active or the Goal
         remains undetermined (free).
         """
@@ -144,8 +103,8 @@ class GoalResolver:
             return None
 
         sprites = board.characters()
-        target = self._target(sprite, board, sprites)
-        rule = self.evaluate(sprite.state, sprites, target)
+        assets = board.states(sprite.state.layer)
+        rule = self.evaluate(sprite.state, sprites, assets)
 
         if rule is None:
             return None
@@ -158,11 +117,16 @@ class GoalResolver:
                 return None
             return board.cradle.spawn_expression(palette, expression, sprite)
 
+        context = ResolutionContext(
+            responses=self.responses,
+            reflexes=self.reflexes,
+            locators=self.locators,
+            spawn=_spawn
+        )
+
         return self.outcomes.resolve(
             rule=rule,
             sprite=sprite,
             board=board,
-            response=self.response,
-            reflex=self.reflex,
-            spawn=_spawn
+            context=context
         )

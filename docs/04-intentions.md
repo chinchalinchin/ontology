@@ -161,29 +161,37 @@ Terms:
 * `constants`: A dictionary of Application constants.
 * `functions`: A dictionary of helper functions.
 
-For example, in the Application's default Intention Transition Matrix, the transition from `attack` to `hunt` is conditional on,
+For example, in the Application's default Intention Transition Matrix, the transition from `idle` to `hunt` is conditional on,
 
 ```yaml
-- not sprite.goal
-- sprite.memory.goal.category == constants.Goals.TARGET
+- sprite.goal
+- sprite.goal.category == constants.Goals.TARGET
+- sprite.layer == sprite.goal.layer
 ```
 
-`sprite` is a reference to the Sprite's State which is currently having its Intention processed by the Engine. Thus, the Sprite's Intention will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `target`.
+`sprite` is a reference to the Sprite's State which is currently having its Intention processed by the Engine. Thus, the Sprite's Intention will transition to `hunt` if the Sprite currently has a Goal of Category `target` on the same Layer.
 
 !!! note
-    The expression `not sprite.goal` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.goal` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
+    The expression `sprite.goal` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.goal` exists. If the expression involves a List, e.g. `sprite.inventory.bag`, this expression evaluates to `true` whenit has more than 0 entries.
 
-In another example, the transition from `attack` to `scavenge` in the default Intention Transition Matrix is given by,
+In another example, the transition from `idle` to `find` in the default Intention Transition Matrix is given by,
 
 ```yaml
+- sprite.goal
+- sprite.goal.category == constants.Goals.SUBJECT
+- sprite.layer == sprite.goal.layer
 - sprites.get(sprite.goal.name)
-- sprites.get(sprite.goal.name).mutators.triggers.dead
+- not functions.is_near(
+    sprite.position, 
+    sprites.get(sprite.goal.name).position, 
+    sprite.mutators.parameters.action.radius
+    )
 ```
 
 `sprites` is a reference to a cross-Layer dictionary of all Sprites States on the [Board](./00-overview.md#component-board) keyed by their unique `name`.
 
 !!! important "Intention Order"
-    The conditions for an Intention transition are evaluated in the order they specified. In the example, if `not sprite.goal`, none of the other conditions for Intention transitions are evaluated and the Intention remains into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified. In the example, if `sprite.goal`, none of the other conditions for Intention transitions are evaluated and the Intention remains into `idle`.
 
 Intention transition conditions are compile during [Application Initialization](./12-architecture.md#specification-initialization) and evaluated at runtime. 
 
@@ -206,14 +214,13 @@ versus,
 ```yaml
 # INCORRECT CONFIGURATION
 - sprite.goal.category == constants.Goals.TARGET
-- sprite.goal
 ```
 
 In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`, while the second will generate a runtime error.
 
 **Environment: Variables**
 
-The Transition execution environment is injected with variables during execution.
+The Transition execution environment is injected with live State variables during execution.
 
 * `sprite`: The Sprite State of the Asset evaluating its conditions.
 * `sprites`: Map of deployed Character `name` to Character State across the Board.
@@ -290,7 +297,7 @@ Reflexes mutate [Sprite Psyche](./02-sprites.md#model-psyche).
 
 Locators search the Sprite's active Layer for candidate Assets needed to satisfy an Outcome.
 
-* `door`: Sensory recall of Doors.
+* `door`: Sensory recall of [Doors](./01-assets.md#object-doors).
 
 ## Module: AnimationMap
 

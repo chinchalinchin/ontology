@@ -75,9 +75,12 @@ class TransitionMechanics(Mechanic):
             if self.executor and sprite.state.intention:
                 next_intent = self.executor.evaluate(
                     current_state=sprite.state.intention,
-                    locals={'sprite': sprite.state, 'sprites': sprites_dict}
+                    locals={
+                        'sprite': sprite.state,
+                        'sprites': sprites_dict,
+                        'assets': board.states(sprite.state.layer),
+                    }
                 )
-
                 current_intent = sprite.state.intention
 
                 if next_intent and next_intent != current_intent:

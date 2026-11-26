@@ -38,6 +38,7 @@ from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.models.adapters import serialize
 from app.models.state.core import (
+    AssetState,
     PlotState,
     CalendarState
 )
@@ -209,6 +210,11 @@ class Board:
         return target_assets
 
 
+    def states(self, layer: str) -> Dict[str, AssetState]:
+        """Retrieves an O(1) layer-scoped mapping of asset names to AssetStates."""
+        return self._cache.get_states(layer)
+
+    
     def weights(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         """Retrieves physical weight candidates, optionally filtered by layer and elevation."""
         weights = self._cache.get_weights(layer)

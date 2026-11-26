@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/groom.md.j2
+  template: iterate/implement.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -13,7 +13,7 @@ tools:
       board: true
       docs: true
       bugs: false
-      templates: true
+      templates: false
     # --------------------------------------------
     source:
       data: true
@@ -66,14 +66,18 @@ tools:
             scan:
               domain: [ system ]
               app: [ core, component ]
+          - title: 'Board - Modules'
+            scan: 
+              domain: [ system ]
+              app: [ module, board ]
           - title: 'Asset - Abstract'
             scan:
               domain: [ abstract ]
               app: [ asset ]
-          # - title: 'Mechanic - Abstract'
-          #   scan:
-          #     domain: [ abstract] 
-          #     app: [ mechanic ]
+          - title: 'Mechanic - Abstract'
+            scan:
+              domain: [ abstract] 
+              app: [ mechanic ]
           - title: 'Asset - Models'
             scan:
               domain: [ model ]
@@ -88,19 +92,28 @@ tools:
           #     domain: [ concrete ]
           #     app: [ asset ]
           #     category: [ sheets ]
-          - title: 'Services - Automata'
+          - title: 'Automata - Models'
+            scan: 
+              domain: [ model, automata ]
+          - title: 'Automata - Services'
             scan: 
               domain: [ automata ]
               app: [ service ]
-          - title: 'Modules - Automata'
+          - title: 'Automata - Modules'
             scan:
               domain: [ automata ]
               app: [ module ]
-          - title: 'Mechanics - Intentional'
+          - title: 'Mechanics - Cognition'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ cognition ]
+          - title: 'Mechanics - Transition'
             scan:
               domain: [ concrete ]
               app: [ mechanic ]
               modality: [ intention ]
+              workflows: [ transitions ]
           # - title: 'Libraries - Navigation'
           #   scan: 
           #     domain: [ system ]

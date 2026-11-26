@@ -17,6 +17,7 @@ from abc import (
     ABC, 
     abstractmethod
 )
+from dataclasses import dataclass
 from typing import (
     Callable,
     Dict,
@@ -43,10 +44,9 @@ from app.services.automaton import GoalRule
 
 if TYPE_CHECKING:
     from app.game.board import Board
-    from app.game.logic.modules.cognition import (
-        ResponseOperator,
-        ReflexOperator
-    )
+    from app.game.logic.modules.cognition.locators import LocatorOperator
+    from app.game.logic.modules.cognition.reflexes import ReflexOperator
+    from app.game.logic.modules.cognition.responses import ResponseOperator
     
 # -----------------------------------------------------
 
@@ -62,6 +62,18 @@ ExpressionSpawner = Callable[
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------
+
+
+@dataclass(slots=True, frozen=True)
+class ResolutionContext:
+    """
+    Immutable bundle of orthogonal cognitive operators and expression spawner
+    passed into Outcome execution during Goal resolution.
+    """
+    responses: ResponseOperator
+    reflexes: ReflexOperator
+    locators: LocatorOperator
+    spawn: ExpressionSpawner
 
 
 class Operator(ABC, Generic[K, Op]):
@@ -156,9 +168,7 @@ class Outcome(ABC):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseOperator,
-        reflex: ReflexOperator,
-        spawn: ExpressionSpawner
+        context: ResolutionContext
     ) -> None:
         """Applies Memory responses, Psyche reflexes, and active Goal updates."""
         pass

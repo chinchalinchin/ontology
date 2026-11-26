@@ -3,7 +3,7 @@
 @domain.concrete
 @app.service
 
-# Ontology: Source - app.services.translators.lamb
+# Ontology: Source - app.services.automaton.backends.lamb
 
 Lambda ConditionBackend implementation for ISL compilation and evaluation.
 """
@@ -19,8 +19,8 @@ from typing import (
 
 # Application Libraries
 import app.static.settings as settings
-from app.services.translators.base import Backend
-from app.services.translators.environ import Environ
+from app.services.automaton.base import Backend
+from app.services.automaton.environ import Environ
 
 # ----------------------------------------------
 

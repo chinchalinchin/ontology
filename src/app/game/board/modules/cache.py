@@ -22,6 +22,7 @@ from typing import (
 import app.static.settings as settings
 import app.game.logic.predicates as predicates
 from app.assets.base import Asset
+from app.models.state.core import AssetState
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
@@ -50,6 +51,7 @@ class Cache:
     cached_tilemap: Dict[str, Dict[str, Dict[Tuple[int, int], Asset]]]
     cached_fluidmap: Dict[str, Dict[Tuple[int, int], List[Asset]]]
     cached_characters: Dict[str, Any]
+    cached_states: Dict[str, Dict[str, AssetState]]
     cached_sizes: Dict[str, Dimensions]
     assets_by_name: Dict[str, Asset]
     shorelines: Dict[str, List[Asset]]
@@ -104,6 +106,7 @@ class Cache:
             AssetInstances.CANOPY: {}
         })
         self.cached_fluidmap.setdefault(layer, {})
+        self.cached_states.setdefault(layer, {})
         self.cached_sizes.setdefault(layer, Dimensions(w=0, l=0))
         self.shorelines.setdefault(layer, [])
 
@@ -221,6 +224,9 @@ class Cache:
             self.cached_categories[layer].setdefault(cat, []).append(asset)
             self.cached_instances[layer].setdefault(inst, []).append(asset)
             self.cached_layers[layer].append(asset)
+
+            if asset.name:
+                self.cached_states[layer][asset.name] = asset.state
 
             if cat != AssetCategories.TILES:
                 self.cached_renderables[layer].append(asset)
@@ -367,6 +373,16 @@ class Cache:
             if asset.name and self.assets_by_name.get(asset.name) is asset:
                 del self.assets_by_name[asset.name]
 
+            # Identity-safe eviction preserves reciprocal Door projections on other layers
+            layer = asset.state.layer
+            if (
+                layer is not None
+                and asset.name
+                and layer in self.cached_states
+                and self.cached_states[layer].get(asset.name) is asset.state
+            ):
+                del self.cached_states[layer][asset.name]
+
         # 3. Character cache evictions
         for name in removal_names:
             if name in self.cached_characters:
@@ -412,6 +428,13 @@ class Cache:
             if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
                 self.shorelines[old_layer].remove(asset)
 
+            if (
+                old_layer in self.cached_states
+                and asset.name
+                and self.cached_states[old_layer].get(asset.name) is asset.state
+            ):
+                del self.cached_states[old_layer][asset.name]
+
             self.cached_sizes.pop(old_layer, None)
 
         asset.state.layer = new_layer
@@ -428,6 +451,9 @@ class Cache:
         self.cached_categories[new_layer].setdefault(cat, []).append(asset)
         self.cached_instances[new_layer].setdefault(inst, []).append(asset)
         self.cached_layers[new_layer].append(asset)
+
+        if asset.name:
+            self.cached_states[new_layer][asset.name] = asset.state
 
         if cat != AssetCategories.TILES:
             self.cached_renderables[new_layer].append(asset)
@@ -465,6 +491,7 @@ class Cache:
         self.cached_tilemap = {}
         self.cached_fluidmap = {}
         self.cached_characters = {}
+        self.cached_states = {}
         self.cached_sizes = {}
         self.assets_by_name = {}
         self.shorelines = {}
@@ -579,6 +606,10 @@ class Cache:
 
     def get_characters(self) -> Dict[str, Any]:
         return self.cached_characters
+
+    def get_states(self, layer: str) -> Dict[str, AssetState]:
+        """Returns the O(1) layer-scoped mapping of asset names to AssetStates."""
+        return self.cached_states.get(layer, {})
 
     def get_fluid_bucket(self, layer: str, cx: int, cy: int) -> Optional[List[Asset]]:
         return self.cached_fluidmap.get(layer, {}).get((cx, cy))

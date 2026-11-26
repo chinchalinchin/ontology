@@ -133,7 +133,7 @@ class Memory:
     relationships: Optional[Dict[str, Enumerated[Relationships]]] = None
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
-    doors: Optional[Dict[str, str]] = None
+    doors: Optional[Dict[str, Dict[str, str]]] = field(default_factory=dict)
     stack: List[Goal] = field(default_factory=list)
     
     def __post_init__(self) -> None:
@@ -151,6 +151,7 @@ class Memory:
             self.doors = {} 
         if self.prices is None: 
             self.prices = {}
+            
 
 @dataclass(slots=True)
 class Trajectory:
