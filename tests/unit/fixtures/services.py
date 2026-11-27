@@ -53,22 +53,44 @@ from libs.graphics.registry import Registry
 
 
 @pytest.fixture
-def mock_translator():
+def mock_backend():
     """
     Parameterized fixture factory for instantiating an ISL translator ('lambda' or 'compiler').
     """
-    def _translator(
+    def _backend(
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ):
-        return MechanicFactory.translator(implementation)
+        return MechanicFactory.backend(implementation)
 
-    return _translator
+    return _backend
 
+@pytest.fixture
+def mock_transitions():
+    """
+    """
+    def _transitions(
+        implementation: str = settings.TRANSLATOR_IMPLEMENTATION
+    ):
+        return MechanicFactory.transitions(implementation)
+
+    return _transitions
+
+@pytest.fixture
+def mock_goals():
+    """
+    """
+    def _goals(
+        implementation: str = settings.TRANSLATOR_IMPLEMENTATION
+    ):
+        return MechanicFactory.goals(implementation)
+
+    return _goals
 
 @pytest.fixture
 def mock_executors(
     mock_configurations_schema: ConfigurationSchema,
-    mock_translator,
+    mock_transitions,
+    mock_goals
 ):
     """
     Parameterized fixture factory compiling intention, plot, and stage executors.
@@ -76,10 +98,15 @@ def mock_executors(
     def _executors(
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ) -> dict[str, Any]:
-        trans = mock_translator(implementation)
+        trans = mock_transitions(implementation)
+        goals = mock_goals(implementation)
+
         compiled: dict[str, Any] = {
             Executors.INTENTION.value: trans.compile(
                 mock_configurations_schema.intentions
+            ),
+            Executors.GOAL.value: goals.compile(
+                mock_configurations_schema.goals
             ),
             Executors.PLOT.value: trans.compile(
                 mock_configurations_schema.plots

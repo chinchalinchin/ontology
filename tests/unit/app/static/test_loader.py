@@ -420,7 +420,7 @@ def test_load_properties_hydrates_entire_schema(
     assert isinstance(maize.hitboxes, dict)
 
     # 8. Sheets & Equipment
-    player = mock_properties_schema.sheets.sprites["player"]
+    player = mock_properties_schema.sheets.players["player"]
     rat = mock_properties_schema.sheets.pixies["giant-rat"]
     sword = mock_properties_schema.sheets.weapons["sword"]
     buckler = mock_properties_schema.sheets.shields["buckler"]

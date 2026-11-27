@@ -3,7 +3,6 @@
 @domain.user
 @app.mechanic
 @category.sheets
-@modality.intention
 @workflow.player
 
 # Ontology: Source - app.game.logic.mechanics.intentional.player

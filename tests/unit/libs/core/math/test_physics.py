@@ -1,5 +1,5 @@
 """
-@domain.tests
+@domain.test
 @test.unit
 @app.library
 @physics.motion

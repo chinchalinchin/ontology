@@ -14,7 +14,7 @@ from typing import Optional
 import pytest
 
 # Application Libraries
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 from app.models.properties import (
     AssetProperties,
     PropertiesSchema,

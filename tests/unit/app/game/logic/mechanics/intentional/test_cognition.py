@@ -22,7 +22,6 @@ from app.static.semantics import (
 )
 from app.game.logic.mechanics import (
     CognitionMechanics,
-    WANDER,
 )
 from app.models.state import Goal
 
@@ -95,7 +94,7 @@ def test_cognition_resolve_stale_wander_dropped(mock_mechanic, mock_board):
 
     sprite.state.intention = Intentions.HUNT.value
     sprite.state.goal = Goal(
-        name=WANDER,
+        name="wander",
         category=Goals.POSITION.value,
         position=Position(200, 200),
     )
@@ -261,7 +260,7 @@ def test_cognition_ideate_dialogue_target(mock_mechanic, mock_board):
     sprite.state.mutators.parameters.vision.radius = 100
     sprite.state.layer = "1"
     sprite.state.goal = Goal(
-        name=WANDER,
+        name="wander",
         category=Goals.POSITION.value,
         position=Position(100, 100),
     )
@@ -273,7 +272,7 @@ def test_cognition_ideate_dialogue_target(mock_mechanic, mock_board):
 
     assert sprite.state.goal.category == Goals.SUBJECT.value
     assert sprite.state.goal.name == player.name
-    assert WANDER in sprite.state.memory.goals
+    assert 'wander' in sprite.state.memory.goals
 
 
 def test_cognition_remember_idle_only(mock_mechanic, mock_board):
@@ -450,7 +449,7 @@ def test_cognition_project_wander(mock_mechanic, mock_board):
     mechanic._project(sprite, mock_board)
 
     assert sprite.state.goal is not None
-    assert sprite.state.goal.name == WANDER
+    assert sprite.state.goal.name == "wander"
     assert sprite.state.goal.category == Goals.POSITION.value
     assert sprite.state.goal.layer == sprite.state.layer
 
@@ -483,5 +482,5 @@ def test_cognition_update_pipeline(mock_mechanic, mock_board, mock_bus, mock_pay
     mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
 
     assert sprite.state.goal is not None
-    assert sprite.state.goal.name == WANDER
+    assert sprite.state.goal.name == "wander"
     assert sprite.state.goal.category == Goals.POSITION.value

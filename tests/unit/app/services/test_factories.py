@@ -91,9 +91,10 @@ from app.game.menus.controllers import (
     PauseController,
     ScrollController,
 )
-from app.services.translators import (
-    CompilerTranslator,
-    LambdaTranslator,
+from app.services.automaton import (
+    TransitionTranslator,
+    Lambda,
+    Compiler
 )
 from app.services.factories import (
     AssetFactory,
@@ -261,15 +262,10 @@ def test_factory_controller():
 @pytest.mark.workflow_plots
 @pytest.mark.workflow_seasons
 def test_factory_translator():
-    assert isinstance(
-        MechanicFactory.translator(Translators.LAMBDA.value),
-        LambdaTranslator,
+    lambda_transitions = MechanicFactory.transitions(Translators.LAMBDA.value)
+    assert isinstance(lambda_transitions, TransitionTranslator,
     )
-    assert isinstance(
-        MechanicFactory.translator(Translators.COMPILER.value),
-        CompilerTranslator,
-    )
-    assert isinstance(
-        MechanicFactory.translator("unmapped_translator"),
-        LambdaTranslator,
-    )
+    assert isinstance(lambda_transitions.backend, Lambda)
+    compiler_transitions = MechanicFactory.transitions(Translators.COMPILER.value)
+    assert isinstance(compiler_transitions, TransitionTranslator,)
+    assert isinstance(compiler_transitions.backend, Compiler,)

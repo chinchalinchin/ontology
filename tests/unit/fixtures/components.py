@@ -11,7 +11,6 @@ Concrete application component, device, registry, mechanic, and engine fixtures.
 import collections
 from typing import (
     Any,
-    Callable,
     Dict,
     List,
     Optional,

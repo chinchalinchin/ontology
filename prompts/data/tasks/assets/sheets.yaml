@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: maintain/patch.md.j2
+  template: iterate/cover.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -12,8 +12,8 @@ tools:
     manager:
       board: true
       docs: true
-      bugs: true
-      templates: true
+      bugs: false
+      templates: false
     # --------------------------------------------
     source:
       data: true
@@ -21,6 +21,11 @@ tools:
     # --------------------------------------------
     shell:
       directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: true
+      pipeline: true
+      session: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
@@ -28,22 +33,7 @@ tools:
       board:
         phase: 06-02
         action: refactor
-      bugs: 
-        - b019
-        - b057
-        - b058
-        - b059
-        - b060
-        - b061
-        - b066
-        - b067
-        - b068
-        - b070
-        - b071
-        - b072
-        - b073
-        - b074
-        - b075
+      bugs: []
       docs:
         exclude:
           # - 00-overview
@@ -114,38 +104,41 @@ tools:
               domain: [ concrete ]
               app: [ mechanic ]
               modality: [ intention ]
-          # - title: 'Mechanics - Cognition'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ mechanic ]
-          #     workflows: [ cognition ]
-          # - title: 'Mechanics - Transition'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ mechanic ]
-          #     modality: [ intention ]
-          #     workflows: [ transitions ]
-          # - title: 'Mechanics - Navigation'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ mechanic ]
-          #     workflows: [ navigation ]
-          # - title: 'Mechanics - Interaction'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ mechanic ]
-          #     workflows: [ interactions ]
           - title: 'Libraries - Navigation'
             scan: 
               domain: [ system ]
               app: [ library ]
               workflows: [ navigation ]
+          - title: 'Tests - Fixtures'
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
+          - title: 'Tests - Intentional Mechanics'
+            scan:
+              domain: [ test ]
+              app: [ mechanic ]
+              modality: [ intention ]
+          - title: 'Tests - Automata'
+            scan:
+              domain: [ test ]
+              app: [ service ]
+              workflows: [ transitions ]
+          - title: 'Tests - Navigation'
+            scan: 
+              domain: [ test ]
+              workflows: [ navigation ]
       data:
         properties: [ sheets/sprites ]
-        state: [ ]
-        configurations: [ assets/actions, automata/intentions, automata/goals ]
+        state: [ world-testbed ]
+        configurations: [ automata/intentions, automata/goals ]
         templates: [ ]
     # --------------------------------------------
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: '"workflow_navigation or workflow_cognition or workflow_transitions"'
+        # scope: '**/test_{actuator,cartographer}.py'

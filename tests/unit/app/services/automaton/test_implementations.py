@@ -23,12 +23,11 @@ from app.static.semantics import (
     Goals
 )
 from app.models.state.assets.sheets import Goal
-from app.services.translators.base import Transition
-from app.services.translators.compiler import (
-    CompilerExecutor,
-)
-from app.services.translators.lamb import (
-    LambdaExecutor
+from app.services.automaton import (
+    Transition,
+    Compiler,
+    Lambda,
+    TransitionExecutor
 )
 
 # Cython Libraries
@@ -44,31 +43,31 @@ pytestmark = [
 # -----------------------------------------------------
 
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value, TransitionExecutor, Compiler),
+    (Translators.LAMBDA.value, TransitionExecutor, Lambda)
 ])
 def test_executor_compiles(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema
 ):
-    translator = mock_translator(implementation[0])
+    translator = mock_transitions(implementation[0])
     executor = translator.compile(mock_configurations_schema.intentions)
     
     assert isinstance(executor, implementation[1])
-
+    assert isinstance(executor.backend, implementation[2])
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_compiles_intentions(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema
 ):
-    translator = mock_translator(implementation[0])
+    translator = mock_transitions(implementation[0])
     executor = translator.compile(mock_configurations_schema.intentions)
     
     assert Intentions.IDLE.value in executor.transitions
@@ -78,16 +77,16 @@ def test_executor_compiles_intentions(
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_intention_executor_evaluation_matches_wander(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema,
     mock_state
 ):
-    translator = mock_translator(implementation[0])
+    translator = mock_transitions(implementation[0])
     executor = translator.compile(mock_configurations_schema.intentions)
 
     mock_sprite_state = mock_state(
@@ -108,16 +107,16 @@ def test_intention_executor_evaluation_matches_wander(
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_intention_executor_matches_hunt(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema,
     mock_state
 ):
-    translator = mock_translator(implementation[0])
+    translator = mock_transitions(implementation[0])
     executor = translator.compile(mock_configurations_schema.intentions)
 
     mock_sprite_state = mock_state(
@@ -138,16 +137,16 @@ def test_intention_executor_matches_hunt(
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_evaluation_with_dictionary_lookup(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema,
     mock_state
 ):
-    translator = mock_translator(implementation[0])
+    translator = mock_transitions(implementation[0])
     executor = translator.compile(mock_configurations_schema.intentions)
 
     mock_sprite_state = mock_state(
@@ -179,16 +178,16 @@ def test_executor_evaluation_with_dictionary_lookup(
 
 @pytest.mark.workflow_plots
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_evaluation_with_plot_metadata(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema,
     mock_state_schema
 ):
-    translator = mock_translator(implementation[0])    
+    translator = mock_transitions(implementation[0])    
     executor = translator.compile(mock_configurations_schema.plots)
 
     mock_player_state = mock_state_schema.sheets.players[0]
@@ -206,16 +205,16 @@ def test_executor_evaluation_with_plot_metadata(
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_evaluation_attribute_error_handling(
     implementation,
     mock_configurations_schema,
-    mock_translator,
+    mock_transitions,
     mock_state
 ):
-    translator = mock_translator(implementation[0])  
+    translator = mock_transitions(implementation[0])  
     executor = translator.compile(mock_configurations_schema.intentions)
 
     mock_crate_state = mock_state(
@@ -232,16 +231,16 @@ def test_executor_evaluation_attribute_error_handling(
 
 @pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_evaluation_with_environ_functions(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema, 
     mock_state
 ):
-    translator = mock_translator(implementation[0])  
+    translator = mock_transitions(implementation[0])  
     executor = translator.compile(mock_configurations_schema.intentions)
 
     mock_sprite_state = mock_state(
@@ -265,15 +264,15 @@ def test_executor_evaluation_with_environ_functions(
 
 
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_executor_evaluation_with_bad_arguments(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema
 ):
-    translator = mock_translator(implementation[0])  
+    translator = mock_transitions(implementation[0])  
     executor = translator.compile(mock_configurations_schema.intentions)
 
     result = executor.evaluate("unknown", {})
@@ -281,15 +280,15 @@ def test_executor_evaluation_with_bad_arguments(
  
 
 @pytest.mark.parametrize("implementation", [
-    (Translators.COMPILER.value, CompilerExecutor),
-    (Translators.LAMBDA.value, LambdaExecutor)
+    (Translators.COMPILER.value,),
+    (Translators.LAMBDA.value,)
 ])
 def test_compiler_evaluation_with_bad_conditions(
     implementation,
-    mock_translator,
+    mock_transitions,
     mock_configurations_schema
 ):
-    translator = mock_translator(implementation[0])  
+    translator = mock_transitions(implementation[0])  
     mock_configurations_schema.intentions['bad_syntax']  = [Transition(
         next = "more-bad-syntax",
         conditions = [ 'not thing nor any(this for this in thing)']

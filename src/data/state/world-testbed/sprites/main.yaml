@@ -52,11 +52,11 @@ sheets:
             position:
               x: 100
               y: 200
-        prices: null
-        property: null
+        prices: {}
+        property: {}
         relationships: 
           player: friend
-        rumors: null
+        rumors: []
         sprites: 
           player:
             x: 100
@@ -132,11 +132,11 @@ sheets:
             position:
               x: 100
               y: 200
-        prices: null
-        property: null
+        prices: {}
+        property: {}
         relationships: 
           player: foe
-        rumors: null
+        rumors: []
         sprites: 
           player:
             x: 100
