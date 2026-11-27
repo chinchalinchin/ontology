@@ -7,12 +7,6 @@
 
 Stateless Predicates for making assertions of Assets.
 """
-# Standard Libraries
-from typing import (
-    List,
-    Optional,
-    Tuple
-)
 
 # Application Libraries
 from app.assets.base import Asset

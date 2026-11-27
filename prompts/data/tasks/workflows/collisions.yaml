@@ -1,0 +1,156 @@
+context: true
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: maintain/session.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: TESTS
+    # --------------------------------------------
+    tests:  
+      configuration: true
+      pipeline: true
+      session: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '06-02'
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          # - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: 'Application - Core'
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Module - Board: Cache'
+            scan:
+              domain: [ system ]
+              app: [ board, module ]
+          - title: 'Application - Abstract: Asset'
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: 'Application - Abstract: Mechanic'
+            scan:
+              domain: [ abstract ]
+              app: [ mechanic ]
+          - title: 'Application - Models: Core'
+            scan:
+              domain: [ model ]
+              app: [ core ]
+          - title: 'Asset - Implementations: Hitboxes'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ hitbox ]
+          - title: 'Mechanic - Collisions'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ collisions ]
+          - title: 'Mechanic - Motion'
+            scan:
+              domain: [ logic ]
+              app: [ mechanic ]
+              physics: [ motion ] 
+          - title: 'Application - Modules: Motion'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ motion ]
+          - title: 'Application - Modules: Fields'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ fields ]
+          - title: 'Application - Modules: Predicates'
+            scan:
+              domain: [ logic ]
+              app: [ module, semantics ]
+          - title: 'Libraries - Physics'
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              physics: [ motion ]
+          - title: 'Libraries - Space'
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              physics: [ space ]
+          - title: 'Tests - Fixtures'
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
+          - title: 'Tests - Collisions'
+            scan:
+              domain: [ test ]
+              workflows: [ collisions ]
+          - title: 'Tests - Motion Mechanics'
+            scan:
+              domain: [ test ]
+              app: [ core, mechanic ]
+              physics: [ motion ]
+          - title: 'Tests - Motion Modules'
+            scan:
+              domain: [ test ]
+              app: [ module ]
+              physics: [ motion ]
+      data:
+        properties: [ sheets/sprites, crafts/stairs ]
+        state: [ world-testbed/stairs, world-testbed/players ]
+        configurations: [  ]
+        templates: [ ]
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: TESTS
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: '"workflow_collisions or physics_motion"'
+        # scope: '**/test_{actuator,cartographer}.py'
