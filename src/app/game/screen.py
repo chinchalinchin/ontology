@@ -331,7 +331,8 @@ class Screen:
         # 2. Rasterize font over the cleared canvas
         if isinstance(active_content, str) and active_content:
             font_key = widget.state.font
-            font = self.registry.font(font_key)
+            # Note: convert to raw string with .value for Cython signature
+            font = self.registry.font(str(font_key))
             if not font:
                 logger.warning(
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."

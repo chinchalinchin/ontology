@@ -673,7 +673,7 @@ def test_load_state_hydrates_models_and_referential_integrity(
 
         for instance_field in fields(state_cat):
             instance = instance_field.name
-            prop_map = getattr(prop_cat, AssetInstances.SPRITES.value)
+            prop_map = getattr(prop_cat, instance)
 
             for entity_state in getattr(state_cat, instance):
                 assert entity_state.id in prop_map, (
