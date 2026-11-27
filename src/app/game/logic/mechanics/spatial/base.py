@@ -171,13 +171,14 @@ class SpatialMechanic(Mechanic):
         primitive_data = []
 
         for i, asset in enumerate(assets):
-            # Extract action radius safely, defaulting to 15 (1/2 grid cell)
-            
-            if not asset.state.mutators or \
-                not asset.state.mutators.parameters:
-                continue
-
-            radius = asset.state.mutators.parameters.action.radius
+            # Extract action radius safely, defaulting to 0 when parameters are absent
+            # so static targets remain indexed 1:1 with asset_map for physics.collisions
+            params = asset.state.mutators.parameters
+            radius = (
+                params.action.radius
+                if params is not None and params.action is not None
+                else 0
+            )
 
             # Pad the dimensions by the radius in all directions
             pad_hb = Hitbox(

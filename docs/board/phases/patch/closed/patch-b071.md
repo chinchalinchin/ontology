@@ -1,7 +1,6 @@
-
 ##### Bug B071: `CognitionMechanics._project` Re-Assigns `WANDER` Goal Same Tick, Making `wander -> idle` Unreachable
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

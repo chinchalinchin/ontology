@@ -74,8 +74,6 @@ class LayeredHitbox(HitboxSchema):
         properties: ObjectProperties,
         state: DoorState
     ) -> List[int]:
-        # if state.projection == LayerProjections.OUT:
-        #     return []
         return [max(0, state.elevation if state.elevation is not None else 0)]
 
     def get(

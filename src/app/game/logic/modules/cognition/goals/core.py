@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import (
     Any,
     Dict,
+    FrozenSet,
     Optional,
     TYPE_CHECKING
 )
@@ -92,7 +93,12 @@ class GoalResolver:
             }
         )
 
-    def resolve(self, sprite: Asset, board: Board) -> Optional[Outcomes]:
+    def resolve(
+        self,
+        sprite: Asset,
+        board: Board,
+        excluded: FrozenSet[str] = frozenset()
+    ) -> Optional[Outcomes]:
         """
         Evaluates the Sprite's active Goal and dispatches the matched
         Outcome, Memory Responses, and Psyche Reflexes.
@@ -121,7 +127,8 @@ class GoalResolver:
             responses=self.responses,
             reflexes=self.reflexes,
             locators=self.locators,
-            spawn=_spawn
+            spawn=_spawn,
+            excluded=excluded
         )
 
         return self.outcomes.resolve(

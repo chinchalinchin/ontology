@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typing import (
     Callable,
     Dict,
+    FrozenSet,
     Generic,
     Optional,
     TypeVar,
@@ -67,13 +68,15 @@ logger = logging.getLogger(__name__)
 @dataclass(slots=True, frozen=True)
 class ResolutionContext:
     """
-    Immutable bundle of orthogonal cognitive operators and expression spawner
-    passed into Outcome execution during Goal resolution.
+    Immutable bundle of orthogonal cognitive operators, expression spawner,
+    and excluded stalled Asset names passed into Outcome execution during Goal
+    resolution.
     """
     responses: ResponseOperator
     reflexes: ReflexOperator
     locators: LocatorOperator
     spawn: ExpressionSpawner
+    excluded: FrozenSet[str] = frozenset()
 
 
 class Operator(ABC, Generic[K, Op]):
@@ -118,8 +121,13 @@ class Locator(ABC):
     """
 
     @abstractmethod
-    def locate(self, sprite: Asset, board: Board) -> Optional[Asset]:
-        """Locate an Asset."""
+    def locate(
+        self,
+        sprite: Asset,
+        board: Board,
+        excluded: FrozenSet[str] = frozenset()
+    ) -> Optional[Asset]:
+        """Locate an Asset, skipping any Asset names in excluded."""
         pass
 
 # -----------------------------------------------------

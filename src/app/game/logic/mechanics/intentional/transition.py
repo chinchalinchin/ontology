@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 from app.static.semantics import (
     Actions,
+    Directions,
     StaticIntentions,
     AssetInstances,
     Intentions,
@@ -64,12 +65,24 @@ class TransitionMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
+        """Evaluates Intention transitions and projects Action/Direction state."""
         sprites = board.instances(AssetInstances.SPRITES)
         sprites_dict = board.characters()
         player = board.player()
 
         for sprite in sprites:
             prev_action = sprite.state.animation.action
+
+            # Dead sprites lock into LPC die-up playback and bypass ISL transitions (B085)
+            if sprite.state.mutators.triggers.dead:
+                sprite.state.intention = Intentions.IDLE
+                sprite.state.animation.action = Actions.DIE
+                sprite.state.animation.direction = Directions.UP
+                if prev_action != Actions.DIE:
+                    sprite.state.animation.frame = 0
+                    sprite.state.animation.tick = 1
+                sprite.state.mutators.triggers.animated = True
+                continue
 
             # 1. Evaluate State ISL Conditions
             if self.executor and sprite.state.intention:
@@ -107,6 +120,7 @@ class TransitionMechanics(Mechanic):
                 sprite.state,
                 board.equipment
             )
+            # TODO: why is this here? why is this not part of AnimationMap.action? 
             if action is None:
                 logger.debug(
                     f"Transition({sprite.name}): Reverting inadmissible active "

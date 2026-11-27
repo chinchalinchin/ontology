@@ -16,6 +16,7 @@ import collections
 import logging
 from typing import (
     Dict,
+    FrozenSet,
     List,
     Optional,
     Set,
@@ -52,7 +53,8 @@ class DoorLocator(Locator):
     Locates Doors (both LayerProjections.IN and LayerProjections.OUT) on the
     Sprite's current Layer. Prioritizes the shortest known route in
     memory.doors (minimizing hop count, then distance to the first-hop Door),
-    falling back to the nearest unmapped Door within vision.radius.
+    falling back to the nearest unmapped Door within vision.radius while
+    skipping any stalled Doors supplied in excluded (B087).
     """
 
     @staticmethod
@@ -113,11 +115,16 @@ class DoorLocator(Locator):
 
         return None
 
-    def locate(self, sprite: Asset, board: Board) -> Optional[Asset]:
+    def locate(
+        self,
+        sprite: Asset,
+        board: Board,
+        excluded: FrozenSet[str] = frozenset()
+    ) -> Optional[Asset]:
         """
         Resolves the next Door on the Sprite's active Layer for pursuing a
-        cross-layer Goal, or None if no mapped route or visible unmapped Door
-        is available.
+        cross-layer Goal, excluding stalled Door names in excluded (B087), or
+        None if no mapped route or visible unmapped Door is available.
         """
         goal = sprite.state.goal
         current_layer = sprite.state.layer
@@ -129,7 +136,11 @@ class DoorLocator(Locator):
         ):
             return None
 
-        doors = board.instances(AssetInstances.DOORS, current_layer)
+        doors = [
+            portal
+            for portal in board.instances(AssetInstances.DOORS, current_layer)
+            if portal.name not in excluded
+        ]
         if not doors:
             return None
 
@@ -189,10 +200,11 @@ class LocatorOperator(Operator[Locators, Locator]):
         self,
         key: Locators,
         sprite: Asset,
-        board: Board
+        board: Board,
+        excluded: FrozenSet[str] = frozenset()
     ) -> Optional[Asset]:
         """
         Executes the Locator strategy registered for key and returns the
         located Asset, or None if no candidate is found.
         """
-        return self.get(key).locate(sprite, board)
+        return self.get(key).locate(sprite, board, excluded=excluded)

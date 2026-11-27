@@ -1,6 +1,6 @@
 ##### Bug B066: `SheetState.goal` Default Factory Instantiates a Truthy Empty `Goal()`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: LOW
 
 **Description**

@@ -1,8 +1,6 @@
 """
-@domain.concrete
-@domain.logic
+@domain.automata
 @app.module
-@category.sheets
 @modality.intention
 @workflow.cognition
 

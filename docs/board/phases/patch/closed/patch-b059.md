@@ -1,6 +1,6 @@
 ##### Bug B059: `CognitionMechanics._remember` Uses Stale `triggers.vision` for Dormancy & Ignores Intention Affinity
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

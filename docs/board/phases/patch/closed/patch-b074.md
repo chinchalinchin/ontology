@@ -1,6 +1,6 @@
 ##### Bug B074: `idle -> find` Proximity-Stall Deadlock, `follow -> speak` Missing Category Guard, & `Ideation` Relationship Mismatch
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

@@ -39,9 +39,6 @@ from app.models.menus import (
 )
 from app.models.state import DevicePayload
 
-# Cython Libraries
-import libs.core.math.geometry as geometry
-
 # -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
@@ -52,18 +49,73 @@ logger = logging.getLogger(__name__)
 class InteractionMechanics(SpatialMechanic):
     """
     Resolves interactive Object transitions for Players (via hitbox
-    intersections) and autonomous Sprites (via action-radius proximities and
-    hitbox intersections, prioritizing sprite.state.goal.name).
+    intersections) and autonomous Sprites (via hitbox-gap action-radius
+    proximities and hitbox intersections, prioritizing sprite.state.goal.name).
     """
 
     def __init__(self):
         super().__init__(max_entities=2000)
 
     @staticmethod
-    def _select_sprite_target(source: Asset, candidates: List[Asset]) -> Asset:
+    def _hitbox_distance_sq(source: Asset, target: Asset) -> int:
+        """
+        Computes the minimum squared Euclidean gap between source's and
+        target's active hitbox footprints (falling back to full dimensions
+        when an Asset exposes no hitboxes), matching Perception._contact_origin (B084).
+        """
+        sx = source.state.position.x
+        sy = source.state.position.y
+        tx = target.state.position.x
+        ty = target.state.position.y
+
+        src_hbs = source.hitboxes
+        tgt_hbs = target.hitboxes
+
+        src_boxes = (
+            [
+                (
+                    sx + hb.position.x,
+                    sy + hb.position.y,
+                    sx + hb.position.x + hb.dimensions.w,
+                    sy + hb.position.y + hb.dimensions.l,
+                )
+                for hb in src_hbs
+            ]
+            if src_hbs
+            else [(sx, sy, sx + source.dimensions.w, sy + source.dimensions.l)]
+        )
+        tgt_boxes = (
+            [
+                (
+                    tx + hb.position.x,
+                    ty + hb.position.y,
+                    tx + hb.position.x + hb.dimensions.w,
+                    ty + hb.position.y + hb.dimensions.l,
+                )
+                for hb in tgt_hbs
+            ]
+            if tgt_hbs
+            else [(tx, ty, tx + target.dimensions.w, ty + target.dimensions.l)]
+        )
+
+        best_dist_sq: int = -1
+        for sx1, sy1, sx2, sy2 in src_boxes:
+            for tx1, ty1, tx2, ty2 in tgt_boxes:
+                dx = max(0, tx1 - sx2, sx1 - tx2)
+                dy = max(0, ty1 - sy2, sy1 - ty2)
+                dist_sq = dx * dx + dy * dy
+                if dist_sq == 0:
+                    return 0
+                if best_dist_sq < 0 or dist_sq < best_dist_sq:
+                    best_dist_sq = dist_sq
+
+        return best_dist_sq if best_dist_sq >= 0 else 0
+
+    @classmethod
+    def _select_sprite_target(cls, source: Asset, candidates: List[Asset]) -> Asset:
         """
         Prioritizes the candidate matching source.state.goal.name; otherwise
-        selects the nearest candidate by squared Euclidean distance.
+        selects the nearest candidate by squared hitbox gap.
         """
         goal = source.state.goal
         if goal and goal.name:
@@ -71,14 +123,9 @@ class InteractionMechanics(SpatialMechanic):
                 if candidate.name == goal.name:
                     return candidate
 
-        sx = source.state.position.x
-        sy = source.state.position.y
         return min(
             candidates,
-            key=lambda target: (
-                (target.state.position.x - sx) ** 2
-                + (target.state.position.y - sy) ** 2
-            )
+            key=lambda target: cls._hitbox_distance_sq(source, target)
         )
 
     @staticmethod
@@ -211,9 +258,10 @@ class InteractionMechanics(SpatialMechanic):
         processed_sources: Set[str]
     ) -> None:
         """
-        Resolves Sprite interactions within action.radius (matching find ->
-        interact closed-ball distance semantics, B067) or direct hitbox contact,
-        prioritizing sprite.state.goal.name.
+        Resolves Sprite interactions within hitbox-edge action.radius (matching
+        Perception._contact_origin and find -> interact closed-ball distance
+        semantics, B067/B084) or direct hitbox contact, prioritizing
+        sprite.state.goal.name.
         """
         source_ids = {id(asset) for asset in sources}
         target_ids = {id(asset) for asset in targets}
@@ -237,12 +285,9 @@ class InteractionMechanics(SpatialMechanic):
                 continue
 
             action_radius = source.state.mutators.parameters.action.radius
-            if not geometry.nearby(
-                source.state.position.x,
-                source.state.position.y,
-                target.state.position.x,
-                target.state.position.y,
-                action_radius
+            if (
+                action_radius < 0
+                or self._hitbox_distance_sq(source, target) > action_radius * action_radius
             ):
                 continue
 
@@ -294,14 +339,17 @@ class InteractionMechanics(SpatialMechanic):
                 if sprite.state.intention != Intentions.INTERACT:
                     sprite.state.mutators.triggers.interacted = False
 
+            # Exclude dead entities from triggering Doors or interactive Objects (B085)
             sprite_sources = [
                 asset for asset in sprites
                 if asset.state.intention == Intentions.INTERACT
+                and not asset.state.mutators.triggers.dead
                 and asset.name not in processed_sources
             ]
             player_sources = [
                 asset for asset in players
                 if asset.state.intention == Intentions.INTERACT
+                and not asset.state.mutators.triggers.dead
                 and asset.name not in processed_sources
             ]
 

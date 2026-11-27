@@ -190,21 +190,31 @@ class CognitionMechanics(Mechanic):
             return False
 
         was_stalled = sprite.state.trajectory.stalled
-        outcome = self.resolver.resolve(sprite, board)
+        excluded = self.perception.stalled_doors(
+            sprite.name,
+            sprite.state.layer
+        )
+        outcome = self.resolver.resolve(sprite, board, excluded=excluded)
         if outcome is None:
             return False
 
-        if (
-            outcome == Outcomes.LOST
-            and goal.category == Goals.DOOR
-            and goal.name
-            and was_stalled
-        ):
-            self.perception.mark_stalled_door(
-                sprite_name=sprite.name,
-                layer=goal.layer or sprite.state.layer,
-                door_name=goal.name
-            )
+        if outcome == Outcomes.LOST and goal.name and was_stalled:
+            if goal.category == Goals.DOOR:
+                self.perception.mark_stalled_door(
+                    sprite_name=sprite.name,
+                    layer=goal.layer or sprite.state.layer,
+                    door_name=goal.name
+                )
+            elif goal.category in (
+                Goals.OBJECT,
+                Goals.RESOURCE,
+                Goals.PROPERTY,
+            ):
+                self.perception.mark_stalled_static(
+                    sprite_name=sprite.name,
+                    layer=goal.layer or sprite.state.layer,
+                    goal_name=goal.name
+                )
 
         return sprite.state.goal is not goal
 
@@ -256,6 +266,7 @@ class CognitionMechanics(Mechanic):
 
         return False
 
+    
     def _sync(
         self,
         sprite: Asset,
@@ -279,7 +290,11 @@ class CognitionMechanics(Mechanic):
 
         if acquired and self.resolver is not None:
             previous_goal = sprite.state.goal
-            outcome = self.resolver.resolve(sprite, board)
+            excluded = self.perception.stalled_doors(
+                sprite.name,
+                sprite.state.layer
+            )
+            outcome = self.resolver.resolve(sprite, board, excluded=excluded)
             if outcome is not None and sprite.state.goal is not previous_goal:
                 if sprite.state.goal is not None:
                     self.perception.track(sprite, board)

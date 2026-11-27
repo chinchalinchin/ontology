@@ -1,6 +1,6 @@
 ##### Bug B070: `any_memories_visible` Matches Dead Targets
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

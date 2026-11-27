@@ -147,26 +147,46 @@ class NavigationMechanics(Mechanic):
         return sprite.state.intention in NavigationIntentions
 
 
+    @staticmethod
+    def _tracks_live_asset(sprite: Asset) -> bool:
+        """
+        Determines whether navigation may resolve a Goal's live deployed Asset
+        footprint. Static non-position Goals track directly; mobile Character
+        Goals require active visual perception (B082).
+        """
+        goal = sprite.state.goal
+        if not goal or not goal.name or goal.category == Goals.POSITION:
+            return False
+
+        if goal.category in (Goals.TARGET, Goals.SUBJECT):
+            return sprite.state.mutators.triggers.vision
+
+        return True
+
+
     def _clear(self, sprite: Asset) -> None:
         """
-        Resets tactical trajectory buffers when an entity ceases navigation.
+        Resets tactical trajectory buffers and stall cooldown when an entity
+        ceases navigation or clears a prior Goal (B089).
         """
         sprite.state.trajectory.target = None
         sprite.state.trajectory.vertices.clear()
         sprite.state.trajectory.stalled = False
+        sprite.state.trajectory.cooldown = 0
 
 
     def _target(self, sprite: Asset, board: Board) -> Optional[Position]:
         """
         Resolves the physical anchor coordinate of the sprite's goal.
-        Bypasses board asset lookup for synthetic Goals.POSITION coordinates (B072).
+        Bypasses board asset lookup for synthetic Goals.POSITION coordinates (B072)
+        and unseen same-layer Characters so frozen last-known coordinates are respected (B082).
         """
         goal = sprite.state.goal
         if not goal:
             return None
 
-        # Same-layer deployed asset: track physical footprint center
-        if goal.name and goal.category != Goals.POSITION:
+        # Same-layer deployed asset: track physical footprint center when epistemically allowed
+        if self._tracks_live_asset(sprite):
             target_asset = board.asset(goal.name, sprite.state.layer) or \
                            board.asset(goal.name)
             if target_asset and target_asset.state.layer == sprite.state.layer:
@@ -228,6 +248,11 @@ class NavigationMechanics(Mechanic):
         """
         Tactical trajectory update frequency for an individual sprite.
         """
+        # Dead sprites cease tactical pathfinding immediately (B085)
+        if sprite.state.mutators.triggers.dead:
+            self._clear(sprite)
+            return
+
         if sprite.state.mutators.triggers.falling:
             return
         
@@ -264,10 +289,7 @@ class NavigationMechanics(Mechanic):
             goal_target = Position(x=goal_x, y=goal_y)
 
         exclude = [sprite.name]
-        if (
-            sprite.state.goal.name
-            and sprite.state.goal.category != Goals.POSITION
-        ):
+        if self._tracks_live_asset(sprite):
             exclude.append(sprite.state.goal.name)
 
         pad_x, pad_y = self.padding(sprite)
@@ -293,7 +315,6 @@ class NavigationMechanics(Mechanic):
             # Line of sight is clear: direct tracking to strategic goal
             self._clear(sprite)
             sprite.state.trajectory.target = goal_target
-            sprite.state.trajectory.cooldown = 0
 
         else:
             # Line of sight is blocked

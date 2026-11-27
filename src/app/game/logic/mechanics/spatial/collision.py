@@ -2,9 +2,6 @@
 @domain.concrete
 @domain.logic
 @app.mechanic
-@category.crafts
-@category.objects
-@category.sheets
 @physics.space
 @workflow.collisions
 

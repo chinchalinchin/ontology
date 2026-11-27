@@ -1,6 +1,6 @@
 ##### Bug B060: `attack` Intention Softlock, Unreachable `attack -> scavenge`, and Unsafe Attribute Dereference
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

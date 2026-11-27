@@ -1,6 +1,6 @@
 ##### Bug B058: `SpriteAnimation.animate` Freezes Expression TTL Decay When `triggers.animated` Is `False`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

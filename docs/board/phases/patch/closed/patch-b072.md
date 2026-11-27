@@ -1,6 +1,6 @@
 ##### Bug B072: `TypeError` Crash on Missing Inventory/Price Keys in `intentions/main.yaml` (`barter` and `mine`)
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

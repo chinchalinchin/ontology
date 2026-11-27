@@ -101,7 +101,12 @@ class LayeredOutcome(Outcome):
         context: ResolutionContext
     ) -> None:
         goal = sprite.state.goal
-        target_door = context.locators.resolve(self.locator, sprite, board)
+        target_door = context.locators.resolve(
+            self.locator,
+            sprite,
+            board,
+            excluded=context.excluded
+        )
 
         if target_door is not None:
             context.responses.resolve(rule.responses, goal, sprite.state.memory)

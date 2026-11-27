@@ -1,6 +1,6 @@
 ##### Bug B075: Aliased `Position` Reference in `CognitionMechanics._scan` & Unchecked `board.player()` Dereference
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

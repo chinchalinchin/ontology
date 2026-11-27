@@ -87,6 +87,8 @@ intentions:
         - sprite.goal.category == constants.Goals.SUBJECT
         - sprite.layer == sprite.goal.layer
         - sprite.mutators.triggers.vision
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
         - sprite.memory.relationships.get(sprite.goal.name)
         - sprite.memory.relationships[sprite.goal.name] in [
             constants.Relationships.FRIEND,
@@ -114,6 +116,8 @@ intentions:
         - sprite.goal.category == constants.Goals.SUBJECT
         - sprite.psyche.dialogue
         - sprite.layer == sprite.goal.layer
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
         - functions.is_near(
             sprite.position,
             sprite.goal.position,

@@ -5,6 +5,8 @@ goals:
       responses: [ forget ]
       conditions:
         - not sprite.psyche.dialogue
+          or not sprites.get(sprite.goal.name)
+          or sprites.get(sprite.goal.name).mutators.triggers.dead
     layered:
       reflexes: []
       responses: [ push ]

@@ -1,6 +1,6 @@
 ##### Bug B057: `NavigationMechanics._target` Overrides `ESCAPE` Goal Projection, Steering Fleeing Sprites Toward Their Attacker
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/review.md.j2
+  template: maintain/patch.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -12,7 +12,7 @@ tools:
     manager:
       board: true
       docs: true
-      bugs: false
+      bugs: true
       templates: true
     # --------------------------------------------
     source:
@@ -28,7 +28,22 @@ tools:
       board:
         phase: 06-02
         action: refactor
-      bugs: []
+      bugs: 
+        - b019
+        - b057
+        - b058
+        - b059
+        - b060
+        - b061
+        - b066
+        - b067
+        - b068
+        - b070
+        - b071
+        - b072
+        - b073
+        - b074
+        - b075
       docs:
         exclude:
           # - 00-overview

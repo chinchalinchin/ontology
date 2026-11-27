@@ -15,6 +15,7 @@ import collections
 import logging
 from typing import (
     Dict,
+    FrozenSet,
     Optional,
     Set,
     Tuple,
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 # Application Libraries
+import app.static.settings as settings
 from app.assets.base import Asset
 from app.static.semantics import (
     AssetInstances,
@@ -53,12 +55,14 @@ class Perception:
     _known_doors: Dict[str, Set[Tuple[str, str, str]]]
     _seen_unmapped_doors: Dict[str, Set[str]]
     _stalled_doors: Dict[str, Dict[str, Set[str]]]
+    _stalled_static: Dict[str, Dict[str, Dict[str, int]]]
 
     def __init__(self):
         self._last_layer = {}
         self._known_doors = {}
         self._seen_unmapped_doors = {}
         self._stalled_doors = {}
+        self._stalled_static = {}
 
     def mark_stalled_door(
         self,
@@ -68,13 +72,105 @@ class Perception:
     ) -> None:
         """
         Records a Door on the given Layer that caused a navigation stall so
-        re-sighting it does not re-trigger an infinite unwind/wake loop (B081).
+        re-sighting it does not re-trigger an infinite unwind/wake loop (B081)
+        and DoorLocator can exclude it in favor of alternate Doors (B087).
         """
         if layer is None or not door_name:
             return
         self._stalled_doors.setdefault(sprite_name, {}).setdefault(
             layer, set()
         ).add(door_name)
+
+    def stalled_doors(
+        self,
+        sprite_name: str,
+        layer: Optional[str]
+    ) -> FrozenSet[str]:
+        """
+        Returns Door names on layer previously marked as stalled for
+        sprite_name so DoorLocator can fall back to alternate routes (B087).
+        """
+        if layer is None:
+            return frozenset()
+        return frozenset(
+            self._stalled_doors.get(sprite_name, {}).get(layer, ())
+        )
+
+    def mark_stalled_static(
+        self,
+        sprite_name: str,
+        layer: Optional[str],
+        goal_name: str,
+        cooldown: int = settings.PATH_RETRY_INTERVAL
+    ) -> None:
+        """
+        Records a backoff cooldown for a stalled same-layer static Goal
+        (OBJECT, RESOURCE, PROPERTY) so Perception.scan can re-wake it once
+        obstructions may have cleared without per-tick oscillation (B088).
+        """
+        if layer is None or not goal_name:
+            return
+        self._stalled_static.setdefault(sprite_name, {}).setdefault(
+            layer, {}
+        )[goal_name] = max(1, cooldown)
+
+    @staticmethod
+    def _contact_origin(source: Asset, target: Asset) -> Position:
+        """
+        Computes the nearest Sprite origin (x, y) at which source's hitbox
+        footprint touches target's hitbox footprint. Distance from
+        source.state.position to the returned Position equals the exact
+        Euclidean hitbox gap, matching InteractionMechanics._hitbox_distance_sq (B084).
+        """
+        sx = source.state.position.x
+        sy = source.state.position.y
+        tx = target.state.position.x
+        ty = target.state.position.y
+
+        src_hbs = source.hitboxes
+        tgt_hbs = target.hitboxes
+
+        src_boxes = (
+            [
+                (hb.position.x, hb.position.y, hb.dimensions.w, hb.dimensions.l)
+                for hb in src_hbs
+            ]
+            if src_hbs
+            else [(0, 0, source.dimensions.w, source.dimensions.l)]
+        )
+        tgt_boxes = (
+            [
+                (
+                    tx + hb.position.x,
+                    ty + hb.position.y,
+                    tx + hb.position.x + hb.dimensions.w,
+                    ty + hb.position.y + hb.dimensions.l,
+                )
+                for hb in tgt_hbs
+            ]
+            if tgt_hbs
+            else [(tx, ty, tx + target.dimensions.w, ty + target.dimensions.l)]
+        )
+
+        best_x = sx
+        best_y = sy
+        best_dist_sq: Optional[int] = None
+
+        for hx, hy, hw, hl in src_boxes:
+            for rx1, ry1, rx2, ry2 in tgt_boxes:
+                gx = max(rx1 - (hx + hw), min(sx, rx2 - hx))
+                gy = max(ry1 - (hy + hl), min(sy, ry2 - hy))
+                dx = gx - sx
+                dy = gy - sy
+                dist_sq = dx * dx + dy * dy
+                if dist_sq == 0:
+                    return Position(x=gx, y=gy)
+                if best_dist_sq is None or dist_sq < best_dist_sq:
+                    best_dist_sq = dist_sq
+                    best_x = gx
+                    best_y = gy
+
+        return Position(x=best_x, y=best_y)
 
     @staticmethod
     def _door_edges(
@@ -129,6 +225,7 @@ class Perception:
         if layer_changed:
             self._seen_unmapped_doors[name] = set()
             self._stalled_doors.pop(name, None)
+            self._stalled_static.pop(name, None)
 
         # 2. Detect newly added memory.doors edges
         current_edges = self._door_edges(memory.doors)
@@ -201,11 +298,96 @@ class Perception:
             ):
                 mem_goal.dormant = False
 
+    def _scan_static_goals(self, sprite: Asset, board: Board) -> None:
+        """
+        Maintains same-layer static Goals (OBJECT, RESOURCE, PROPERTY) in
+        memory.goals: decrements stall backoffs, evicts observed missing or
+        completed entries, and wakes visible dormant entries once their stall
+        backoff has expired (B088).
+        """
+        state = sprite.state
+        current_layer = state.layer
+        if current_layer is None:
+            return
+
+        sprite_pos = state.position
+        vision_radius = state.mutators.parameters.vision.radius
+        memory = state.memory
+
+        # Advance per-layer static stall cooldowns
+        layer_cooldowns = self._stalled_static.get(sprite.name, {}).get(
+            current_layer
+        )
+        if layer_cooldowns:
+            for goal_key in list(layer_cooldowns.keys()):
+                layer_cooldowns[goal_key] -= 1
+                if layer_cooldowns[goal_key] <= 0:
+                    del layer_cooldowns[goal_key]
+
+        for key, mem_goal in list(memory.goals.items()):
+            if mem_goal.layer != current_layer:
+                continue
+            if mem_goal.category not in (
+                Goals.OBJECT,
+                Goals.RESOURCE,
+                Goals.PROPERTY,
+            ):
+                continue
+
+            if mem_goal.category == Goals.PROPERTY:
+                if key in memory.property:
+                    memory.goals.pop(key, None)
+                    continue
+                if not mem_goal.dormant:
+                    continue
+                if layer_cooldowns and key in layer_cooldowns:
+                    continue
+                if geometry.nearby(
+                    mem_goal.position.x,
+                    mem_goal.position.y,
+                    sprite_pos.x,
+                    sprite_pos.y,
+                    vision_radius
+                ):
+                    mem_goal.dormant = False
+                continue
+
+            # OBJECT / RESOURCE: evict if observed missing, else wake when visible off cooldown
+            target_asset = board.asset(key, current_layer)
+            if target_asset is None:
+                if geometry.nearby(
+                    mem_goal.position.x,
+                    mem_goal.position.y,
+                    sprite_pos.x,
+                    sprite_pos.y,
+                    vision_radius
+                ):
+                    memory.goals.pop(key, None)
+                continue
+
+            if not mem_goal.dormant:
+                continue
+            if layer_cooldowns and key in layer_cooldowns:
+                continue
+
+            contact = self._contact_origin(sprite, target_asset)
+            if geometry.nearby(
+                contact.x,
+                contact.y,
+                sprite_pos.x,
+                sprite_pos.y,
+                vision_radius
+            ):
+                mem_goal.position.x = contact.x
+                mem_goal.position.y = contact.y
+                mem_goal.dormant = False
+
     def scan(self, sprite: Asset, board: Board) -> None:
         """
         Refreshes copied Position snapshots in memory.sprites (B074), wakes
         visible same-layer character Goals (B019, B059), evicts observed dead
-        TARGET goals, and evaluates cross-layer dormancy wake triggers (B081).
+        TARGET/SUBJECT goals (B086), maintains static memory goals (B088), and
+        evaluates cross-layer dormancy wake triggers (B081).
         """
         state = sprite.state
         if state.mutators.parameters is None:
@@ -244,7 +426,7 @@ class Perception:
                 continue
 
             if other_state.mutators.triggers.dead:
-                if mem_goal.category == Goals.TARGET:
+                if mem_goal.category in (Goals.TARGET, Goals.SUBJECT):
                     memory.goals.pop(other_name, None)
                 continue
 
@@ -254,6 +436,7 @@ class Perception:
             mem_goal.dormant = False
 
         self._wake_cross_layer(sprite, board)
+        self._scan_static_goals(sprite, board)
 
     def fear(self, sprite: Asset, board: Board) -> bool:
         """
@@ -381,8 +564,9 @@ class Perception:
     def track(self, sprite: Asset, board: Board) -> None:
         """
         Updates active Goal visibility and coordinates. Restricts goal.layer
-        updates strictly to same-layer sightings or observed Door transits,
-        closing cross-layer telepathy without performing inline Door subsumption.
+        updates strictly to same-layer sightings or observed Door transits
+        (using destination-layer exit coordinates, B083), aligns static Goal
+        contact origins to hitbox bounds (B084), and rejects dead Characters (B086).
         """
         state = sprite.state
         goal = state.goal
@@ -398,7 +582,7 @@ class Perception:
 
         if goal.category in (Goals.TARGET, Goals.SUBJECT):
             target_state = board.character(goal.name) if goal.name else None
-            if target_state is None:
+            if target_state is None or target_state.mutators.triggers.dead:
                 state.mutators.triggers.vision = False
                 return
 
@@ -427,8 +611,16 @@ class Perception:
             )
             if observed_door is not None:
                 goal.layer = observed_door.state.outlayer
-                goal.position.x = observed_door.state.position.x
-                goal.position.y = observed_door.state.position.y
+                # Record destination-layer exit coordinates and learn the observed Door edge (B083)
+                goal.position.x = observed_door.state.out.x
+                goal.position.y = observed_door.state.out.y
+                if (
+                    current_layer is not None
+                    and observed_door.state.outlayer is not None
+                ):
+                    state.memory.doors.setdefault(
+                        current_layer, {}
+                    )[observed_door.name] = observed_door.state.outlayer
                 logger.info(
                     f"{sprite.name} observed {goal.name} transit Door("
                     f"{observed_door.name}) -> layer '{goal.layer}'"
@@ -447,19 +639,22 @@ class Perception:
             return
 
         if goal.category in (Goals.DOOR, Goals.OBJECT, Goals.RESOURCE):
-            layer_states = (
-                board.states(current_layer)
-                if current_layer is not None
-                else {}
+            target_asset = (
+                board.asset(goal.name, current_layer)
+                if goal.name and current_layer is not None
+                else None
             )
-            asset_state = layer_states.get(goal.name) if goal.name else None
-            if asset_state is None:
+            if target_asset is None:
                 state.mutators.triggers.vision = False
                 return
 
+            # Align Goal coordinate to nearest hitbox-contact Sprite origin (B084)
+            contact = self._contact_origin(sprite, target_asset)
+            goal.position.x = contact.x
+            goal.position.y = contact.y
             state.mutators.triggers.vision = geometry.nearby(
-                asset_state.position.x,
-                asset_state.position.y,
+                contact.x,
+                contact.y,
                 state.position.x,
                 state.position.y,
                 vision_radius

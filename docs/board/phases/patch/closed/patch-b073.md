@@ -1,7 +1,7 @@
 
 ##### Bug B073: `CognitionMechanics._project` Steers Escaping Sprites Into Attackers & Crashes on `None` Goal
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**
