@@ -7,6 +7,13 @@
 
 Stateless Predicates for making assertions of Assets.
 """
+# Standard Libraries
+from typing import (
+    List,
+    Optional,
+    Tuple
+)
+
 # Application Libraries
 from app.assets.base import Asset
 from app.assets.hitboxes.core import NoHitbox
@@ -74,6 +81,14 @@ def is_obstacle(asset: Asset) -> bool:
         AssetInstances.TREES,
     )
 
+
+def is_hazard(asset: Asset) -> bool:
+    """
+    Evaluates whether a non-weight sensor Asset represents an environmental
+    navigational hazard (such as active Fluid corridors) that autonomous
+    pathfinding should avoid without blocking solid collision physics.
+    """
+    return asset.instance == AssetInstances.FLUIDS
 
 def _in_corridor(
     px: int,
