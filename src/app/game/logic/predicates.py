@@ -196,6 +196,20 @@ def in_fluid(position: Position, fluid: Asset) -> bool:
                 and hy <= py < hy + hb.dimensions.l
             ):
                 return True
+
+        for branch in fluid.state.branches or ():
+            if not branch.hitboxes:
+                continue
+            bx = int(branch.position.x)
+            by = int(branch.position.y)
+            for hb in branch.hitboxes:
+                hx = bx + hb.position.x
+                hy = by + hb.position.y
+                if (
+                    hx <= px < hx + hb.dimensions.w
+                    and hy <= py < hy + hb.dimensions.l
+                ):
+                    return True
         return False
 
     if in_pool(position, fluid):

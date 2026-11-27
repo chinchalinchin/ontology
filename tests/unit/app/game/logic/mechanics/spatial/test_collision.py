@@ -16,6 +16,7 @@ import pytest
 from app.static.semantics import (
     AssetInstances,
     Mechanics,
+    Directions
 )
 
 # Cython Libraries
@@ -336,7 +337,7 @@ def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
 
     stairs.elevation = 0
     stairs.state.delta = 1
-    stairs.state.direction = "up"
+    stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
     # Ascent: place foot inside upper 85% of stair tread with northward velocity (vy < 0)
@@ -377,7 +378,7 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
 
     stairs.elevation = 0
     stairs.state.delta = 1
-    stairs.state.direction = "right"
+    stairs.state.blueprint = Directions.RIGHT.value
     stairs.state.position = Position(500, 500)
 
     # RIGHT Ascent (vx > 0, tread_progress >= 0.15)
@@ -400,7 +401,7 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
     assert player.elevation == 0
 
     # LEFT Ascent (vx < 0, tread_progress <= 0.85)
-    stairs.state.direction = "left"
+    stairs.state.blueprint = Directions.LEFT.value
     player.state.position = Position(
         stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
         stairs.state.position.y,

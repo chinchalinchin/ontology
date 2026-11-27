@@ -333,6 +333,7 @@ def test_board_cache_fluid_directions_pool_and_relayer(mock_board):
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
     fluid.state.branches = []
+    fluid.state.hitboxes = []
     fluid.state.pool = Pool(x=500, y=500, w=64, l=64)
 
     # 1. UP corridor + annular pool
