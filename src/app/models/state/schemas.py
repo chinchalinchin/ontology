@@ -37,6 +37,7 @@ from app.models.state.assets import (
     FluidState,
     SpriteState,
     SheetState,
+    CharacterState,
     CraftState,
     ResourceState,
     StairState
@@ -85,7 +86,7 @@ class ResourceStateInstances:
 @dataclass(slots=True)
 class SheetStateInstances:
     sprites: List[SpriteState] = field(default_factory=list)
-    players: List[SheetState] = field(default_factory=list)
+    players: List[CharacterState] = field(default_factory=list)
     pixies: List[SheetState] = field(default_factory=list)
     
 @dataclass(slots=True)

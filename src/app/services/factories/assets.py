@@ -90,6 +90,7 @@ class AssetFactory:
     _FRAMES = {
         FrameRecipe.BINARY: BinaryFrame(),
         FrameRecipe.CARDINAL: CardinalFrame(),
+        FrameRecipe.CHARACTER: CharacterFrame(),
         FrameRecipe.FLUID: FluidFrame(),
         FrameRecipe.ICON: IconFrame(),
         FrameRecipe.ITERABLE: IterableFrame(),
@@ -110,6 +111,7 @@ class AssetFactory:
     _ANIMATIONS = {
         AnimationRecipe.FREQUENCY: FrequencyAnimation(),
         AnimationRecipe.NONE: NoAnimation(),
+        AnimationRecipe.CHARACTER: CharacterAnimation(),
         AnimationRecipe.SPRITE: SpriteAnimation(),
         AnimationRecipe.STATE: StateAnimation(),
     }
