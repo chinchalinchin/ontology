@@ -1,14 +1,13 @@
 """
+@domain.automata
 @domain.concrete
-@domain.logic
 @app.module
-@category.sheets
 @modality.intention
 @workflow.cognition
 
 # Ontology: Source - app.game.logic.modules.cognition.instincts.combat
 
-Combat drive Instincts (HostilityInstinct).
+CombatInstinct implementation.
 """
 from __future__ import annotations
 
@@ -39,7 +38,7 @@ from libs.core.models import Position
 # -----------------------------------------------------
 
 
-class HostilityInstinct(Instinct):
+class CombatInstinct(Instinct):
     """
     Drive Instinct selecting the nearest visible living same-layer FOE as a
     Goals.TARGET when the Sprite has admissible ATTACK equipment.

@@ -126,6 +126,7 @@ class Migrator:
         # 2. Yield through component injection
         for task in tasks:
 
+            # A. MIGRATION SHORT CIRCUITS: Special formulae for generating State.
             if task[0] == Shortcuts.COMPOSITIONS:
                 comp_state = task[1]
                 expanded_assets = self.decomposer.unpack(comp_state)
@@ -154,21 +155,14 @@ class Migrator:
                 plot = task[1]
                 self.board.set_plot(plot)
 
+            # B. STATE MIGRATION: Standard Asset Instantiation
             else:
                 _, category_key, instance_key, state_obj = task
                 
                 cat_recipes = getattr(self.configurations.recipes, category_key)
-                recipe = getattr(cat_recipes, instance_key)
-                
-                prop_instance_key = instance_key
-                # NOTE: Register Sprite properties as Player properties
-                if category_key == AssetCategories.SHEETS and (
-                    instance_key == AssetInstances.PLAYERS
-                ):
-                    prop_instance_key = AssetInstances.SPRITES
-                    
+                recipe = getattr(cat_recipes, instance_key)    
                 cat_props = getattr(self.properties, category_key)
-                inst_props = getattr(cat_props, prop_instance_key)
+                inst_props = getattr(cat_props, instance_key)
                 props = inst_props.get(state_obj.id)
 
                 asset = AssetFactory.asset(

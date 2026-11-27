@@ -21,6 +21,7 @@ from app.assets.base import (
     HitboxSchema
 )
 from app.assets.animations import (
+    CharacterAnimation,
     FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
@@ -29,6 +30,7 @@ from app.assets.animations import (
 from app.assets.frames import (
     BinaryFrame,
     CardinalFrame,
+    CharacterFrame,
     FluidFrame,
     IconFrame,
     IterableFrame,

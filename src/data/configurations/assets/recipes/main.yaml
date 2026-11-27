@@ -116,8 +116,8 @@ recipes:
       hitbox: stage
   sheets:
     players:
-      frame: sprite
-      animation: sprite
+      frame: character
+      animation: character
       hitbox: static
     pixies:
       frame: state

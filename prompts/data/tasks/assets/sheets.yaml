@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implement.md.j2
+  template: iterate/review.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -13,7 +13,7 @@ tools:
       board: true
       docs: true
       bugs: false
-      templates: false
+      templates: true
     # --------------------------------------------
     source:
       data: true
@@ -46,11 +46,11 @@ tools:
           # - 12-architecture
       templates:
         - template-docs
-        - template-backlog
+        # - template-backlog
         - template-bug
         # - template-design
         # - template-merge
-        # - template-review
+        - template-review
         # - template-spec
     # --------------------------------------------
     source:
@@ -78,11 +78,11 @@ tools:
               domain: [ model ]
               app: [ asset ]
               category: [ sheets ]
-          # - title: 'Asset - Implementations: Sheets'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
+          - title: 'Asset - Implementations: Sheets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
           - title: 'Automata - Models'
             scan: 
               domain: [ model, automata ]
@@ -94,27 +94,32 @@ tools:
             scan:
               domain: [ automata ]
               app: [ module ]
-          - title: 'Mechanics - Cognition'
-            scan:
-              domain: [ concrete ]
-              app: [ mechanic ]
-              workflows: [ cognition ]
-          - title: 'Mechanics - Transition'
+          - title: 'Mechanics - Intentional'
             scan:
               domain: [ concrete ]
               app: [ mechanic ]
               modality: [ intention ]
-              workflows: [ transitions ]
-          - title: 'Mechanics - Navigation'
-            scan:
-              domain: [ concrete ]
-              app: [ mechanic ]
-              workflows: [ navigation ]
-          - title: 'Mechanics - Interaction'
-            scan:
-              domain: [ concrete ]
-              app: [ mechanic ]
-              workflows: [ interactions ]
+          # - title: 'Mechanics - Cognition'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ mechanic ]
+          #     workflows: [ cognition ]
+          # - title: 'Mechanics - Transition'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ mechanic ]
+          #     modality: [ intention ]
+          #     workflows: [ transitions ]
+          # - title: 'Mechanics - Navigation'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ mechanic ]
+          #     workflows: [ navigation ]
+          # - title: 'Mechanics - Interaction'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ mechanic ]
+          #     workflows: [ interactions ]
           - title: 'Libraries - Navigation'
             scan: 
               domain: [ system ]

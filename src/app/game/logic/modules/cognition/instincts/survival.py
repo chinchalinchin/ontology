@@ -7,7 +7,7 @@
 
 # Ontology: Source - app.game.logic.modules.cognition.instincts.survival
 
-Survival-tier Instincts (FleeInstinct).
+SurvivalInstinct implementation.
 """
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ CARDINAL_FALLBACKS: Tuple[Tuple[float, float], ...] = (
 # -----------------------------------------------------
 
 
-class FleeInstinct(Instinct):
+class SurvivalInstinct(Instinct):
     """
     Survival Instinct active whenever triggers.frightened is True.
     Derives a threat centroid from visible living same-layer FOE or ATTACKing

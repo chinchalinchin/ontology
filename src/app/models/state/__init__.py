@@ -45,6 +45,7 @@ from app.models.state.assets import (
     # ---- RESOURCE STATES
     ResourceState,
     # ---- SHEET STATES
+    CharacterState,
     SpriteState,
     SheetState,
     # ----- SHEET FIELDS
@@ -123,6 +124,7 @@ __all__ = [
     # RESOURCE STATES
     'ResourceState',
     # SPRITE STATES
+    'CharacterState',
     'SpriteState',
     'SheetState',
     ## SPRITE FIELDS

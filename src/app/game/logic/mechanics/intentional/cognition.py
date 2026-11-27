@@ -30,14 +30,14 @@ if TYPE_CHECKING:
 from app.assets.base import Asset
 from app.game.logic.mechanics import Mechanic
 from app.game.logic.modules.cognition import (
-    ConverseInstinct,
-    FleeInstinct,
+    SocialInstinct,
+    SurvivalInstinct,
     GoalResolver,
-    HostilityInstinct,
+    CombatInstinct,
     Instinct,
     Perception,
     Recall,
-    WanderInstinct
+    ExploreInstinct
 )
 from app.models.state import DevicePayload
 from app.services.automaton import GoalEvaluator
@@ -89,15 +89,15 @@ class CognitionMechanics(Mechanic):
         self.resolver = resolver
         self.survival = (
             tuple(survival) if survival is not None
-            else (FleeInstinct(),)
+            else (SurvivalInstinct(),)
         )
         self.drives = (
             tuple(drives) if drives is not None
-            else (HostilityInstinct(), ConverseInstinct())
+            else (CombatInstinct(), SocialInstinct())
         )
         self.exploratory = (
             tuple(exploratory) if exploratory is not None
-            else (WanderInstinct(),)
+            else (ExploreInstinct(),)
         )
 
     def set_executor(self, key: str, executor: Any) -> None:
