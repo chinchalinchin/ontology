@@ -62,7 +62,7 @@ def test_interaction_sprite_door_relayers_and_memorizes(
     assert sprite.state.layer == door.state.outlayer
     assert sprite.state.position.x == door.state.out.x
     assert sprite.state.position.y == door.state.out.y
-    assert sprite.state.memory.doors[door.name] == door.state.outlayer
+    assert sprite.state.memory.doors[door.state.layer][door.name] == door.state.outlayer
 
 
 def test_interaction_player_door_resets_intention(

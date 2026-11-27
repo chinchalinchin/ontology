@@ -332,7 +332,11 @@ def test_sprite_frame_no_equipment(mock_asset):
     sprite.state.animation.action = Actions.WALK.value
     sprite.state.animation.direction = Directions.DOWN.value
     sprite.state.animation.frame = 0
-    sprite.state.slots.equipment = None
+    sprite.state.slots.equipment.armor = None
+    sprite.state.slots.equipment.tool = None
+    sprite.state.slots.equipment.shield = None
+    sprite.state.slots.equipment.weapon = None
+    sprite.state.slots.equipment.weapon = None
     sprite.state.psyche.expression = None
 
     keys = sprite.frame.keys(sprite.id, sprite.state)

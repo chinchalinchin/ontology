@@ -753,35 +753,8 @@ def test_navigation_waypoint_arrival_advances_queue(mock_mechanic, mock_board):
     mechanic._navigate(sprite, mock_board)
 
     assert sprite.state.trajectory.vertices == [wp2]
-    assert sprite.state.trajectory.target is wp2
-
-
-def test_navigation_waypoint_arrival_advances_queue(mock_mechanic, mock_board):
-    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
-    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
-
-    sprite.state.position = Position(100, 500)
-    sprite.state.intention = Intentions.FIND.value
-    sprite.state.goal = Goal(
-        name="destination",
-        category=Goals.POSITION.value,
-        layer=sprite.state.layer,
-        position=Position(300, 500),
-    )
-    # Block direct LOS to goal (x=300), while keeping LOS to wp1 (x=100) clear
-    mock_board.perimeters["0"] = {
-        0: [Boundary(Position(220, 450), Dimensions(40, 150))],
-    }
-
-    wp1 = Position(100, 500)
-    wp2 = Position(150, 400)
-    sprite.state.trajectory.vertices = [wp1, wp2]
-    sprite.state.trajectory.target = wp1
-
-    mechanic._navigate(sprite, mock_board)
-
-    assert sprite.state.trajectory.vertices == [wp2]
     assert sprite.state.trajectory.target == wp2
+
 
 def test_navigation_intermediate_corner_waypoint_waits_for_los_clearance(
     mock_mechanic,
