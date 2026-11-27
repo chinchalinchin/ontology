@@ -12,11 +12,14 @@ cdef struct RRTObstacle:
     float l
 
 cpdef list rrt(
-    float sx, 
-    float sy, 
-    float tx, 
-    float ty, 
-    list obstacles, 
-    float step_size=*, 
-    int max_iter=*
+    float sx,
+    float sy,
+    float tx,
+    float ty,
+    list obstacles,
+    float step_size = *,
+    int max_iter = *,
+    float hx = *,
+    float hy = *,
+    float inertia = *
 )

@@ -52,6 +52,12 @@ logger = logging.getLogger(__name__)
 
 GoalSignature = Tuple[Optional[str], Optional[Goals], Optional[str]]
 
+HEADING_VECTORS: Dict[Directions, Tuple[float, float]] = {
+    Directions.UP: (0.0, -1.0),
+    Directions.DOWN: (0.0, 1.0),
+    Directions.LEFT: (-1.0, 0.0),
+    Directions.RIGHT: (1.0, 0.0),
+}
 # -----------------------------------------------------
 
 class NavigationMechanics(Mechanic):
@@ -232,7 +238,21 @@ class NavigationMechanics(Mechanic):
             residuals.append((ix2, iy1, ax2, iy2))
         return residuals
 
-
+    @staticmethod
+    def heading(sprite: Asset) -> Tuple[float, float]:
+        """
+        Resolves a unit heading vector from live velocity when moving,
+        falling back to the Sprite's current AnimationState direction.
+        """
+        vel = sprite.state.velocity
+        mag = math.hypot(vel.vx, vel.vy)
+        if mag > 1e-3:
+            return (vel.vx / mag, vel.vy / mag)
+        return HEADING_VECTORS.get(
+            sprite.state.animation.direction,
+            (0.0, 0.0)
+        )
+    
     @classmethod
     def _fluid_obstacles(
         cls,
@@ -535,6 +555,8 @@ class NavigationMechanics(Mechanic):
             obstacles=obstacles,
             step_size=32.0,
             max_iter=300,
+            heading=self.heading(sprite),
+            inertia=0.75,
         )
         path = planner.plan()
 

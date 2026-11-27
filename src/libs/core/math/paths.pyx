@@ -27,6 +27,44 @@ from libs.core.math.geometry cimport c_punctures
 from libs.core.math.paths cimport RRTNode, RRTObstacle
 
 
+cdef inline void _sample_point(
+    float min_x,
+    float max_x,
+    float min_y,
+    float max_y,
+    float sx,
+    float sy,
+    float tx,
+    float ty,
+    float heading_angle,
+    float heading_bias,
+    float span,
+    float step_size,
+    float* out_x,
+    float* out_y
+) noexcept nogil:
+    cdef float PI = 3.141592653589793
+    cdef float roll = rand() / (RAND_MAX * 1.0)
+    cdef float u1, u2, delta_angle, angle, radius, px, py
+
+    if roll <= 0.05:
+        out_x[0] = tx
+        out_y[0] = ty
+    elif heading_bias > 0.0 and roll <= (0.05 + heading_bias):
+        # Triangular forward-cone sample peaked along heading_angle over [-pi/2, +pi/2]
+        u1 = rand() / (RAND_MAX * 1.0)
+        u2 = rand() / (RAND_MAX * 1.0)
+        delta_angle = ((u1 + u2) * 0.5 - 0.5) * PI
+        angle = heading_angle + delta_angle
+        radius = step_size + (rand() / (RAND_MAX * 1.0)) * fmaxf(step_size, span - step_size)
+        px = sx + radius * cosf(angle)
+        py = sy + radius * sinf(angle)
+        out_x[0] = fminf(max_x, fmaxf(min_x, px))
+        out_y[0] = fminf(max_y, fmaxf(min_y, py))
+    else:
+        out_x[0] = min_x + (rand() / (RAND_MAX * 1.0)) * (max_x - min_x)
+        out_y[0] = min_y + (rand() / (RAND_MAX * 1.0)) * (max_y - min_y)
+
 cdef inline bint _is_segment_clear(
     float x1, 
     float y1, 
@@ -40,25 +78,6 @@ cdef inline bint _is_segment_clear(
         if c_punctures(x1, y1, x2, y2, obstacles[i].x, obstacles[i].y, obstacles[i].w, obstacles[i].l):
             return False
     return True
-
-
-cdef inline void _sample_point(
-    float min_x, 
-    float max_x, 
-    float min_y, 
-    float max_y, 
-    float tx, 
-    float ty, 
-    float* out_x, 
-    float* out_y
-) noexcept nogil:
-    cdef float roll = rand() / (RAND_MAX * 1.0)
-    if roll <= 0.05:
-        out_x[0] = tx
-        out_y[0] = ty
-    else:
-        out_x[0] = min_x + (rand() / (RAND_MAX * 1.0)) * (max_x - min_x)
-        out_y[0] = min_y + (rand() / (RAND_MAX * 1.0)) * (max_y - min_y)
 
 
 cdef inline int _get_nearest_node_idx(
@@ -155,13 +174,16 @@ cdef inline int _prune_path(
 
 
 cpdef list rrt(
-    float sx, 
-    float sy, 
-    float tx, 
-    float ty, 
-    list obstacles, 
-    float step_size = 32.0, 
-    int max_iter = 300
+    float sx,
+    float sy,
+    float tx,
+    float ty,
+    list obstacles,
+    float step_size = 32.0,
+    int max_iter = 300,
+    float hx = 0.0,
+    float hy = 0.0,
+    float inertia = 0.0
 ):
     """
     Zero-allocation Rapidly-exploring Random Tree (RRT) pathfinding engine.
@@ -219,6 +241,13 @@ cpdef list rrt(
     cdef int nearest_idx, new_idx
     cdef float rnd_x, rnd_y, new_x, new_y
     cdef int iter_count, curr, path_len, forward_len, pruned_len
+    
+    cdef float heading_mag = hypotf(hx, hy)
+    cdef float heading_angle = atan2f(hy, hx) if heading_mag > 1e-6 else 0.0
+    cdef float clamped_inertia = fminf(1.0, fmaxf(0.0, inertia))
+    # Cap heading bias at 0.35 so >= 60% uniform sampling preserves completeness
+    cdef float heading_bias = (0.35 * clamped_inertia) if heading_mag > 1e-6 else 0.0
+    cdef float span = hypotf(tx - sx, ty - sy) + step_size
 
     try:
         # Pack only search-space intersecting obstacles into contiguous C-buffer
@@ -265,7 +294,12 @@ cpdef list rrt(
 
         with nogil:
             for iter_count in range(max_iter):
-                _sample_point(min_x, max_x, min_y, max_y, tx, ty, &rnd_x, &rnd_y)
+                _sample_point(
+                    min_x, max_x, min_y, max_y,
+                    sx, sy, tx, ty,
+                    heading_angle, heading_bias, span, step_size,
+                    &rnd_x, &rnd_y
+                )
                 nearest_idx = _get_nearest_node_idx(nodes, node_count, rnd_x, rnd_y)
                 _steer(nodes[nearest_idx].x, nodes[nearest_idx].y, rnd_x, rnd_y, step_size, &new_x, &new_y)
 
