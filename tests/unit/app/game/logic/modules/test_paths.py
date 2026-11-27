@@ -156,8 +156,26 @@ def test_planner_delegates_to_rrt():
         )
         result = planner.plan()
 
-        mock_rrt.assert_called_once_with(10.0, 20.0, 100.0, 200.0, obstacles, 20.0, 150)
+        mock_rrt.assert_called_once_with(
+            10.0, 20.0, 100.0, 200.0, obstacles, 20.0, 150, 0.0, 0.0, 0.0
+        )
         assert result == [target]
+
+
+def test_rrt_with_heading_inertia_reaches_target_around_wall():
+    wall = (25.0, -20.0, 10.0, 40.0)
+    path = rrt(
+        0.0, 0.0, 70.0, 0.0,
+        [wall],
+        step_size=15.0,
+        max_iter=300,
+        hx=1.0,
+        hy=0.0,
+        inertia=0.75,
+    )
+    assert len(path) > 0
+    assert path[-1].x == 70
+    assert path[-1].y == 0
 
 
 def test_rrt_path_pruning_straightens_obstructed_corridor():

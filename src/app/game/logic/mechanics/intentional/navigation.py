@@ -610,10 +610,11 @@ class NavigationMechanics(Mechanic):
         # Clear stale stall/cooldown/waypoints whenever the active Goal changes
         # within the same NavigationIntention (e.g. SUBJECT -> DOOR in FIND)
         signature = self._goal(sprite)
-        if self._active_goals.get(sprite.name) != signature:
+        prev_signature = self._active_goals.get(sprite.name)
+        if prev_signature is not None and prev_signature != signature:
             self._clear(sprite)
-            if signature is not None:
-                self._active_goals[sprite.name] = signature
+        if signature is not None:
+            self._active_goals[sprite.name] = signature
 
         # 2. Anchor Computation
         anchor = self.anchor(sprite)

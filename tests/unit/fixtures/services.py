@@ -14,6 +14,20 @@ import pytest
 
 # Application Libraries
 import app.static.settings as settings
+
+from app.game.logic.modules.cognition import (
+    CombatInstinct,
+    ExploreInstinct,
+    GoalResolver,
+    Perception,
+    Recall,
+    SocialInstinct,
+    SurvivalInstinct,
+)
+from app.game.logic.modules.cognition.goals.locators import LocatorOperator
+from app.game.logic.modules.cognition.goals.outcomes import OutcomeOperator
+from app.game.logic.modules.cognition.goals.reflexes import ReflexOperator
+from app.game.logic.modules.cognition.goals.responses import ResponseOperator
 from app.game.board import Board
 from app.game.logic.relations import MaterialIndex
 from app.models.configurations import ConfigurationSchema
@@ -123,9 +137,92 @@ def mock_executors(
 
     return _executors
 
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------- COGNITION MODULES
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_response_operator() -> ResponseOperator:
+    return ResponseOperator()
+
+
+@pytest.fixture
+def mock_reflex_operator() -> ReflexOperator:
+    return ReflexOperator()
+
+
+@pytest.fixture
+def mock_locator_operator() -> LocatorOperator:
+    return LocatorOperator()
+
+
+@pytest.fixture
+def mock_outcome_operator() -> OutcomeOperator:
+    return OutcomeOperator()
+
+
+@pytest.fixture
+def mock_goal_resolver(
+    mock_configurations_schema: ConfigurationSchema,
+    mock_goals,
+    mock_response_operator: ResponseOperator,
+    mock_reflex_operator: ReflexOperator,
+    mock_outcome_operator: OutcomeOperator,
+    mock_locator_operator: LocatorOperator,
+):
+    """
+    Parameterized fixture factory building a GoalResolver for a chosen ISL
+    backend ('compiler' or 'lambda').
+    """
+    def _resolver(
+        implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
+    ) -> GoalResolver:
+        evaluator = mock_goals(implementation).compile(
+            mock_configurations_schema.goals
+        )
+        return GoalResolver(
+            evaluator=evaluator,
+            responses=mock_response_operator,
+            reflexes=mock_reflex_operator,
+            outcomes=mock_outcome_operator,
+            locators=mock_locator_operator,
+        )
+
+    return _resolver
+
+
+@pytest.fixture
+def mock_perception() -> Perception:
+    return Perception()
+
+
+@pytest.fixture
+def mock_recall() -> Recall:
+    return Recall()
+
+
+@pytest.fixture
+def mock_survival_instinct() -> SurvivalInstinct:
+    return SurvivalInstinct()
+
+
+@pytest.fixture
+def mock_combat_instinct() -> CombatInstinct:
+    return CombatInstinct()
+
+
+@pytest.fixture
+def mock_social_instinct() -> SocialInstinct:
+    return SocialInstinct()
+
+
+@pytest.fixture
+def mock_explore_instinct() -> ExploreInstinct:
+    return ExploreInstinct()
 
 # ---------------------------------------------------------------------------
-# --------------------------------------------------------- MARKET SERVICES
+# ----------------------------------------------------------- MARKET SERVICES
 # ---------------------------------------------------------------------------
 
 

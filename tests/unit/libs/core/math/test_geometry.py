@@ -84,22 +84,27 @@ def test_geometry_camera():
     dim = Dimensions(32, 32)
 
     # Top-left clamp
-    assert geometry.camera(Position(100, 100), dim, screen, board) == Position(0, 0)
+    cam = geometry.camera(Position(100, 100), dim, screen, board)
+    assert (cam.x, cam.y) == (0, 0)
 
     # Bottom-right clamp
-    assert geometry.camera(Position(1500, 1100), dim, screen, board) == Position(800, 600)
+    cam = geometry.camera(Position(1500, 1100), dim, screen, board)
+    assert (cam.x, cam.y) == (800, 600)
 
     # Free middle tracking
-    assert geometry.camera(Position(800, 600), dim, screen, board) == Position(416, 316)
+    cam = geometry.camera(Position(800, 600), dim, screen, board)
+    assert (cam.x, cam.y) == (416, 316)
 
     # Sub-viewport centering on both axes
     small_board = Dimensions(128, 192)
     square_screen = Dimensions(480, 480)
-    assert geometry.camera(Position(64, 96), dim, square_screen, small_board) == Position(-176, -144)
+    cam = geometry.camera(Position(64, 96), dim, square_screen, small_board)
+    assert (cam.x, cam.y) == (-176, -144)
 
     # Asymmetric centering (X smaller than viewport, Y larger than viewport)
     asym_board = Dimensions(200, 1000)
-    assert geometry.camera(Position(100, 800), dim, square_screen, asym_board) == Position(-140, 520)
+    cam = geometry.camera(Position(100, 800), dim, square_screen, asym_board)
+    assert (cam.x, cam.y) == (-140, 520)
 
 
 @pytest.mark.workflow_rendering
@@ -143,9 +148,13 @@ def test_geometry_cone():
 
 
 def test_geometry_nearby():
+    """Verify geometry.nearby uses inclusive closed-ball distance (<=) and rejects negative radii."""
     assert geometry.nearby(0, 0, 3, 4, 10) is True
-    assert geometry.nearby(0, 0, 3, 4, 5) is False
+    assert geometry.nearby(0, 0, 3, 4, 5) is True
+    assert geometry.nearby(0, 0, 3, 4, 4) is False
     assert geometry.nearby(0, 0, 10, 10, 5) is False
+    assert geometry.nearby(0, 0, 0, 0, 0) is True
+    assert geometry.nearby(0, 0, 0, 0, -1) is False
 
 
 def test_geometry_bounded():
