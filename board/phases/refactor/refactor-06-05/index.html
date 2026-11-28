@@ -1,0 +1,3971 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-06-05/">
+      
+      
+        <link rel="prev" href="../refactor-06-04/">
+      
+      
+        <link rel="next" href="../refactor-06-06/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Phase 06.05 - Beliefs - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0605-beliefs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 06.05 - Beliefs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_15_2" id="__nav_15_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_15_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_15_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_15_2_1" id="__nav_15_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_15_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-dialogue.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automata - Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-interaction.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automata - Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-wander.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automata - Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Temple of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_15_2_2" id="__nav_15_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_15_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_15_2_3" id="__nav_15_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_15_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_15_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor-01-02.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.02 - Render Decoupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.05 - Ammunition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0605-beliefs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 06.05 - Beliefs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 06.05 - Beliefs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formal-epistemic-update-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formal Epistemic Update Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-belief-data-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Belief Data Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-epistemic-revision-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Epistemic Revision Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-relativized-isl-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Relativized ISL Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-subjective-beliefs-model-agm-inspired-belief-revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Subjective Beliefs Model &amp; AGM-Inspired Belief Revision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-epistemically-relativized-isl-execution-cognitive-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Epistemically Relativized ISL Execution &amp; Cognitive Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-observable-state-projection-social-information-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Observable State Projection &amp; Social Information Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.06 - Goal Decomposition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor/refactor-07-06.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.06 - Crafting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0605-beliefs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 06.05 - Beliefs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 06.05 - Beliefs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formal-epistemic-update-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formal Epistemic Update Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-belief-data-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Belief Data Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-epistemic-revision-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Epistemic Revision Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-relativized-isl-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Relativized ISL Contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-subjective-beliefs-model-agm-inspired-belief-revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Subjective Beliefs Model &amp; AGM-Inspired Belief Revision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-epistemically-relativized-isl-execution-cognitive-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Epistemically Relativized ISL Execution &amp; Cognitive Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-observable-state-projection-social-information-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Observable State Projection &amp; Social Information Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 06.05 - Beliefs</h1>
+
+<h4 id="refactor-phase-0605-beliefs">Refactor: Phase 06.05 - Beliefs</h4>
+<p><strong>Overview</strong></p>
+<p>Relativize all Sprite cognitive evaluation (<code>TransitionMechanics</code>, <code>GoalResolver</code>, <code>LocatorOperator</code>, and <code>Instincts</code>) from objective <code>Board</code> state to a subjective, per-Sprite <strong>Belief Base</strong> (<code>Beliefs</code>) on <code>SpriteState</code>. Replace the omniscient <code>sprites</code> and <code>assets</code> ISL locals with <code>beliefs</code>, upgrade <code>Perception</code> into an observational <strong>Belief Revision</strong> stage supporting positive sightings, line-of-sight occlusion, and negative absence detection, restrict inter-Sprite perception strictly to externally observable state projections (eliminating private mind-reading), and wire <code>SocialMechanics</code> to exchange testimonial beliefs (<code>rumors</code>, entity sightings, and Door routes) modulated by trust and freshness.</p>
+<h5 id="specification">Specification</h5>
+<h6 id="1-formal-epistemic-update-cycle">1. Formal Epistemic Update Cycle</h6>
+<p>At each simulation tick <span class="arithmatex">\(t\)</span>, an autonomous Sprite <span class="arithmatex">\(s\)</span> updates its subjective Belief Base <span class="arithmatex">\(B_s(t)\)</span> from objective <code>Board</code> state <span class="arithmatex">\(W(t)\)</span> and incoming social messages <span class="arithmatex">\(M_s(t)\)</span> prior to any deliberative evaluation:</p>
+<div class="arithmatex">\[O_s(t) = \text{Observe}\big(W(t), \; s(t)\big)\]</div>
+<div class="arithmatex">\[B_s(t) = \text{Revise}\big(B_s(t-1), \; O_s(t), \; M_s(t)\big)\]</div>
+<div class="arithmatex">\[\text{GoalOutcome}(t) = \text{GoalEvaluator}\big(s.\text{goal.category}, \; \{\texttt{sprite}: s, \; \texttt{beliefs}: B_s(t)\}\big)\]</div>
+<div class="arithmatex">\[\text{NextIntention}(t) = \text{TransitionExecutor}\big(s.\text{intention}, \; \{\texttt{sprite}: s, \; \texttt{beliefs}: B_s(t)\}\big)\]</div>
+<pre class="mermaid"><code>flowchart LR
+    W[Objective Board W] --&gt;|Vision + LOS\nObservable Projection Only| P[Perception.observe\nPercept O_s]
+    M[SocialMechanics\nMessages M_s] --&gt;|Trust-Weighted\nHearsay| R[BeliefReviser\nPositive + Negative + Testimonial]
+    P --&gt; R
+    R --&gt; B[SpriteState.beliefs\nSubjective Belief Base B_s]
+    B --&gt; GR[GoalResolver\nGoalEvaluator]
+    B --&gt; LO[LocatorOperator\nDoor / Foe / Ally / Resource]
+    B --&gt; IN[Instincts\nFlee / Hostility / Converse]
+    B --&gt; TM[TransitionMechanics\nTransitionExecutor]</code></pre>
+<ul>
+<li><strong>Body / Mind Separation:</strong> <code>Perception</code>, <code>NavigationMechanics</code>, <code>MotionMechanics</code>, and <code>SpatialMechanics</code> interact with objective <code>Board</code> state <span class="arithmatex">\(W\)</span>. <code>GoalResolver</code>, <code>Recall</code>, <code>Instincts</code>, <code>LocatorOperator</code>, and <code>TransitionMechanics</code> operate exclusively over <code>(sprite.state, sprite.state.beliefs)</code> with zero direct reads of <code>board.characters()</code> or <code>board.states()</code>.</li>
+</ul>
+<h6 id="2-belief-data-hierarchy">2. Belief Data Hierarchy</h6>
+<p><code>Beliefs</code> sits on <code>SpriteState</code> (never on <code>SheetState</code> or <code>CharacterState</code>) and stores sparse, slot-allocated records representing what the Sprite takes to be true about deployed entities:</p>
+<pre class="mermaid"><code>classDiagram
+    class Beliefs {
+        tick: int
+        characters: Dict~str, CharacterBelief~
+        assets: Dict~str, AssetBelief~
+        doors: Dict~str, Dict~str, DoorBelief~~
+        visible(name) bool
+        exists(name, layer) bool
+        character(name) Optional~CharacterBelief~
+        asset(name, layer) Optional~AssetBelief~
+        door(layer, name) Optional~DoorBelief~
+    }
+    class EntityBelief {
+        name: str
+        category: AssetCategories
+        instance: AssetInstances
+        layer: str
+        position: Position
+        exists: bool
+        seen_at: int
+        confidence: float
+        source: BeliefSources
+    }
+    class CharacterBelief {
+        dead: bool
+        action: Actions
+        weapon: Optional~WeaponPalette~
+        hostile_pose: bool
+    }
+    class AssetBelief {
+        switch: Optional~bool~
+        stage: Optional~str~
+        owner: Optional~str~
+    }
+    class DoorBelief {
+        outlayer: Optional~str~
+    }
+    EntityBelief &lt;|-- CharacterBelief
+    EntityBelief &lt;|-- AssetBelief
+    AssetBelief &lt;|-- DoorBelief
+    Beliefs *-- CharacterBelief
+    Beliefs *-- AssetBelief
+    Beliefs *-- DoorBelief</code></pre>
+<ul>
+<li><strong>Observable Projection Invariant:</strong> <code>CharacterBelief</code> captures strictly externally observable traits (<code>position</code>, <code>layer</code>, <code>dead</code>, visible <code>action</code>, equipped <code>weapon</code>, whether visibly attacking/threatening) — never private internal attributes (<code>inventory</code>, <code>meters.health</code>, <code>psyche.motivation</code>, <code>memory</code>).</li>
+<li><strong>Zero-Reset Freshness:</strong> Direct observation stamps <code>belief.seen_at = beliefs.tick</code>. Live visibility reduces to an <span class="arithmatex">\(O(1)\)</span> timestamp test with zero per-tick clearing loop:
+  $<span class="arithmatex">\(\text{visible}(b) \iff \big(b.\text{exists}\big) \land \big(b.\text{seen\_at} = B_s.\text{tick}\big)\)</span>$</li>
+<li><strong>Separation from Conative <code>Memory</code>:</strong> <code>sprite.state.memory</code> retains conative and relational stores (<code>goals</code>, <code>stack</code>, <code>relationships</code>, <code>prices</code>, <code>rumors</code>), while spatial/world-model tables (<code>memory.sprites</code>, <code>memory.doors</code>, <code>memory.property</code>) migrate cleanly into <code>sprite.state.beliefs</code>.</li>
+</ul>
+<h6 id="3-epistemic-revision-rules">3. Epistemic Revision Rules</h6>
+<p><code>BeliefReviser</code> resolves conflicts using provenance priority (<code>DIRECT &gt; TESTIMONIAL &gt; INITIAL</code>), recency (<code>seen_at</code>), and trust:</p>
+<ol>
+<li><strong>Positive Revision (Direct Observation):</strong> Any entity within <code>vision.radius</code> on <code>sprite.layer</code> whose anchor passes <code>geometry.los</code> (unobstructed by solid elevation obstacles) updates its existing <code>EntityBelief</code> in place with <code>seen_at = tick</code>, <code>exists = True</code>, <code>confidence = 1.0</code>, <code>source = BeliefSources.DIRECT</code>.</li>
+<li><strong>Negative Revision (Observed Absence):</strong> For any belief <span class="arithmatex">\(b \in B_s\)</span> on <code>sprite.layer</code> with <span class="arithmatex">\(b.\text{exists} = \top\)</span>, <span class="arithmatex">\(b.\text{seen\_at} &lt; B_s.\text{tick}\)</span>, and whose believed <code>b.position</code> lies within <code>vision.radius</code> with clear <code>geometry.los</code>:</li>
+<li>If <span class="arithmatex">\(b\)</span> is a <strong>static Asset</strong> (<code>AssetBelief</code> / <code>DoorBelief</code>): set <code>b.exists = False</code> (and <code>b.seen_at = tick</code>), allowing <code>object.complete</code>, <code>resource.complete</code>, or <code>door.lost</code> to resolve upon discovering the empty site rather than telepathically from afar.</li>
+<li>If <span class="arithmatex">\(b\)</span> is a <strong>mobile Character</strong> (<code>CharacterBelief</code>): leave <code>b.exists = True</code> (the Character moved, not necessarily vanished); <code>visible(b)</code> is <code>False</code>, triggering <code>lost</code> + <code>confusion</code> + <code>store</code> upon arriving at the empty last-known location.</li>
+<li><strong>Testimonial Revision (Social Communication):</strong> During <code>speak</code> in <code>SocialMechanics</code>, a speaker may share selected beliefs (e.g., high-salience <code>CharacterBelief</code> sightings or <code>DoorBelief</code> routes) with a listener. Incoming testimony is accepted only if the listener trusts the speaker (<code>FRIEND</code>/<code>FAMILY</code>, not <code>FOE</code>), holds no fresher direct observation (<code>incoming.seen_at &gt; current.seen_at</code> or <code>current.source != DIRECT</code>), and discounts <code>confidence</code> by a decay factor <span class="arithmatex">\(\gamma \in (0, 1)\)</span>.</li>
+<li><strong>Bounded Retention (Forgetting):</strong> Beliefs exceeding <code>BELIEF_TTL</code> ticks since <code>seen_at</code> that are not referenced by <code>sprite.goal</code>, <code>memory.goals</code>, <code>memory.stack</code>, <code>memory.relationships</code>, or self-owned <code>property</code> are pruned periodically to bound memory per Sprite.</li>
+</ol>
+<h6 id="4-relativized-isl-contract">4. Relativized ISL Contract</h6>
+<p>Both <code>TransitionExecutor</code> (<code>intentions/main.yaml</code>) and <code>GoalEvaluator</code> (<code>goals/main.yaml</code>) compile against a single unified local signature:</p>
+<ul>
+<li><code>sprite</code>: Evaluating Sprite's <code>SpriteState</code></li>
+<li><code>beliefs</code>: Evaluating Sprite's <code>Beliefs</code> (<code>sprite.beliefs</code>)</li>
+<li><code>constants</code>: Application semantic enumerations (including <code>BeliefSources</code>)</li>
+<li><code>functions</code>: Pure predicates operating over <code>(sprite, beliefs)</code> — replacing <code>any_memories_visible(sprite, sprites, categories)</code> with <code>any_memories_visible(sprite, beliefs, categories)</code></li>
+</ul>
+<p>Representative relativized rules:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># goals/main.yaml (relativized)</span>
+<span class="nt">goals</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">complete</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">reflexes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">forget</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not beliefs.character(sprite.goal.name) or beliefs.character(sprite.goal.name).dead</span>
+<span class="w">  </span><span class="nt">door</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">lost</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">reflexes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">forget</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">unwind</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not beliefs.exists(sprite.goal.name, sprite.layer) or sprite.trajectory.stalled</span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">complete</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">reflexes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">forget</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.layer == sprite.goal.layer</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not beliefs.exists(sprite.goal.name, sprite.layer) or sprite.mutators.triggers.interacted</span>
+<span class="w">  </span><span class="nt">resource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">complete</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">reflexes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">forget</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.layer == sprite.goal.layer</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not beliefs.exists(sprite.goal.name, sprite.layer)</span>
+</code></pre></div>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<ol>
+<li><strong>Building on Phase 06.02's End State Without Rework:</strong></li>
+<li>Phase 06.02's decomposition of <code>CognitionMechanics</code> into <code>Perception</code>, <code>GoalResolver</code>, <code>Recall</code>, <code>Instincts</code>, and <code>LocatorOperator</code> already isolates the exact seams needed for relativization.</li>
+<li>Replacing <code>target</code> with <code>assets</code> in Phase 06.02 Task 4 removes ad-hoc lookup fallbacks immediately; Phase 06.05 then cleanly swaps <code>(sprites, assets)</code> for <code>beliefs</code> in one atomic cut across <code>GoalResolver</code>, <code>TransitionMechanics</code>, <code>Environ</code>, <code>settings.LAMBDA_SIGNATURE</code>, and the two automata YAML matrices.</li>
+<li><strong>Eliminating <code>triggers.vision</code> Drift:</strong></li>
+<li>In Phase 06.02, <code>mutators.triggers.vision</code> tracks visibility for the single active Goal only, requiring careful synchronization whenever <code>sprite.state.goal</code> changes in Stage 2 or Stage 3.</li>
+<li>With tick-stamped <code>Beliefs</code>, <code>beliefs.visible(name)</code> is intrinsically exact for <em>every</em> known entity simultaneously; <code>triggers.vision</code> becomes a simple derived mirror of <code>beliefs.visible(goal.name)</code> (or can be retired from ISL conditions altogether in favor of <code>beliefs.visible(sprite.goal.name)</code>).</li>
+<li><strong>Bootstrap &amp; Initial Beliefs from State YAML:</strong></li>
+<li>Scenarios where a Sprite begins the simulation knowing about an entity on another Layer (e.g., Empress Jasilynn starting on <code>throne-layer-3</code> with a <code>subject</code> Goal for <code>player</code> on Layer <code>'0'</code>) remain fully supported: initial State files seed <code>sprite.beliefs</code> (with <code>source = INITIAL</code>, <code>seen_at = 0</code>), preserving intentional agency from tick 1 without granting omniscience about subsequent world changes!</li>
+<li><strong>Performance Guardrails:</strong></li>
+<li>Running <code>geometry.los</code> against every obstacle for every entity in <code>vision.radius</code> for every Sprite can become expensive in dense scenes. <code>Perception.observe</code> must filter by <strong>same Layer</strong> and <strong>squared Euclidean radius</strong> first, exclude static Tiles and passive Effects, and only execute <code>geometry.los</code> on the small candidate set inside <code>vision.radius</code> (caching per-Layer static obstacle tuples once per tick outside the Sprite loop).</li>
+<li>Updating <code>EntityBelief</code> fields in place preserves Ontology's zero-allocation inner-loop principle.</li>
+</ol>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-subjective-beliefs-model-agm-inspired-belief-revision">Goal: Subjective <code>Beliefs</code> Model &amp; AGM-Inspired Belief Revision</h6>
+<p>Introduce <code>Beliefs</code>, <code>EntityBelief</code>, <code>CharacterBelief</code>, <code>AssetBelief</code>, and <code>DoorBelief</code> on <code>SpriteState</code> (migrating spatial/world-model maps out of <code>Memory</code>), backed by a <code>BeliefReviser</code> module under <code>app.game.logic.modules.cognition</code> handling direct positive observation, observed-absence negative revision, trust-weighted testimonial revision, and TTL pruning.</p>
+<h6 id="goal-epistemically-relativized-isl-execution-cognitive-modules">Goal: Epistemically Relativized ISL Execution &amp; Cognitive Modules</h6>
+<p>Remove objective <code>sprites</code> and <code>assets</code> collections from <code>TransitionExecutor</code>, <code>GoalEvaluator</code>, <code>settings.LAMBDA_SIGNATURE</code>, and <code>Environ.functions</code>, passing only <code>(sprite, beliefs)</code> into all Intention and Goal rules. Migrate <code>LocatorOperator</code> (<code>DoorLocator</code> and future entity locators) and <code>Instincts</code> (<code>Flee</code>, <code>Hostility</code>, <code>Converse</code>) to query <code>sprite.state.beliefs</code> exclusively so <code>Perception</code> is the sole boundary reading <code>Board</code> state into cognition.</p>
+<h6 id="goal-observable-state-projection-social-information-propagation">Goal: Observable State Projection &amp; Social Information Propagation</h6>
+<p>Enforce strict projection of externally observable traits in <code>Perception.observe</code> (with <code>geometry.los</code> occlusion) and extend <code>SocialMechanics</code> so conversing Sprites exchange high-salience beliefs (character sightings, deaths, door routes) with provenance and trust discounting — unlocking emergent rumors, false beliefs, stealth, and scouting.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Belief Semantics, State Models &amp; Hydration Schema</strong></p>
+<p><em>Objective</em>: Define strict Pydantic-validated Belief models on <code>SpriteState</code>, enumerate epistemic provenance semantics, and migrate spatial/world-model tables cleanly from <code>Memory</code> into <code>Beliefs</code>.</p>
+<ul>
+<li>[ ] Subtask: Add <code>BeliefSources</code> (<code>initial</code>, <code>direct</code>, <code>rumor</code>) to <code>app.static.semantics</code> and expose it in <code>Environ.constants</code>.</li>
+<li>[ ] Subtask: Define <code>@dataclass(slots=True)</code> models <code>EntityBelief</code>, <code>CharacterBelief(EntityBelief)</code>, <code>AssetBelief(EntityBelief)</code>, <code>DoorBelief(AssetBelief)</code>, and <code>Beliefs</code> (with typed query helpers <code>visible</code>, <code>exists</code>, <code>character</code>, <code>asset</code>, <code>door</code>) in <code>src/app/models/state/assets/beliefs.py</code> (or <code>sheets.py</code>), and attach <code>beliefs: Beliefs = field(default_factory=Beliefs)</code> strictly on <code>SpriteState</code>.</li>
+<li>[ ] Subtask: Migrate <code>memory.sprites</code>, <code>memory.doors</code>, and <code>memory.property</code> references into <code>sprite.beliefs</code> (<code>characters</code>, <code>doors</code>, <code>assets</code> with <code>owner</code>), retaining conative/relational fields (<code>goals</code>, <code>stack</code>, <code>relationships</code>, <code>prices</code>, <code>rumors</code>) on <code>Memory</code>, and update <code>/src/data/state/**/*.yaml</code> schemas and <code>Board.serialize</code> accordingly.</li>
+<li>[ ] Subtask: Add <code>BELIEF_TTL</code> and <code>RUMOR_CONFIDENCE_DECAY</code> configuration constants to <code>app.static.settings</code>.</li>
+</ul>
+<p><strong>2. Task: Perception Observation Projection &amp; <code>BeliefReviser</code></strong></p>
+<p><em>Objective</em>: Upgrade <code>Perception</code> into the sole sensorimotor bridge from <code>Board</code> to <code>Beliefs</code>, implementing observable-only projection, LOS occlusion, negative absence revision, and bounded retention.</p>
+<ul>
+<li>[ ] Subtask: Create <code>src/app/game/logic/modules/cognition/beliefs.py</code> implementing <code>BeliefReviser</code> with <code>observe_positive(beliefs, percept)</code>, <code>observe_absence(beliefs, sprite, visible_names, obstacles)</code>, <code>assimilate_testimony(beliefs, incoming, relationship)</code>, and <code>prune(beliefs, memory, ttl)</code> — mutating existing slot records in place with zero inner-loop heap churn.</li>
+<li>[ ] Subtask: Update <code>Perception</code> in <code>src/app/game/logic/modules/cognition/perception.py</code> to advance <code>beliefs.tick</code>, cache per-Layer static obstacle primitives once per tick, filter same-Layer <code>Characters</code>, <code>Doors</code>, <code>Objects</code>, <code>Resources</code>, and <code>Crafts</code> by <code>vision.radius</code> + <code>geometry.los</code> (optional <code>geometry.cone</code>), project strictly observable attributes into <code>EntityBelief</code> updates, and execute negative absence revision for expected static assets missing within visible LOS.</li>
+<li>[ ] Subtask: Re-anchor <code>Perception.fear</code> and <code>Perception.track</code> onto <code>sprite.state.beliefs</code>: evaluate <code>triggers.frightened</code> solely from currently visible hostile <code>CharacterBelief</code> entries within <code>fear.radius</code> (plus self health ratio), wake dormant <code>memory.goals</code> when <code>beliefs</code> receives a fresh direct or trusted testimonial update, and derive <code>triggers.vision</code> from <code>beliefs.visible(goal.name)</code>.</li>
+<li>[ ] Subtask: Update <code>InteractionMechanics</code> Door traversal to record bidirectional <code>DoorBelief</code> entries directly into <code>sprite.state.beliefs.doors</code> (recording <code>outlayer</code> on both origin and reciprocal <code>OUT</code> projections).</li>
+</ul>
+<p><strong>3. Task: Relativize ISL Signature, <code>GoalResolver</code>, <code>TransitionMechanics</code>, <code>LocatorOperator</code> &amp; <code>Instincts</code></strong></p>
+<p><em>Objective</em>: Remove all objective <code>Board</code> collections (<code>sprites</code>, <code>assets</code>) from ISL execution and deliberative cognitive modules so Sprite decisions depend exclusively on <code>(sprite, beliefs)</code>.</p>
+<ul>
+<li>[ ] Subtask: Update <code>settings.LAMBDA_SIGNATURE</code> to replace <code>sprites=None, assets=None</code> with <code>beliefs=None</code> (verifying <code>PlotMechanics</code> and <code>SeasonMechanics</code> locals remain unaffected), and refactor <code>Environ.functions.any_memories_visible(sprite, beliefs, categories)</code> to query <code>beliefs.visible(goal.name)</code> and <code>not beliefs.character(goal.name).dead</code> without inspecting <code>Board</code> character dicts.</li>
+<li>[ ] Subtask: Update <code>GoalResolver.evaluate(state, beliefs)</code> and <code>GoalResolver.resolve(sprite, board)</code> to pass <code>locals={'sprite': sprite.state, 'beliefs': sprite.state.beliefs}</code>, and update <code>TransitionMechanics.update()</code> to pass <code>locals={'sprite': sprite.state, 'beliefs': sprite.state.beliefs}</code> (removing the <code>board.characters()</code> query from <code>TransitionMechanics</code>).</li>
+<li>[ ] Subtask: Update <code>/src/data/configurations/automata/goals/main.yaml</code> and <code>/src/data/configurations/automata/intentions/main.yaml</code> to query <code>beliefs</code> (<code>beliefs.character(...)</code>, <code>beliefs.asset(...)</code>, <code>beliefs.exists(...)</code>, <code>beliefs.visible(...)</code>) instead of <code>sprites</code> and <code>assets</code>, eliminating all remaining cross-layer and off-vision telepathy.</li>
+<li>[ ] Subtask: Refactor <code>DoorLocator</code> (<code>cognition/locators.py</code>) and all concrete <code>Instincts</code> (<code>FleeInstinct</code>, <code>HostilityInstinct</code>, <code>ConverseInstinct</code>) to read <code>sprite.state.beliefs</code> exclusively rather than scanning <code>board.characters()</code> or <code>board.instances(AssetInstances.DOORS)</code> directly.</li>
+</ul>
+<p><strong>4. Task: Testimonial Belief Exchange in <code>SocialMechanics</code></strong></p>
+<p><em>Objective</em>: Enable Sprites in <code>speak</code> to propagate subjective beliefs (entity sightings, deaths, and Door routes) with trust filtering and provenance precedence.</p>
+<ul>
+<li>[ ] Subtask: Extend <code>SocialMechanics</code> Sprite-to-Sprite dialogue exchange to select salient recent beliefs from the speaker's <code>Beliefs</code> (e.g., observed <code>FOE</code> locations/deaths, mapped <code>DoorBelief</code> routes, or requested <code>memory.goals</code> subjects) and feed them through <code>BeliefReviser.assimilate_testimony(...)</code> on the listener.</li>
+<li>[ ] Subtask: Ensure direct sightings (<code>BeliefSources.DIRECT</code>) always supersede hearsay (<code>BeliefSources.RUMOR</code>), distrusted speakers (<code>Relationships.FOE</code>) are rejected, and receiving a trusted sighting of a dormant remembered Goal wakes it (<code>dormant = False</code>) with the rumored coordinates and Layer.</li>
+</ul>
+<p><strong>5. Task: Verification &amp; Epistemic Isolation Tests</strong></p>
+<p><em>Objective</em>: Verify zero epistemic leakage, false-belief persistence and revision upon arrival, testimonial belief propagation, and AST/Lambda backend parity.</p>
+<ul>
+<li>[!: Dependent on User Acceptance Tests] Subtask: Add unit tests verifying <code>BeliefReviser</code> positive revision, negative absence revision for missing static Assets (<code>object</code>/<code>resource</code>/<code>door</code>) vs. non-lethal absence for mobile Characters (<code>target</code>/<code>subject</code>), <code>seen_at == tick</code> zero-reset visibility, and <code>BELIEF_TTL</code> pruning without evicting active/stored Goals.</li>
+<li>[!: Dependent on User Acceptance Tests] Subtask: Add epistemic isolation tests confirming a Sprite with a distant <code>target</code>, <code>resource</code>, or <code>object</code> Goal retains its false belief when the target dies or is removed outside <code>vision.radius</code> / behind an LOS wall, and resolves <code>complete</code>/<code>lost</code> only once the Sprite enters visible LOS of the location (or receives a trusted rumor).</li>
+<li>[!: Dependent on User Acceptance Tests] Subtask: Add <code>Compiler</code> vs. <code>Lambda</code> parity tests for the relativized <code>locals={'sprite': ..., 'beliefs': ...}</code> contract across <code>goals/main.yaml</code> and <code>intentions/main.yaml</code>, plus <code>SocialMechanics</code> rumor-propagation tests (trust acceptance vs. <code>FOE</code> rejection, direct-observation dominance over stale rumors).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -972,9 +972,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1038,9 +1036,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2" id="__nav_15_2_label" tabindex="0">
@@ -1107,9 +1103,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_1" >
         
           
           <label class="md-nav__link" for="__nav_15_2_1" id="__nav_15_2_1_label" tabindex="0">
@@ -1450,9 +1444,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2_2" id="__nav_15_2_2_label" tabindex="0">
@@ -2043,6 +2035,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2051,9 +2047,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_3" >
         
           
           <label class="md-nav__link" for="__nav_15_2_3" id="__nav_15_2_3_label" tabindex="0">
@@ -2120,7 +2114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../board/phases/refactor-01-20.md" class="md-nav__link">
+      <a href="../board/phases/refactor-01-02.md" class="md-nav__link">
         
   
   
@@ -2772,6 +2766,62 @@
     
   
     Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.06 - Goal Decomposition
   
 
     
@@ -3451,9 +3501,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -3604,9 +3652,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
         
           
           <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
@@ -4195,11 +4241,8 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 </ul>
 <p><strong>CollectionState: Methods</strong></p>
 <ul>
-<li><code>get_item(slot_index: int) -&gt; str</code>: Resolves the item key at <span class="arithmatex">\(\omega + \text{slot\_index}\)</span>, or <code>""</code> if vacant.</li>
-<li><code>is_occupied(slot_index: int) -&gt; bool</code>: Asserts <span class="arithmatex">\(0 \le \omega + \text{slot\_index} &lt; |\text{collection}|\)</span>.</li>
-<li><code>sync(pane_name: str, widgets: Dict[str, Widget]) -&gt; None</code>: Sets occupied aperture slot buttons to <code>Statuses.IDLE</code> and vacant slots to <code>Statuses.DISABLED</code>.</li>
-<li><code>scroll(direction: str, slot_index: int) -&gt; bool</code>: Advances or decrements <span class="arithmatex">\(\omega\)</span> when traversal crosses the active scroll boundary (<span class="arithmatex">\(\pm 1\)</span> on <code>WEST</code>/<code>EAST</code> for 1D strips where <span class="arithmatex">\(C \le K\)</span>; <span class="arithmatex">\(\pm K\)</span> on <code>NORTH</code>/<code>SOUTH</code> for 2D grids where <span class="arithmatex">\(C &gt; K\)</span>).
-&amp; <code>clamp_slot(slot_index: int) -&gt; Optional[int]</code>: Clamps focus to the highest occupied slot index in the aperture window after pagination.</li>
+<li><code>get_item(slot_index: int)</code>: Resolves the item key at <span class="arithmatex">\(\omega + \text{slot\_index}\)</span>.</li>
+<li><code>scroll(direction: str, slot_index) -&gt; bool</code>: Advances or decrements <span class="arithmatex">\(\omega\)</span> when traversal crosses the active scroll boundary.</li>
 </ul>
 <h3 id="widget-buttons">Widget: Buttons</h3>
 <p>Buttons are <em>traversible</em> Widgets. They have a <em>Status</em> that changes as they are traversed. </p>
@@ -4294,40 +4337,55 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <div class="highlight"><pre><span></span><code><span class="nt">menus</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">text</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scroll</span>
-<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">roots</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">panes</span>
-<span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutral</span>
+<span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dark-texture</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-menu</span>
 <span class="w">        </span><span class="nt">parameters</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.175</span>
-<span class="w">            </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.60</span>
+<span class="w">          </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.65</span>
+<span class="w">            </span><span class="nt">pl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25</span>
+<span class="w">          </span><span class="nt">justification</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">horizontal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">            </span><span class="nt">vertical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">          </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">horizontal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">            </span><span class="nt">vertical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
 <span class="w">          </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
-<span class="w">          </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
 <span class="w">          </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15</span>
+<span class="w">          </span><span class="nt">margins</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 <span class="w">          </span><span class="nt">font</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dialogue</span>
-<span class="w">          </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pages</span>
-<span class="w">              </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dark-notification</span>
+<span class="w">          </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dark-solid</span>
+<span class="w">              </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">panes</span>
 <span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-display</span>
+<span class="w">              </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                    </span><span class="nt">pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.40</span>
+<span class="w">                    </span><span class="nt">pl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.20</span>
 <span class="w">              </span><span class="nt">bind</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">library</span>
-<span class="w">                </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                </span><span class="nt">target</span><span class="p">:</span>
 <span class="w">                  </span><span class="nt">plot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.plot.current</span>
 <span class="w">                  </span><span class="nt">persona</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.object.persona</span>
 <span class="w">                  </span><span class="nt">lexicon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.object.lexicon</span>
 <span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">panes</span>
-<span class="w">              </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent-slot</span>
+<span class="w">              </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent</span>
 <span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-buttons</span>
 <span class="w">              </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">pw</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.08</span>
+<span class="w">                    </span><span class="nt">pl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.15</span>
 <span class="w">                </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stack</span>
-<span class="w">                </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">                </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                    </span><span class="nt">horizontal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">                    </span><span class="nt">vertical</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
 <span class="w">                </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">                </span><span class="nt">children</span><span class="p">:</span>
 <span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buttons</span>
 <span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
 <span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-up</span>
-<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span>
 <span class="w">                      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
 <span class="w">                      </span><span class="nt">target</span><span class="p">:</span>
 <span class="w">                        </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrollup</span>
@@ -4335,7 +4393,7 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buttons</span>
 <span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
 <span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-down</span>
-<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span>
 <span class="w">                      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
 <span class="w">                      </span><span class="nt">target</span><span class="p">:</span>
 <span class="w">                        </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown</span>
@@ -4363,8 +4421,8 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <p>Every Menu has a Context. When a Menu is instantiated, it receives a MenuContext object. This payload contains direct references to underlying Asset State data models. </p>
 <p>Widgets populate their State by evaluating their <a href="#menus-binding">Binding</a> paths against their MenuContext. Because the Context holds the State directly, a meter bound to <code>context.sprite.meters.health</code> will traverse the Context to retrieve the live <code>MeterState</code> without needing to parse the raw Asset. This <em>Binding</em> of Asset State to Widget State is referred to as a <em>State Closure</em>.</p>
 <h3 id="menus-bindings">Menus: Bindings</h3>
-<p>Widgets display live Asset State information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated user interface logic from overcrowding the codebase. In other words, <a href="#controllers">Menu Controllers</a> do not have to worry about managing animation states or updating Widget State references.</p>
-<p>However, since Menus are unpacked by the Provider into Widgets, otherwise indistinguishable from standard Assets to the <a href="../00-overview/#component-engine">Engine</a> and <a href="../00-overview/#component-screen">Screen</a>, every Widget bound to Asset State declares and utilizes a <em>Binding</em>.</p>
+<p>Widgets display live Asset State information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated user interface logic from overcrowding the Codebase. In other words, <a href="#controllers">Menu Controllers</a> do not have to worry about managing AnimationStates or updating Widget State references.</p>
+<p>However, since Menus are unpacked by the <a href="#service-provider">Provider</a> into Widgets, otherwise indistinguishable from standard Assets to the <a href="../00-overview/#component-engine">Engine</a> and <a href="../00-overview/#component-screen">Screen</a>, every Widget bound to Asset State declares and utilizes a <em>Binding</em>.</p>
 <p>Widget Bindings to Asset State are generated inside of the <a href="#service-provider">Provider</a> via the <a href="#service-binder">Binder</a> factory. Each Binding requires a <code>schema</code> and a nested <code>target</code> dictionary.</p>
 <ul>
 <li><code>schema</code>: Determines the structure of the Binding. </li>
@@ -4420,8 +4478,8 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <span class="w">        </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;gizmo-pane-name&gt;</span>
 <span class="w">        </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;slot-index&gt;</span>
 </code></pre></div>
-<p>Each Binding <em>expects</em> the nested paths in the <code>target</code> dictionary to resolve to valid domain entities in the Menu Context based on the schema. For example, if <code>schema == meter</code>, the path mapped to <code>target.meter</code> must ultimately resolve to an entity whose data structure exactly matches the Binding schema, i.e. a MeterState.</p>
-<p>For example, in the View (HUD) Menu, a Widget is bound to the Player's health meter:</p>
+<p>Each Binding <em>expects</em> the nested paths in the <code>target</code> dictionary to resolve to valid domain references in the Menu Context based on the schema. For example, if <code>schema == meter</code>, the path mapped to <code>target.meter</code> must ultimately resolve to a data structure that exactly matches the Binding schema, i.e. a MeterState.</p>
+<p>For example, in the <a href="#menu-data">View Menu</a>, a Widget is bound to the Player's health meter:</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meters</span>
 <span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health-meter</span>
@@ -4430,31 +4488,16 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">meter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.meters.health</span>
 </code></pre></div>
-<p>By decoupling the layout from the logic, Widgets do not need to know what is controlling them; they only require a declarative Binding to know what data they are displaying.</p>
+<p>Widgets do not need to know what is controlling them; they only require a declarative Binding to know what data they are displaying.</p>
 <p><strong>Selection Bindings</strong></p>
-<p>Selection Bindings define how Widgets interact with user input and game state. Rather than pointing to external game state, their <code>target</code> dictionary maps internal Menu commands:</p>
+<p>Selection Bindings define how Widgets interact with <a href="../02-sprites/#devices">Device Input</a> and <a href="../00-overview/#core-state">Asset State</a>. In other words, a Selection Binding maps Menu commands.</p>
 <ul>
-<li><code>selection</code>: The specific action or command a Control Widget emits when selected by the user (e.g., <code>scrollup</code>).</li>
+<li><code>selection</code>: The specific action or command a Control Widget emits when selected by a <a href="../02-sprites/#devices">Device</a>.</li>
 <li><code>selector</code>: A direct pointer to the unique <code>name</code> of another Widget in the Menu, or a destination key. Used when a Control Widget needs to mutate or read another Widget's state.</li>
 </ul>
-<p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. Because these buttons control the Page widget, their <code>selector</code> bindings are set to <code>text-display</code>—the unique name of the target Page.</p>
-<p>When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the <code>ScrollController</code>). The Controller uses the <code>selector</code> binding to perform an <span class="arithmatex">\(O(1)\)</span> dictionary lookup for the target widget and applies the <code>selection</code> action:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScrollController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">):</span>
-        <span class="n">widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-        <span class="n">selection</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selection</span>
-        <span class="n">target_key</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selector</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_key</span> <span class="ow">or</span> <span class="n">target_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">target_widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">target_key</span><span class="p">]</span>
-
-        <span class="c1"># apply selection logic to target_widget...</span>
-</code></pre></div>
-<p>Bindings are enumerated and summarized below:</p>
+<p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. These Buttons control the <code>text-display</code> Pane widget via their <code>selector</code>  Bindings.</p>
+<p>When a Button is selected, <a href="../05-mechanics/#core-mechanic-menumechanics">MenuMechanics</a> route the <a href="../02-sprites/#devices">Device Payload</a> to the appropriate Controller (in this case, the <a href="#menus-controllers">ScrollController</a>, keyed to the Menu by its unique ID, <code>scroll</code>). The Controller uses the <code>selector</code> binding to perform a lookup for the target Widget and applies the <code>selection</code> action.</p>
+<p>Selection Bindings are enumerated and summarized below:</p>
 <ul>
 <li><code>selection</code>: Menu Action commands.<ul>
 <li><code>SCROLLUP</code>: Call <code>scrollup()</code> on a PaneState.</li>
@@ -4475,7 +4518,8 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 </li>
 </ul>
 <h3 id="menus-gizmos">Menus: Gizmos</h3>
-<p>A Gizmo is a macro node declared in the Menu Tree. Before the Layout evaluates spatial geometry, the Provider delegates Gizmo MenuNodes to a specialize <em>Fabricator Service</em>, transforming the Gizmo Node into concrete structures of Panes, Buttons, Meters and Icons with a synthesizedState attached to the root pane of the Gizmo.</p>
+<p>A Gizmo is a macro node declared in the Menu Tree. Before the Layout evaluates spatial geometry, the Provider delegates Gizmo MenuNodes to a specialized <a href="#service-fabricator">Fabricator Service</a>, transforming the Gizmo Node into concrete structures of Panes, Buttons, Meters and Icons with a synthesized State attached to the root Pane of the Gizmo.</p>
+<p><strong>Example: Gizmo Declaration</strong></p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapons</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
 <span class="w">  </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gizmos</span>
@@ -4498,18 +4542,30 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <p><strong>Behavior: Edge-Triggered Pagination</strong></p>
 <p>Collection Gizmos do not use explicit scroll arrow buttons. Instead, aperture slot buttons are directly traversable and paginate automatically when directional input crosses the aperture boundary:</p>
 <ul>
-<li><strong>1D Strip Gizmos (<span class="arithmatex">\(C \le K\)</span>, used in <code>Menu: Equipment</code>)</strong>: (Used in the <a href="#menu-data">Equipment Menu</a>) <code>west</code> and <code>east</code> traverse horizontally within the strip and shift <code>offset</code> by <span class="arithmatex">\(\pm 1\)</span> at the left (<span class="arithmatex">\(c = 0\)</span>) and right (<span class="arithmatex">\(c = K - 1\)</span>) boundaries when <span class="arithmatex">\(|\text{collection}| &gt; C\)</span>. <code>north</code> and <code>south</code> immediately traverse between adjacent equipment rows via <a href="#concept-traversibility">Traversal Graph</a>.</li>
-<li><strong>2D Grid Gizmos (<span class="arithmatex">\(C &gt; K\)</span>)</strong>: (Used in the <a href="#menu-data">Pouch and Pack Menus</a>) <code>north</code> and <code>south</code> shift <code>offset</code> by <span class="arithmatex">\(\pm K\)</span> (one row) at the top (<span class="arithmatex">\(r = 0\)</span>) and bottom (<span class="arithmatex">\(r = R - 1\)</span>) boundaries.</li>
+<li><strong>1D Strip Gizmos (<span class="arithmatex">\(C \le K\)</span>)</strong>: <code>west</code> and <code>east</code> traverse horizontally within the strip and shift <code>offset</code> by <span class="arithmatex">\(\pm 1\)</span> at the left (<span class="arithmatex">\(c = 0\)</span>) and right (<span class="arithmatex">\(c = K - 1\)</span>) boundaries when <span class="arithmatex">\(|\text{collection}| &gt; C\)</span>. <code>north</code> and <code>south</code> immediately traverse between adjacent equipment rows via <a href="#concept-traversibility">Traversal Graph</a>.</li>
+<li><strong>2D Grid Gizmos (<span class="arithmatex">\(C &gt; K\)</span>)</strong>: <code>north</code> and <code>south</code> shift <code>offset</code> by <span class="arithmatex">\(\pm K\)</span> (one row) at the top (<span class="arithmatex">\(r = 0\)</span>) and bottom (<span class="arithmatex">\(r = R - 1\)</span>) boundaries.</li>
 </ul>
 <h2 id="menu-services">Menu: Services</h2>
 <h3 id="service-provider">Service: Provider</h3>
+<ul>
+<li>Address: <code>app.services.generators.menus.provider</code></li>
+</ul>
 <p>The Provider, similiar to the <a href="../03-compositions/#service-decomposer">Decomposer</a>, is responsible for unpacking Menu Configurations into flat lists of Assets for the <a href="../00-overview/#component-engine">Engine</a>. However, unlike the Decomposer, the Provider must also generate a Traversal graph, inject bindings into Widgets and pass the result to a Menu.</p>
 <p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the <a href="../12-architecture/#cython">zero-allocation principle</a>.</p>
 <h3 id="service-binder">Service: Binder</h3>
+<ul>
+<li>Address: <code>app.services.generators.menu.provider</code></li>
+</ul>
 <p>The Binder Service instantiates Bindings and generates the callable functions leveraged by Widgets for their State Closures.</p>
 <h3 id="service-fabricator">Service: Fabricator</h3>
+<ul>
+<li>Address: <code>app.services.generators.menu.fabricator</code></li>
+</ul>
 <p>The Fabricator Service synthesizes Gizmo Widgets and their Pane Bindings.</p>
 <h3 id="service-layout">Service: Layout</h3>
+<ul>
+<li>Address: <code>app.services.generators.menu.layout</code></li>
+</ul>
 <p>Consider a <code>stack</code> Pane with two children <code>dock</code> Panes, each with three Buttons, represented by the matrix, <code>[[a,b,c], [d, e, f]]</code>. Consider the problem of the Menu <code>focus</code> residing on the <code>b</code> Button element when the user presses <code>south</code>. In this case, the Menu must shift focus to the <code>e</code> element. The <code>graph</code> attribute of the Menu holds this relational struture. </p>
 <p>As this example illustrates, a Menu must have access to the Traversal graph. This is generated by the Layout of a Menu. A Layout does two things:</p>
 <ol>
@@ -4519,69 +4575,75 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <p><strong>Interface: Render List</strong></p>
 <p>To generate the Render List, when a Menu is triggered, the Layout Module executes the following sequence:</p>
 <ol>
-<li><strong>Quantize 9-Slice Spans (Post-Order)</strong>: Recursively walk the Menu Tree bottom-up (<code>Layout._quantize</code>). Leaf and child Pane dimensions are resolved first; each parent Pane bounds its requested <code>(w_req, l_req)</code> below by the aggregate footprint of its children (<code>DOCK</code>, <code>STACK</code>, or <code>OVERLAY</code> plus <code>gap</code> and <code>margins</code>) before quantizing <code>multiple</code> (<code>nx</code>, <code>ny</code>) and <code>span</code> to 9-slice tile multiples.</li>
-<li><strong>Resolve Root Pane Anchors</strong>: Convert each root Pane's <code>span</code> and <code>justification</code> to absolute screen coordinates <code>(x, y)</code>.</li>
-<li><strong>Align Children (Pre-Order)</strong>: Recursively position child Widgets relative to their parent Pane's anchor along the Pane's <code>layout</code> axis (<code>dock</code>, <code>stack</code>, or <code>overlay</code>) using <code>Layout._resolve_axis</code>.</li>
-<li><strong>Flatten</strong>: Return the flattened list of instantiated <code>Widget</code> objects.</li>
+<li><strong>Quantize 9-Slice Spans (Post-Order)</strong>: Recursively walk the Menu Tree bottom-up. Leaf and child Pane dimensions are resolved first; each parent Pane bounds its requested Dimensions below by the aggregate footprint of its children before quantizing its 9-slice tile multiples.</li>
+<li><strong>Resolve Root Pane Anchors</strong>: Convert each root Pane Dimensions to absolute screen coordinates <code>(x, y)</code>.</li>
+<li><strong>Align Children (Pre-Order)</strong>: Recursively position child Widgets relative to their parent Pane's anchor along the Pane's <code>layout</code> axis.</li>
+<li><strong>Flatten</strong>: Return the flattened list of instantiated Widget objects.</li>
 </ol>
 <p><strong>Interface: Traversal Graph</strong></p>
 <p>To construct the Traversal Graph, the Layout Service evaluates Axis-Aligned Bounding Box (AABB) overlaps across traversable Buttons:</p>
 <ul>
-<li><strong>Graph Inclusion</strong>: Passive display slots (<code>status == Statuses.DISABLED</code>) are excluded from <code>menu.graph</code>. All Gizmo aperture slot buttons (<code>SelectBinding</code> with <code>selection == Selections.SLOT</code>) are always indexed into Traversal Graph regardless of initial vacancy so dynamic collection changes and pagination never leave stale or missing graph edges.</li>
+<li><strong>Graph Inclusion</strong>: Disabled Slots are excluded from the Traversal Graph. All Gizmo aperture slot buttons (SelectBinding with <code>selection == Selections.SLOT</code>) are always indexed into Traversal Graph regardless of initial vacancy so dynamic collection changes and pagination never leave stale or missing graph edges.</li>
 <li><strong>Cardinal Raycast</strong>: For each Button, the Layout Service links the nearest overlapping Button along each cardinal axis (<code>north</code>, <code>south</code>, <code>east</code>, <code>west</code>).</li>
-<li><strong>Runtime Traversal</strong>: When directional input is polled, <a href="../05-mechanics/#core-mechanic-menumechanics">MenuMechanics</a> first checks whether focus resides on a Gizmo aperture boundary that can scroll. Otherwise, it looks up the neighbor in <code>menu.graph</code> and shifts focus only if <code>neighbor.state.status != Statuses.DISABLED</code>.</li>
+<li><strong>Runtime Traversal</strong>: When the <a href="../02-sprites/#devices">Device</a> is polled, <a href="../05-mechanics/#core-mechanic-menumechanics">MenuMechanics</a> first checks whether focus resides on a Gizmo aperture boundary that can scroll. Otherwise, it looks up the neighbor in the Traversal Graph and shifts focus only if its Neighbor is not Disabled.</li>
 </ul>
 <h2 id="board-overlays">Board: Overlays</h2>
 <p>The <a href="../00-overview/#component-board">Board</a> maintains an <code>overlay</code> and <code>menus</code> field to separate the responsiblities of different Menus. </p>
-<p>The HUD is always painted on top of all dynamic Assets; as such, it is stored in <code>overlays</code> and treated separately by the rendering loop. The <code>menus</code> field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,</p>
+<p>The View is always painted on top of all dynamic Assets; as such, it is stored in <code>overlays</code> and treated separately by the rendering loop. The <code>menus</code> field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,</p>
 <ul>
-<li><code>board.menus: List[Menu]</code>: A LIFO stack for <em>Modal</em> interfaces (Inventory, Dialogue, Trade). When <code>len(board.menus) &gt; 0</code>, world mechanics are paused, and <code>MenuMechanics</code> intercepts device polling for traversal.</li>
-<li><code>board.overlays: List[Menu]</code>: A flat list for <em>Non-blocking</em> interfaces (HUD, Floating Damage Numbers, Action Prompts). These do not pause the board and do not receive input focus. They passively observe <code>UpdateEvent</code> emissions from the Event Bus.</li>
+<li><code>board.menus: List[Menu]</code>: A LIFO stack for <em>modal</em> interfaces (Inventory, Dialogue, Trade). When Menus exist, <a href="../05-mechanics/#mechanics-world">World Mechanics</a> are paused, and <a href="../05-mechanics/#core-mechanic-menumechanics">MenuMechanics</a> intercepts device polling for Widget Traversal.</li>
+<li><code>board.overlays: List[Menu]</code>: A flat list for the <em>non-blocking</em> <a href="#menu-data">View Menu</a>. These do not pause the <a href="../00-overview/#component-board">Board</a> and do not receive Menu <code>focus</code>. They passively observe UpdateEvent emissions from the Event Bus.</li>
 </ul>
 <h3 id="menu-data">Menu: Data</h3>
 <ol>
-<li>Dialogue:<ul>
-<li><strong>Payload</strong>: <code>DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)</code></li>
-<li><strong>Events</strong>: <code>UpdateEvent</code> (canvas paging and line progression), <code>TerminalEvent</code> (closing dialogue loop)</li>
+<li>Dialogue: Menu for displaying <a href="../08-narratives/#service-library">Library</a> Dialogue.<ul>
+<li><strong>Context</strong>: <code>DialogueContext(plot, sprite, object)</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code>, <code>TerminalEvent</code></li>
 </ul>
 </li>
-<li>Editor: TODO<ul>
-<li><strong>Payload</strong>: <code>EditorContext</code> (TBD)</li>
+<li>Editor: Menu for editing <a href="../00-overview/#component-board">Board States</a><ul>
+<li><strong>Context</strong>: <code>EditorContext(TODO)</code></li>
 <li><strong>Events</strong>: TODO</li>
 </ul>
 </li>
-<li><strong>Equipment, Pouch &amp; Pack (Inventory Menus)</strong>: Instantiated from the world loop via <code>MenuEvent('equipment')</code>, <code>MenuEvent('pouch')</code>, and <code>MenuEvent('pack')</code> in <code>PlayerMechanics</code>:<ul>
-<li><strong>Payload</strong>: <code>InventoryContext(inventory: Inventory, slots: Slots, active_grip: str = "right")</code></li>
-<li><strong><code>equipment</code></strong>: Displays passive <code>Gear</code> slots (<code>armor</code>, <code>shield</code>) and three 1x4 strip Gizmos mapping <code>inventory.sheathe</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.weapon</code>, <code>inventory.belt</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.tool</code>, and <code>inventory.bag</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.utility</code>.</li>
-<li><strong><code>pouch</code></strong>: Displays interactive <code>right</code> and <code>left</code> Grip buttons (<code>Selections.GRIP</code>) and a 2x4 grid Gizmo mapping <code>inventory.pouch</code> <span class="arithmatex">\(\to\)</span> <code>slots.grip.&lt;active_grip&gt;</code>.</li>
-<li><strong><code>pack</code></strong>: Displays two 2x4 grid Gizmos for <code>inventory.pack</code> (<code>materials</code>) and <code>inventory.sack</code> (<code>crops</code>) alongside the Craft Formulae pane.</li>
-<li><strong>Events</strong>: <code>TerminalEvent</code> (closing menu and unpausing world). Slot icon updates and Gizmo pagination evaluate reactively through <code>IconBinding</code> and <code>ApertureBinding</code> closures without emitting <code>UpdateEvent</code>.</li>
+<li>Pouch: Menu for attaching <a href="../02-sprites/#model-inventory">Inventory</a> to <a href="../02-sprites/#model-slots">Grip</a>.<ul>
+<li><strong>Context</strong>: <code>InventoryContext(inventory, slots, grip)</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code>, <code>TerminalEvent</code></li>
 </ul>
 </li>
-<li>Market: TODO<ul>
-<li><strong>Payload</strong>: <code>MarketContext(buyer: Inventory, seller: Inventory)</code> (TBD)</li>
+<li>Pack: Menu for navigating <a href="../02-sprites/#model-inventory">Inventory</a> and displaying <a href="../03-compositions/#category-crafts">Craft Formula</a>.<ul>
+<li><strong>Context</strong>: <code>InventoryContext(inventory, slots, grip)</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code>, <code>TerminalEvent</code></li>
+</ul>
+</li>
+<li>Equipment: Menu for attaching <a href="../02-sprites/#sheet-equipment">Equipment</a> to <a href="../02-sprites/#model-slots">Slots</a><ul>
+<li><strong>Context</strong>: <code>InventoryContext(inventory, slots, grip)</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code>, <code>TerminalEvent</code></li>
+</ul>
+</li>
+<li>Market: Menu for Sprite-to-Sprite <a href="../04-intentions/">bartering</a><ul>
+<li><strong>Context</strong>: <code>MarketContext(buyer, seller)</code></li>
 <li><strong>Events</strong>: TODO</li>
 </ul>
 </li>
-<li>Main: Instantiated at ignition by injecting a <code>MenuEvent('main')</code> directly onto the Engine event bus before world simulation begins.<ul>
-<li><strong>Payload</strong>: <code>MainContext(registry: Registry)</code></li>
-<li><strong>Events</strong>: <code>StateEvent</code> (triggers <code>Migrator</code> hydration for New/Load), <code>MenuEvent</code> (opens <code>options</code> or <code>editor</code> submenus)</li>
-<li><strong>Outputs</strong>: <code>&lt;board-key&gt;</code> / save slot target for state migration</li>
+<li>Main: Main entrypoint for the <a href="../00-overview/#application">Application</a><ul>
+<li><strong>Context</strong>: <code>MainContext(registry)</code></li>
+<li><strong>Events</strong>: <code>StateEvent</code>, <code>MenuEvent('load')</code>, <code>MenuEvent('options')</code></li>
 </ul>
 </li>
-<li>Options: Generic settings modal invoked from the Main Menu or Pause Menu.<ul>
-<li><strong>Payload</strong>: <code>MenuContext</code> (generic or inherited context)</li>
-<li><strong>Events</strong>: <code>UpdateEvent</code> (live preview text stamping on display canvas), <code>TerminalEvent</code> (returns to previous menu)</li>
+<li>Options: Menu for configuring settings.<ul>
+<li><strong>Context</strong>: <code>MenuContext()</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code>, <code>TerminalEvent</code></li>
 </ul>
 </li>
-<li>Pause: Modal menu triggered from the world loop via <code>MenuEvent('pause')</code> in <code>PlayerMechanics</code>. Pauses the engine tick by setting <code>board.paused = True</code>.<ul>
-<li><strong>Payload</strong>: <code>PauseContext(board: Board)</code></li>
-<li><strong>Events</strong>: <code>TerminalEvent</code> (unpauses game simulation), <code>StateEvent</code> (triggers state rehydration for loads), <code>MenuEvent</code> (opens <code>options</code> submenu or resets board to return to <code>main</code>)</li>
+<li>Pause: Menu for saving and loading <a href="../00-overview/#component-board">Board State</a><ul>
+<li><strong>Context</strong>: <code>PauseContext(board)</code></li>
+<li><strong>Events</strong>: <code>TerminalEvent</code>, <code>StateEvent</code>, <code>MenuEvent('options')</code></li>
 </ul>
 </li>
-<li>View: Also known as the Heads-Up Display (HUD). Created during engine bootstrap and stored in <code>board.overlays</code> rather than the modal <code>board.menus</code> stack. It renders on top of world assets every frame without pausing simulation or intercepting input traversal.<ul>
-<li><strong>Payload</strong>: <code>ViewContext(sprite: SpriteState)</code></li>
-<li><strong>Events</strong>: None (passively evaluates live state bindings each tick)</li>
+<li>View: Heads-up display Menu.<ul>
+<li><strong>Context</strong>: <code>ViewContext(sprite)</code></li>
+<li><strong>Events</strong>: None</li>
 </ul>
 </li>
 </ol>
@@ -4634,7 +4696,7 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

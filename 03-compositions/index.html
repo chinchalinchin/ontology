@@ -845,9 +845,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -911,9 +909,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2" id="__nav_15_2_label" tabindex="0">
@@ -980,9 +976,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_1" >
         
           
           <label class="md-nav__link" for="__nav_15_2_1" id="__nav_15_2_1_label" tabindex="0">
@@ -1323,9 +1317,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2_2" id="__nav_15_2_2_label" tabindex="0">
@@ -1916,6 +1908,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1924,9 +1920,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_3" >
         
           
           <label class="md-nav__link" for="__nav_15_2_3" id="__nav_15_2_3_label" tabindex="0">
@@ -1993,7 +1987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../board/phases/refactor-01-20.md" class="md-nav__link">
+      <a href="../board/phases/refactor-01-02.md" class="md-nav__link">
         
   
   
@@ -2645,6 +2639,62 @@
     
   
     Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.06 - Goal Decomposition
   
 
     
@@ -3324,9 +3374,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -3477,9 +3525,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
         
           
           <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
@@ -3806,7 +3852,7 @@
 
 <h1 id="ontology-docs-compositions">Ontology Docs: Compositions</h1>
 <p>A Composition is collection of multiple Assets organized into a formula to allow their "<em>virtualization</em>" and reuse. A Composition Configuration defines a Composition <code>id</code> that can be referenced like any other Asset in the <a href="../00-overview/#state">State file</a>. </p>
-<p>Composition Configuration can be found in <code>/src/data/config/compositions/**/*.yml</code>, otherwise known as the <em>Composition directories</em>.</p>
+<p>Composition Configuration can be found in <code>/src/data/configurations/assets/compositions/**/*.yml</code>, otherwise known as the <em>Composition directories</em>.</p>
 <h2 id="category-crafts">Category: Crafts</h2>
 <p>Compositions are used to formalize the spatial relationships of Assets for reuse. For this reason, <a href="../01-assets/#category-crafts">Crafts</a> are an essential component of Compositions.</p>
 <p><strong>Palette: Material</strong></p>
@@ -3951,19 +3997,19 @@
 <p>Each Blueprint Schema has a unique Multiplication Strategy associated with it in the <a href="../appendices/01-schemas/#configuration-materials">Materials Configuration</a> that determines how its <code>multiple</code> will be expanded during <a href="../00-overview/#component-board">Board</a> hydration. Multiplication is executed by a dedicated Multiplier implementation dispatched by the <a href="#service-decomposer">Decomposer</a>.</p>
 <ul>
 <li><code>simple</code> (SimpleMultiplier): 2D grid tiling across <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + i_y \cdot l)\)</span> for <span class="arithmatex">\(i_x \in [0, n_x),\; i_y \in [0, n_y)\)</span>[cite: 1].</li>
-<li><code>oriented</code> (<code>OrientedMultiplier</code>): 1D axis-locked tiling across <span class="arithmatex">\((x_0 + i_x \cdot w, y_0)\)</span> when <code>blueprint == 'horizontal'</code> (<span class="arithmatex">\(n_x \times 1\)</span>) or <span class="arithmatex">\((x_0, y_0 + i_y \cdot l)\)</span> when <code>blueprint == 'vertical'</code> (<span class="arithmatex">\(1 \times n_y\)</span>)[cite: 1].</li>
+<li><code>oriented</code> (OrientedMultiplier): 1D axis-locked tiling across <span class="arithmatex">\((x_0 + i_x \cdot w, y_0)\)</span> when <code>blueprint == 'horizontal'</code> (<span class="arithmatex">\(n_x \times 1\)</span>) or <span class="arithmatex">\((x_0, y_0 + i_y \cdot l)\)</span> when <code>blueprint == 'vertical'</code> (<span class="arithmatex">\(1 \times n_y\)</span>)[cite: 1].</li>
 <li><code>expansion</code> (ExpansionMultiplier): Vertical column interpolation placing <code>crowns</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0)\)</span>, <span class="arithmatex">\(n_y\)</span> contiguous <code>shafts</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + (k + 1) \cdot l)\)</span>, and <code>bases</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + (n_y + 1) \cdot l)\)</span>, locking each segment's perspective <code>anchor</code> to the column's <code>base</code> ground line (<span class="arithmatex">\(\text{base.y} + l\)</span>)[cite: 1].</li>
 <li><code>perimeter</code> (PerimeterMultiplier): Hollow 2D boundary of <span class="arithmatex">\(2(n_x + n_y + 4)\)</span> segments spanning <span class="arithmatex">\((n_x + 2)w \times (n_y + 2)l\)</span> with superimposed <code>L</code>-corners, an open interior, and <code>north</code> baseline <code>anchor</code> adjustment[cite: 1].</li>
 </ul>
 <h3 id="craft-struts">Craft: Struts</h3>
-<p><em>Struts</em> are structural Assets that encapsulate architecture. Struts may be placed on the Board through the State files manually, but they are generally instantiated during the <a href="../00-overview/#component-engine">Engine Loop</a> through the <code>build</code> <a href="../04-intentions/">Intention</a>.</p>
+<p><em>Struts</em> are structural <a href="../01-assets/">Assets</a> that encapsulate architecture. Struts may be placed on the Board through the <a href="../00-overview/#core-state">State Files</a> manually, but they are generally instantiated during the <a href="../00-overview/#component-engine">Engine Loop</a> through <a href="../04-intentions/">Intentions</a>.</p>
 <p><strong>Behavior: Composability</strong></p>
 <p>Struts are the "<em>bedrock</em>" upon which Compositions of Assets can be built. A Strut's main purpose is to provide a coordinate system for the relative positioning of Assets in a Composition. </p>
 <h2 id="definitions">Definitions</h2>
 <h3 id="definition-composition">Definition: Composition</h3>
-<p>From the perspective of the <a href="../00-overview/#core-state">State files</a>, Compositions are another type of Asset that can be deployed onto the <a href="../00-overview/#component-board">Board</a>. However, they are a "<em>virtual</em>" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. </p>
-<p>Compositions are collections of multiple Assets. When a Composition is deployed onto the <a href="../00-overview/#component-board">Board</a>, its individual Assets are added to the appropriate <code>(Category, Instance)</code>-nodes in the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a> by the <a href="#service-decomposer">Decomposer Service</a>.</p>
-<p>A Composition is a way to reuse common Asset configurations in the State without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the <a href="../00-overview/#component-board">Board</a>'s perspective. They only serve to simplify the amount of State file boilerplate that is required to fully declare a complex, high-level entity on the <a href="../00-overview/#component-board">Board</a>.</p>
+<p>From the perspective of the <a href="../00-overview/#core-state">State Files</a>, Compositions are another type of Asset that can be deployed onto the <a href="../00-overview/#component-board">Board</a>. However, they are a "<em>virtual</em>" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. </p>
+<p>Compositions are collections of multiple Assets. When a Composition is deployed onto the <a href="../00-overview/#component-board">Board</a>, its individual Assets are added to the appropriate (Category, Instance)-nodes in the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a> by the <a href="#service-decomposer">Decomposer Service</a>.</p>
+<p>A Composition is a way to reuse common Asset Configurations in the State without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the <a href="../00-overview/#component-board">Board</a>'s perspective. They only serve to simplify the amount of State File boilerplate that is required to fully declare a complex, high-level entity on the <a href="../00-overview/#component-board">Board</a>.</p>
 <p>Compositions are organized around <a href="#craft-struts">Struts</a>. They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the <em>realization</em> of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets in a Composition.</p>
 <h3 id="defintion-roots-branches">Defintion: Roots &amp; Branches</h3>
 <p>Every Composition has atleast one <a href="#craft-struts">Strut</a>, known as the Root Strut. If it has more than one Strut, the other Struts are known as Branch Struts. </p>
@@ -3987,20 +4033,19 @@
 </li>
 </ul>
 <h3 id="definition-macros">Definition: Macros</h3>
-<p>Compositions abstract the static and contextual relationships of Assets into formulaic Macros. A Macro binds an Asset's attributes to its own properties (<code>self</code>), its enclosing Struts (<code>parent</code>, <code>root</code>), or any named Asset <code>&lt;name&gt;</code> within the Composition, and supports algebraic arithmetic (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code>, <code>%</code>, parentheses). Using this procedure, a Composition can be authored as a purely formal container of relational formulas without hardcoded coordinates.</p>
+<p>Compositions abstract the static and contextual relationships of Assets into formulaic Macros. A Macro binds a Component Asset's attributes to its own properties (<code>self</code>), its enclosing Struts (<code>parent</code>, <code>root</code>), or any named Asset <code>&lt;name&gt;</code> within the Composition, and supports algebraic arithmetic (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code>, <code>%</code>, parentheses). Using this procedure, a Composition can be authored as a purely formal container of relational formulas without hardcoded coordinates.</p>
 <p><strong>Concept: Macro Scopes</strong></p>
 <ul>
-<li><code>self</code>: The current Component or Strut being evaluated.</li>
-<li><code>parent</code>: The immediate enclosing Strut (<code>root.strut</code> for Root Components and Branch Struts; <code>branch.strut</code> for Branch Components)[cite: 4].</li>
-<li><code>root</code>: The Composition's Root Strut (<code>root.strut</code>)[cite: 4].</li>
-<li><code>&lt;name&gt;</code>: Any Strut or Component in the Composition (across <code>root</code> or <code>branches</code>) that declares <code>name: &lt;name&gt;</code>[cite: 4].</li>
+<li><code>self</code>: The current Component Asset being evaluated.</li>
+<li><code>parent</code>: The immediate enclosing Strut (e.g., the Root Strut or Branch Struts).</li>
+<li><code>root</code>: The Composition's Root Strut.</li>
+<li><code>&lt;name&gt;</code>: Any named Strut or Component Asset in the Composition.</li>
 </ul>
 <p>Each Scope exposes its PseudoState attributes (<code>position.x</code>, <code>position.y</code>, <code>material</code>, <code>blueprint</code>, <code>layer</code>, <code>owner</code>), its static Properties (<code>dimensions.w</code>, <code>dimensions.l</code>, <code>mass</code>, <code>priority</code>), and its multiplied <code>span</code> (<code>span.w</code>, <code>span.l</code>).</p>
 <p><strong>Interface: Composition Macros</strong></p>
 <ul>
-<li><code>anchor(&lt;target&gt;)</code>: Calculates and returns the integer <code>anchor</code> offset required to align <code>self</code>'s rendering baseline (<code>ground_y</code>) with <code>&lt;target&gt;</code>'s rendering baseline[cite: 4]:
-  $<span class="arithmatex">\(\text{anchor}(\text{self}, A) = \big(A.\text{position}.y + A.\text{span}.l\big) - \big(\text{self}.\text{position}.y + \text{self}.\text{span}.l\big)\)</span>$</li>
-<li><code>bind(&lt;target&gt;.&lt;field&gt;)</code>: Resolves <code>&lt;field&gt;</code> (e.g., <code>dimensions.l</code>, <code>span.l</code>, <code>position.y</code>, <code>material</code>, <code>layer</code>) on <code>&lt;target&gt;</code>. Multiple <code>bind(...)</code> and <code>anchor(...)</code> calls may be combined in algebraic expressions.</li>
+<li><code>anchor(&lt;target&gt;)</code>: Calculates and returns the integer offset required to align the Asset's rendering baseline with <code>&lt;target&gt;</code>'s rendering baseline: <span class="arithmatex">\(\text{anchor}(\text{self}, A) = \big(A.\text{position}.y + A.\text{span}.l\big) - \big(\text{self}.\text{position}.y + \text{self}.\text{span}.l\big)\)</span></li>
+<li><code>bind(&lt;target&gt;.&lt;field&gt;)</code>: Resolves <code>&lt;field&gt;</code> on <code>&lt;target&gt;</code>. Multiple <code>bind(...)</code> and <code>anchor(...)</code> calls may be combined in algebraic expressions.</li>
 </ul>
 <p>The following snippet illustrates how Macros may be utilized in a Composition to dynamically resolve State,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2</span>
@@ -4072,9 +4117,9 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Door Projection</p>
-<p><a href="../01-assets/#object-doors">Doors</a> automatically project a reciprocal shadow footprint onto their <code>outlayer</code> at <code>out</code> (<code>Substrates.OVERLAYS = -1</code>, <code>ChannelTypes.TINT</code>). When <code>door</code> (<code>panel</code>) is deployed on the Root Layer, the <a href="#service-decomposer">Decomposer</a> automatically instantiates its reciprocal return shadow Door on <code>house-layer</code> without requiring a second Door declaration in <code>branches</code>.</p>
+<p><a href="../01-assets/#object-doors">Doors</a> automatically project a reciprocal shadow footprint onto their <code>outlayer</code> at <code>out</code>. When <code>panel</code> is deployed on the Root Layer in the above example, the <a href="#service-decomposer">Decomposer</a> automatically instantiates its reciprocal return shadow Door on <code>house-layer</code> without requiring a second Door declaration in <code>branches</code>.</p>
 </div>
-<p>This is a formula for a <code>brick-house</code> spanning two <a href="../00-overview/#concept-layers">Layers</a> (<code>root.layer</code> and <code>house-layer</code>), linked bidirectionally by <code>door</code> and its projected shadow footprint (<span class="arithmatex">\(\text{house-layer} \leftrightarrow \text{root.layer}\)</span>). In this way, the interior of Compositions can be traversed across independent Layers.</p>
+<p>This is a formula for a <code>brick-house</code> spanning two <a href="../00-overview/#concept-layers">Layers</a> (<code>root.layer</code> and <code>house-layer</code>), linked bidirectionally by the <code>panel</code> Door and its projected shadow footprint (<span class="arithmatex">\(\text{house-layer} \leftrightarrow \text{root.layer}\)</span>). In this way, the interior of Compositions can be traversed across independent Layers.</p>
 <div class="admonition note">
 <p class="admonition-title">Pseudo State Overrides</p>
 <p>Except for Position (see immediately below), the Pseudo State overrides the inherited State of the Root Strut. In this example, the <code>state.layer</code> of <code>floor</code> is is <code>house-layer-&lt;increment&gt;</code>, regardless of the <code>layer</code> passed to the Root Strut when deployed.</p>
@@ -4096,7 +4141,7 @@
 <li>Because <code>interior</code> transitions to a different layer (<code>house-layer-1</code> <span class="arithmatex">\(\neq\)</span> <code>'0'</code>), its coordinate origin resets to <code>(0, 0)</code>, placing <code>interior</code> at <code>(10, 10)</code> on <code>house-layer-1</code>.</li>
 <li><code>floor</code> shares <code>house-layer-1</code> with its parent <code>interior</code>, so its Position is translated relative to <code>interior</code> (<code>(10, 10) + (0, 96) = (10, 106)</code>).</li>
 </ul>
-<p>Other than Position, any state attribute (<code>layer</code>, <code>owner</code>, <code>elevation</code>) <em>not</em> specified in a Component Asset's Pseudo State automatically inherits from its parent Strut's hydrated state.</p>
+<p>Other than Position, any state attribute (<code>layer</code>, <code>owner</code>, <code>elevation</code>) <em>not</em> specified in a Component Asset's Pseudo State automatically inherits from its Parent Strut's hydrated State.</p>
 <h2 id="process-decomposition">Process: Decomposition</h2>
 <p>Compositions are processed in two stages: <strong>Compile-Time Macro Evaluation</strong> during configuration loading, and <strong>Deployment-Time Hydration &amp; Multiplication</strong>  during Board migration or runtime spawning.</p>
 <h3 id="macros-compositioncompiler">Macros: CompositionCompiler</h3>
@@ -4134,9 +4179,9 @@
 <p>The Decomposer translates validated Composition models into flat lists of concrete <a href="../01-assets/">Asset</a> instances when deployed onto the <a href="../00-overview/#component-board">Board</a>.</p>
 <h4 id="decomposer-hydration">Decomposer: Hydration</h4>
 <ol>
-<li><strong>Root Context Initialization &amp; Link Pre-Indexing</strong><ul>
-<li><strong>Action</strong>: Increment the monotonic deployment counter (<code>_increment</code>), initialize <code>root_context</code> from the deployed <code>PropertyState</code> (<code>id</code>, <code>name</code>, <code>layer</code>, <code>owner</code>, <code>position</code>, <code>elevation</code>), and pre-index all named components into <code>_link_map</code>.</li>
-<li><strong>Role</strong>: Ensures all <a href="../01-assets/#category-objects">SwitchState</a> references (e.g., between <code>plates</code> and <code>gates</code>) and internal layer names (<code>&lt;layer&gt;-&lt;increment&gt;</code>) are consistently namespaced across the entire Composition deployment.</li>
+<li><strong>Root Context Initialization &amp; Pre-Indexing</strong>
+    <strong>Root Context Attributes</strong>: Root Strut exposes <code>id</code>, <code>name</code>, <code>layer</code>, <code>owner</code>, <code>position</code>, <code>elevation</code>, <code>material</code>, and <code>blueprint</code> from the deployed PropertyState to its Components.<ul>
+<li><strong>Namespace Hydration</strong> Ensures all <a href="../01-assets/#category-objects">SwitchState</a> references (e.g., between <code>plates</code> and <code>gates</code>) and internal layer names (<code>&lt;layer&gt;-&lt;increment&gt;</code>) are consistently namespaced across the entire Composition deployment. Pre-index all named components.</li>
 </ul>
 </li>
 <li><strong>State Superposition</strong><ul>
@@ -4204,6 +4249,7 @@
 </ol>
 <p><strong>Formula: Cost</strong></p>
 <div class="arithmatex">\[
+\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{material}} \cdot \delta_{\text{purpose}}
 \]</div>
 
 
@@ -4254,7 +4300,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

@@ -56,6 +56,7 @@ $defs:
   AnimationRecipe:
     enum:
     - none
+    - character
     - state
     - sprite
     - frequency
@@ -364,6 +365,65 @@ $defs:
         title: Impulse
         type: integer
     title: Character
+    type: object
+  CharacterState:
+    description: Intentional Sheet state with equipment, inventory, meters, and Goal
+      (Players).
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: 0
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: 0
+        title: Anchor
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        title: Position
+      velocity:
+        title: Velocity
+      animation:
+        $ref: '#/$defs/AnimationState'
+      intention:
+        $ref: '#/$defs/Intentions'
+        default: idle
+      character:
+        $ref: '#/$defs/Character'
+      slots:
+        $ref: '#/$defs/Slots'
+      inventory:
+        $ref: '#/$defs/Inventory'
+      meters:
+        $ref: '#/$defs/Meters'
+      goal:
+        anyOf:
+        - $ref: '#/$defs/Goal'
+        - type: 'null'
+        default: null
+    required:
+    - id
+    title: CharacterState
     type: object
   Chromatics:
     enum:
@@ -1013,6 +1073,7 @@ $defs:
     - perennial
     - centennial
     - actuator
+    - goal
     title: Executors
     type: string
   FearParameters:
@@ -1132,6 +1193,7 @@ $defs:
     enum:
     - binary
     - cardinal
+    - character
     - directed
     - fluid
     - icon
@@ -1204,10 +1266,9 @@ $defs:
         title: Name
       category:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/Goals'
         - type: 'null'
         default: null
-        title: Category
       layer:
         anyOf:
         - type: string
@@ -1215,12 +1276,48 @@ $defs:
         default: null
         title: Layer
       position:
-        anyOf:
-        - {}
-        - type: 'null'
         title: Position
+      dormant:
+        default: false
+        title: Dormant
+        type: boolean
     title: Goal
     type: object
+  GoalConfiguration:
+    description: '    '
+    properties:
+      reflexes:
+        items:
+          $ref: '#/$defs/Reflexes'
+        title: Reflexes
+        type: array
+      responses:
+        items:
+          $ref: '#/$defs/Responses'
+        title: Responses
+        type: array
+      conditions:
+        items:
+          type: string
+        title: Conditions
+        type: array
+    required:
+    - reflexes
+    - responses
+    - conditions
+    title: GoalConfiguration
+    type: object
+  Goals:
+    enum:
+    - door
+    - object
+    - property
+    - position
+    - target
+    - resource
+    - subject
+    title: Goals
+    type: string
   Grip:
     properties:
       left:
@@ -1587,56 +1684,45 @@ $defs:
   Memory:
     properties:
       goals:
-        anyOf:
-        - additionalProperties:
-            $ref: '#/$defs/Goal'
-          type: object
-        - type: 'null'
+        additionalProperties:
+          $ref: '#/$defs/Goal'
         title: Goals
+        type: object
       rumors:
-        anyOf:
-        - items:
-            type: string
-          type: array
-        - type: 'null'
+        items:
+          type: string
         title: Rumors
+        type: array
       prices:
-        anyOf:
-        - additionalProperties:
-            type: number
-          type: object
-        - type: 'null'
+        additionalProperties:
+          type: number
         title: Prices
+        type: object
       relationships:
-        anyOf:
-        - additionalProperties:
-            $ref: '#/$defs/Relationships'
-          type: object
-        - type: 'null'
-        default: null
+        additionalProperties:
+          $ref: '#/$defs/Relationships'
         title: Relationships
+        type: object
       property:
-        anyOf:
-        - additionalProperties: true
-          type: object
-        - type: 'null'
-        default: null
+        additionalProperties: true
         title: Property
+        type: object
       sprites:
-        anyOf:
-        - additionalProperties: true
-          type: object
-        - type: 'null'
-        default: null
+        additionalProperties: true
         title: Sprites
+        type: object
       doors:
-        anyOf:
-        - additionalProperties:
+        additionalProperties:
+          additionalProperties:
             type: string
           type: object
-        - type: 'null'
-        default: null
         title: Doors
+        type: object
+      stack:
+        items:
+          $ref: '#/$defs/Goal'
+        title: Stack
+        type: array
     title: Memory
     type: object
   MenuBinding:
@@ -1774,6 +1860,17 @@ $defs:
         $ref: '#/$defs/Meter'
     title: Meters
     type: object
+  Motivations:
+    enum:
+    - conquest
+    - love
+    - profit
+    - rebellion
+    - revenge
+    - safety
+    - survival
+    title: Motivations
+    type: string
   MotiveState:
     properties:
       id:
@@ -1872,13 +1969,13 @@ $defs:
       direction:
         $ref: '#/$defs/Directions'
         default: down
-      speed:
-        default: 200
-        title: Speed
-        type: integer
       angle:
         default: 0
         title: Angle
+        type: integer
+      speed:
+        default: 200
+        title: Speed
         type: integer
       velocity:
         anyOf:
@@ -2012,6 +2109,10 @@ $defs:
         default: false
         title: Falling
         type: boolean
+      interacted:
+        default: false
+        title: Interacted
+        type: boolean
     title: MutatorTriggers
     type: object
   Mutators:
@@ -2109,6 +2210,13 @@ $defs:
     - horizontal
     - vertical
     title: Orientations
+    type: string
+  Outcomes:
+    enum:
+    - complete
+    - layered
+    - lost
+    title: Outcomes
     type: string
   PaneParameters:
     description: Structural and spatial layout parameters for container panes.
@@ -2302,10 +2410,9 @@ $defs:
         title: Persona
       motivation:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/Motivations'
         - type: 'null'
         default: null
-        title: Motivation
       expression:
         anyOf:
         - $ref: '#/$defs/AttachmentState'
@@ -2435,6 +2542,11 @@ $defs:
         default: null
     title: RecipeConfiguration
     type: object
+  Reflexes:
+    enum:
+    - confusion
+    title: Reflexes
+    type: string
   Relations:
     description: Enumeration of Relations
     enum:
@@ -2544,6 +2656,14 @@ $defs:
         type: array
     title: ResourceStateInstances
     type: object
+  Responses:
+    enum:
+    - forget
+    - store
+    - push
+    - unwind
+    title: Responses
+    type: string
   Seasons:
     enum:
     - spring
@@ -2616,6 +2736,7 @@ $defs:
     title: SheetRecipe
     type: object
   SheetState:
+    description: Base animated Sheet state (Pixies).
     properties:
       id:
         title: Id
@@ -2647,42 +2768,11 @@ $defs:
       mutators:
         $ref: '#/$defs/Mutators'
       position:
-        anyOf:
-        - {}
-        - type: 'null'
         title: Position
       velocity:
-        anyOf:
-        - {}
-        - type: 'null'
         title: Velocity
       animation:
         $ref: '#/$defs/AnimationState'
-      intention:
-        anyOf:
-        - $ref: '#/$defs/Intentions'
-        - type: 'null'
-        default: idle
-      character:
-        anyOf:
-        - $ref: '#/$defs/Character'
-        - type: 'null'
-      slots:
-        anyOf:
-        - $ref: '#/$defs/Slots'
-        - type: 'null'
-      inventory:
-        anyOf:
-        - $ref: '#/$defs/Inventory'
-        - type: 'null'
-      meters:
-        anyOf:
-        - $ref: '#/$defs/Meters'
-        - type: 'null'
-      goal:
-        anyOf:
-        - $ref: '#/$defs/Goal'
-        - type: 'null'
     required:
     - id
     title: SheetState
@@ -2696,7 +2786,7 @@ $defs:
         type: array
       players:
         items:
-          $ref: '#/$defs/SheetState'
+          $ref: '#/$defs/CharacterState'
         title: Players
         type: array
       pixies:
@@ -2722,6 +2812,7 @@ $defs:
     title: Slots
     type: object
   SpriteState:
+    description: Autonomous Character state with Memory, Psyche, and Trajectory (Sprites).
     properties:
       id:
         title: Id
@@ -2753,50 +2844,31 @@ $defs:
       mutators:
         $ref: '#/$defs/Mutators'
       position:
-        anyOf:
-        - {}
-        - type: 'null'
         title: Position
       velocity:
-        anyOf:
-        - {}
-        - type: 'null'
         title: Velocity
       animation:
         $ref: '#/$defs/AnimationState'
       intention:
-        anyOf:
-        - $ref: '#/$defs/Intentions'
-        - type: 'null'
+        $ref: '#/$defs/Intentions'
         default: idle
       character:
-        anyOf:
-        - $ref: '#/$defs/Character'
-        - type: 'null'
+        $ref: '#/$defs/Character'
       slots:
-        anyOf:
-        - $ref: '#/$defs/Slots'
-        - type: 'null'
+        $ref: '#/$defs/Slots'
       inventory:
-        anyOf:
-        - $ref: '#/$defs/Inventory'
-        - type: 'null'
+        $ref: '#/$defs/Inventory'
       meters:
-        anyOf:
-        - $ref: '#/$defs/Meters'
-        - type: 'null'
+        $ref: '#/$defs/Meters'
       goal:
         anyOf:
         - $ref: '#/$defs/Goal'
         - type: 'null'
+        default: null
       memory:
-        anyOf:
-        - $ref: '#/$defs/Memory'
-        - type: 'null'
+        $ref: '#/$defs/Memory'
       psyche:
-        anyOf:
-        - $ref: '#/$defs/Psyche'
-        - type: 'null'
+        $ref: '#/$defs/Psyche'
       trajectory:
         $ref: '#/$defs/Trajectory'
     required:
@@ -3212,6 +3284,17 @@ properties:
     additionalProperties:
       $ref: '#/$defs/MenuConfiguration'
     title: Menus
+    type: object
+  goals:
+    additionalProperties:
+      additionalProperties:
+        $ref: '#/$defs/GoalConfiguration'
+      propertyNames:
+        $ref: '#/$defs/Outcomes'
+      type: object
+    propertyNames:
+      $ref: '#/$defs/Goals'
+    title: Goals
     type: object
 title: ConfigurationSchema
 type: object

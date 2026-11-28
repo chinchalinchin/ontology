@@ -1210,9 +1210,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1276,9 +1274,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2" id="__nav_15_2_label" tabindex="0">
@@ -1345,9 +1341,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_1" >
         
           
           <label class="md-nav__link" for="__nav_15_2_1" id="__nav_15_2_1_label" tabindex="0">
@@ -1688,9 +1682,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2_2" id="__nav_15_2_2_label" tabindex="0">
@@ -2281,6 +2273,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2289,9 +2285,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_3" >
         
           
           <label class="md-nav__link" for="__nav_15_2_3" id="__nav_15_2_3_label" tabindex="0">
@@ -2358,7 +2352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../board/phases/refactor-01-20.md" class="md-nav__link">
+      <a href="../board/phases/refactor-01-02.md" class="md-nav__link">
         
   
   
@@ -3010,6 +3004,62 @@
     
   
     Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.06 - Goal Decomposition
   
 
     
@@ -3689,9 +3739,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -3842,9 +3890,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
         
           
           <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
@@ -4545,8 +4591,8 @@
 <p><a href="https://lpc.opengameart.org/">LPC</a> Assets are bundled with the <a href="../00-overview/#application">Application</a> by default.</p>
 </div>
 <h2 id="assets-overview">Assets: Overview</h2>
-<p>The Asset directory (and all subdirectories) contains Asset Image Files (<code>*.png</code>) and Asset Property indices (<code>*.yaml</code>). The <a href="../12-architecture/#specification-initialization">initialization and hydration phases</a> of the <a href="../00-overview/#application">Application</a> read in all of these files recursively. </p>
-<p>The Property indices are used to index each Asset file into the <a href="../00-overview/#library-registry">Registry</a>. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the <a href="../00-overview/#application">Application</a> . The Property configuration in the <code>*.yaml</code> files must conform to the <a href="../appendices/01-schemas/#model-properties">Asset Property schema</a> of the respective Asset Category it is configuring. </p>
+<p>The Asset directory (and all subdirectories) contains Asset Image Files (<code>*.png</code>) and Asset Property indices (<code>*.yaml</code>). The <a href="../12-architecture/#specification-initialization">initialization and hydration phases</a> of the <a href="../00-overview/#application">Application</a> read in these files recursively. </p>
+<p>The Property indices are used to index each Asset file into the <a href="../00-overview/#library-registry">Registry</a>. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the <a href="../00-overview/#application">Application</a>. The Property indices in the <code>*.yaml</code> files must conform to the <a href="../appendices/01-schemas/#model-properties">Asset Property schema</a> of the respective Asset Category it is indexing. </p>
 <div class="admonition important">
 <p class="admonition-title">Schema Merge</p>
 <p>All <code>*.yaml</code> files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during <a href="../00-overview/#library-registry">Registry indexing</a>.</p>
@@ -4555,12 +4601,12 @@
 <h4 id="concept-identity">Concept: Identity</h4>
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Asset Files to images loaded into the <a href="../00-overview/#library-registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not rendered entities.</p>
-<p>Names are used to uniquely identify an instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the <a href="../00-overview/#component-board">Board</a>. </p>
+<p>Names are used to uniquely identify a specific Instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the <a href="../00-overview/#component-board">Board</a>. </p>
 <p>In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its image file.</p>
 <h4 id="concept-mutability">Concept: Mutability</h4>
 <p><strong>Properties &amp; State</strong></p>
-<p><em>Properties</em> are static and never changed by <a href="../05-mechanics/">Mechanics</a>. Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the <a href="../12-architecture/#rendering-sort">statically configured sort key</a> for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.</p>
-<p><em>State</em> is dynamic and can be changed by <a href="../05-mechanics/">Mechanics</a>. State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: <em>Position</em> State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.</p>
+<p><em>Properties</em> are static and never changed by <a href="../05-mechanics/">Mechanics</a>. Properties determine the immutable characteristics of Assets, e.g. their Dimensions and Hitboxes. They are loaded side-by-side with the Asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying the width and length of their image file, and a Priority property, that specifies the <a href="../12-architecture/#rendering-sort">statically configured sort key</a> for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.</p>
+<p><em>State</em> is dynamic and can be changed by <a href="../05-mechanics/">Mechanics</a>. State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: <em>Position</em> State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the <a href="../12-architecture/#rendering-sort">perspective-based render sorting</a>, given as an integer.</p>
 <p>!!! @TODO(08-04)
     Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their States have internally reached certain conditions, e.g. <code>vision</code> is triggered when the Sprite is in sight of its Goal. </p>
 <pre><code>They also contain general Asset fields, like `submerged`, that is triggered when an Asset is immersed in a Fluid stream.
@@ -4571,14 +4617,14 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p><strong>Model: Mutators</strong></p>
 <ul>
 <li><code>parameters</code>: <ul>
-<li><code>action: bool</code>: The radius of the Asset's action.</li>
-<li><code>vision: bool</code>: The radius of Asset's vision.</li>
+<li><code>action: bool</code>: Radius of interaction.</li>
+<li><code>vision: bool</code>: Radius of perception.</li>
 </ul>
 </li>
-<li><code>triggers</code>: Boolean flags. <ul>
-<li><code>animated: bool</code>: Flag for receiving animation updates.</li>
-<li><code>dead: bool</code>: Flag for receiving Mechanic updates.</li>
-<li><code>submerged: bool</code>: Flag for receiving Frame channels.</li>
+<li><code>triggers</code>: <ul>
+<li><code>animated: bool</code>: Flag governing animation progression.</li>
+<li><code>dead: bool</code>: Flag indicating death.</li>
+<li><code>submerged: bool</code>: Flag governing aquatic Frame modulation.</li>
 </ul>
 </li>
 </ul>
@@ -4604,7 +4650,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li>In <a href="#category-effects">Effects</a>, temporal progression is governed by <code>frequency</code> (<code>delay</code>, <code>amount</code>, <code>cooldown</code>, <code>persist</code>).</li>
 <li>In <a href="#category-sheets">Sheets</a>, temporal progression is governed by <code>actions</code> (<code>count</code>, <code>delay</code>).</li>
 </ul>
-<p>Frame Space is a representation of the different dispositions assumed by Asset Categories; Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are differences are manifested in the atlasing strategy used by Asset Frame. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the <a href="../00-overview/#component-board">Board</a>, an Asset must have a strategy for associating its State with a particular Frame described by its Properties.</p>
+<p>Frame Space is a representation of the different dispositions assumed by Asset Categories; Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These differences are manifested in the atlasing strategy used by Asset Frame. This atlased space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the <a href="../00-overview/#component-board">Board</a>, an Asset must have a strategy for associating its State with a particular Frame described by its Properties.</p>
 <p>An <em>Animation</em> represents a strategy for navigating the Frame space over time. Animations project the internal State changes in an Asset onto a particular trajectory through its Frame space. When an Asset implements an Animation, this is accompanied by its State possessing an <code>animation</code> State field. The purpose of this field is to mutate over time and thus describe the trajectory of the Asset through its Frame space.</p>
 <div class="arithmatex">\[
 \text{Frame.index}: \text{Properties} \to \text{Atlas}
@@ -4624,16 +4670,16 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><code>tick</code>: Engine tick accumulator. Used to control the speed of the Animation.</li>
 </ul>
 <h4 id="concept-physicality">Concept: Physicality</h4>
-<p>Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, An Asset's Mass determines its behavior within the physics of the game,</p>
+<p>Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, an Asset's Mass determines its behavior within the physics of the game.</p>
 <ul>
 <li><span class="arithmatex">\(m &gt; 0\)</span>: <strong>Dynamic Body</strong>. Participates in momentum calculations.</li>
 <li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.</li>
-<li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The Engine detects the spatial collisions for logical conditions, but ignores it entirely during collision resolution.</li>
+<li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. <a href="../00-overview/#component-engine">The Engine</a> detects the collisions for logical conditions, but ignores it entirely during collision resolution.</li>
 </ul>
 <p>See <a href="../05-mechanics/#mechanics-spatial">SpatialMechanics</a> for more information.</p>
 <h4 id="concept-appearance">Concept: Appearance</h4>
 <p><strong>Rendering</strong></p>
-<p>World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority, known respectively as Elevation, Substrates, Perspective and Priority,</p>
+<p><a href="../12-architecture/#rendering-sort">Rendering</a> evaluates spatial geometry using the Painter's Algorithm. The sort is based on elevation, intra-elevation substrate plane, ground perspective, and coplanar priority, known respectively as Elevation, Substrate, Perspective and Priority,</p>
 <div class="arithmatex">\[
 \text{sort_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground}(A),\; A.\text{properties.priority}\Big)
 \]</div>
@@ -4645,7 +4691,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </ol>
 <p>See <a href="../12-architecture/#rendering-sort">Rendering documentation</a> for more information.</p>
 <p><strong>Substrates</strong></p>
-<p>Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto the Asset directly via <a href="../appendices/01-schemas/#configuration-materials">MaterialIndex</a> during <a href="../12-architecture/#phase-2-hydration">hydration</a>.</p>
+<p>Certain Assets have a dedicated Substrate to preserve the fidelity of their <a href="../12-architecture/#rendering-sort">rendering order</a>. These values are hydrated onto the Asset directly via the<a href="../appendices/01-schemas/#configuration-materials">MaterialIndex</a> during <a href="../12-architecture/#phase-2-hydration">hydration</a>.</p>
 <p>| Substrate | Dedicated Elevation | Assets | 
 | Environ | -4 | <code>tiles.environs</code> |
 | Fluids  | -3 |  <code>effects.fluid</code> |
@@ -4686,7 +4732,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </tr>
 </tbody>
 </table>
-<p>Each Genera refers to a range of Material Value. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, if an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.</p>
+<p>Each Genera refers to a range of Material Values. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, if an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.</p>
 <p>Chromatics, being a discrete shade of color, requires a Host Material, to accept its payload. </p>
 <p>See <a href="../03-compositions/#material">Material documentation</a> for more information.</p>
 <p><strong>Model: Material</strong></p>
@@ -4698,7 +4744,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The Property and State <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into their top-level keys.</p>
 <div class="admonition note">
 <p class="admonition-title">Abstraction</p>
-<p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. </p>
+<p>The Asset Hierarchy can be thought of as a data abstraction governing the Asset schemas, which in turn drive the ECS instantiation. </p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Metaphysics</p>
@@ -5023,10 +5069,10 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <ul>
 <li><code>id: str</code>: Uniquely identifies the Asset file. It must match a file found in the <code>src/assets/**</code> directory.</li>
 <li><code>name: str</code>: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</li>
-<li><code>category: str</code>: Determines what Property model is employed by the Asset. The Category must be configured by a <code>src/assets/&lt;category&gt;/**/*.yaml</code> property index file.</li>
-<li><code>instance: str</code>: Determines what State model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/**/*.yaml</code> directory.</li>
+<li><code>category: str</code>: Determines what Property model is employed by the Asset. The Category must be configured by a <code>src/assets/&lt;category&gt;/**/*.yaml</code> Property index file.</li>
+<li><code>instance: str</code>: Determines what State model is employed by the Asset. An Asset's State is hydrated from the <code>data/state/&lt;board&gt;/**/*.yaml</code> directory.</li>
 </ul>
-<p><code>(category, instance)</code> collectively map to the components <code>(frame, animation, hitbox, properties, state)</code> injected into an Asset class during the <a href="../12-architecture/#specification-initialization">application initialization</a>. More specifically, Category maps to properties (<span class="arithmatex">\(\text{category} \to \text{properties}\)</span>), and Instance maps the remaining components (<span class="arithmatex">\(\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})\)</span>).</p>
+<p>(Category, Instance) collectively map to the components (Frame, Animation, Hitbox, Properties, State) injected into an Asset class during the <a href="../12-architecture/#specification-initialization">Application initialization</a>. More specifically, Category maps to properties (<span class="arithmatex">\(\text{category} \to \text{properties}\)</span>), and Instance maps the remaining components (<span class="arithmatex">\(\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})\)</span>).</p>
 <p>The State and Property model of an Asset can be calculated (and <em>is</em> calculated in this way, during <a href="../12-architecture/#specification-initialization">Application Initialization</a> via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a>.</p>
 <h3 id="overview-architecture">Overview: Architecture</h3>
 <p>Every rendered entity in the <a href="../00-overview/#application">Application</a> is an instance of the unified Asset class. The distinction between a <a href="#category-tiles">Tile</a>, an <a href="#category-objects">Object</a>, or a <a href="#category-sheets">Sheet</a> is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the <a href="../00-overview/#component-board">Board's</a> Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
@@ -5046,25 +5092,25 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </ul>
 </li>
 <li><strong>Behavior: Hitbox:</strong> Stateless strategy for resolving Asset Hitboxes from the Asset's internal data structure.<ul>
-<li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Interface for the elevation in which the Asset Hitboxes participate.</li>
-<li><code>get(properties: AssetProperties, state: AssetState, elevation: int) -&gt; List[Hitbox]</code>: Interface for active Hitboxes at the requested elevation.</li>
+<li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Interface for the Elevation in which the Asset Hitboxes participate.</li>
+<li><code>get(properties: AssetProperties, state: AssetState, elevation: int) -&gt; List[Hitbox]</code>: Interface for active Hitboxes at the requested Elevation.</li>
 </ul>
 </li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Stacks and Offsets</p>
-<p>An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. <a href="#category-sheets">Sheets</a>, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite).</p>
+<p>An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. <a href="#category-sheets">Sheets</a>, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the Frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite).</p>
 </div>
 <h2 id="assets-categories">Assets: Categories</h2>
 <h3 id="category-tiles">Category: Tiles</h3>
 <ul>
 <li>Property File: <code>/src/assets/tiles/**/*.yaml</code></li>
 </ul>
-<p>Tiles are static Assets that form environmental foundation of the game. </p>
-<p><strong>Behavior: Rendering</strong></p>
+<p>Tiles are static Assets that form the environmental foundation of the game. </p>
+<p><strong>Behavior: Multliplication</strong></p>
 <p>When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile, usings the Dimensions configured in the Asset directory to expand the multiplied area.</p>
 <p><strong>Behavior: Friction</strong></p>
-<p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#mechanics-spatial">MotionMechanics</a> to determine the rate of velocity decay for Frictive Assets traversing their area.</p>
+<p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#mechanics-spatial">MotionMechanics</a> to determine the rate of Velocity decay for Frictive Assets traversing their area.</p>
 <p><strong>Properties: TileProperties(AssetProperties)</strong></p>
 <ul>
 <li><code>friction: float</code></li>
@@ -5082,8 +5128,8 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <h4 id="tile-environ">Tile: Environ</h4>
 <p>A Environ Tile represents the environment. They participate in climatic events and macro-level state changes in the <a href="../09-ecology/">Ecology</a>.</p>
 <p><strong>Behavior: Rendering</strong></p>
-<p>Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy, regardless any calculations involving <code>elevation</code>, <code>substrate</code>, <code>ground</code>, or <code>priority</code>. </p>
-<p>Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See <a href="../12-architecture/#specification-graphics">Rendering documentation</a> for more information.</p>
+<p>Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy.</p>
+<p>Moreover, they are not included in the core <a href="../12-architecture/#rendering-sort">rendering loop</a>; Instead, they are prerendered once and drawn from cache. See <a href="../12-architecture/#specification-graphics">Rendering documentation</a> for more information.</p>
 <p><strong>Behavior: Seasonality</strong></p>
 <p>Environ Tiles undergo Frame changes based on the accumulation of time on the <a href="../00-overview/#component-board">Board</a>. In other words, Environ Tiles have the unique property of having their Frame depend on an external State, rather than internal State. All rendering of Environ Tiles occurs through the <code>Frame.eras()</code> interface to account for this external dependency.</p>
 <p>For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the <a href="../00-overview/#component-board">Board</a> undergoes Seasons. See <a href="../09-ecology/">Ecology documentation</a> for more information.</p>
@@ -5100,7 +5146,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their <code>elevation</code> or <code>priority</code>. </p>
 <div class="admonition important">
 <p class="admonition-title">Widget Exception</p>
-<p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are an <a href="../05-mechanics/#mechanics-world">World</a> Asset, and thus their render order is superseded by Widgets.</p>
+<p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are a <a href="../05-mechanics/#mechanics-world">World</a> Asset, and thus their render order is superseded by Widgets.</p>
 </div>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
@@ -5149,7 +5195,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><code>position: Position</code></li>
 <li><code>material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]</code> </li>
 </ul>
-<p>All Objects extend this base Model..</p>
+<p>All Objects extend this base Model.</p>
 <p><strong>Frame: ObjectFrame</strong></p>
 <ul>
 <li><code>index(id, properties): returns { "{id}-{i}": (i * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in enumerate(properties.materials)</code></li>
@@ -5158,9 +5204,9 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <h4 id="object-chests">Object: Chests</h4>
-<p><em>Chests</em> are Objects with a binary state whose Frame can be changed by the Player or Sprite entering the <code>interact</code> <a href="../04-intentions/">Intention</a> while in the immediate proximity of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
-<p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
-<p>When interacting with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menu-data">Chest Menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
+<p><em>Chests</em> are Objects with a binary State whose Frame can be changed by the Player or Sprite entering the <code>interact</code> <a href="../04-intentions/">Intention</a> while in the immediate proximity of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
+<p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory keys.</p>
+<p>When interacting with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menu-data">Chest Menu</a>, allowing them to exchange the contents of their Inventory with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
 <p><strong>State: ContainerState</strong></p>
 <ul>
 <li><code>switch: bool</code></li>
@@ -5173,10 +5219,10 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p><strong>Frame: BinaryFrame</strong></p>
 <ul>
 <li><code>index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)</code></li>
-<li><code>keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"</code></li>
+<li><code>keys(id, state): returns "{id}-{state.material}-{Switches.ON}" if state.switch else {id}-{state.material}-{Switches.OFF}"</code></li>
 </ul>
 <h4 id="object-crates">Object: Crates</h4>
-<p>Crates are Objects who state can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See <a href="../05-mechanics/#spatial-mechanic-collisionmechanics">CollisionMechanics</a> for more information on game physics.</p>
+<p>Crates are Objects who State can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See <a href="../05-mechanics/#spatial-mechanic-collisionmechanics">CollisionMechanics</a> for more information on game physics.</p>
 <p><strong>State: MotiveState</strong></p>
 <ul>
 <li><code>velocity: Velocity</code></li>
@@ -5402,8 +5448,17 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li>Property File: <code>/src/assets/cursors/**/*.yaml</code></li>
 </ul>
 <p>Cursors are Assets that bind to other Asset States.</p>
+<p><strong>Properties: CursorProperties(AssetProperties)</strong></p>
+<ul>
+<li><code>frames: List[str]</code></li>
+<li><code>rotation: int = 90</code>: <span class="arithmatex">\(\Delta\theta \in (0, 360]\)</span> dividing <span class="arithmatex">\(360^\circ\)</span> into <span class="arithmatex">\(N = 360 // \text{rotation}\)</span> Frames.</li>
+<li><code>weapons: List[WeaponPalette]</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+</ul>
+<p>!!! @TODO(03-05) "Cursor Redundancy"
+    Expressions utilize <code>frames</code> to index their Frame atlas. Projectils utilize <code>weapons</code> to index their Frame atlas. Both fields are Lists of strings. There appears to be a potential for simplification and solidification of the Cursor properties, i.e. these fields should be merged into a common Cursor <code>indices</code> property, to prevent verbosity and property sprawl/polymorphism.</p>
 <h4 id="cursor-expressions">Cursor: Expressions</h4>
-<p>Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the <a href="../00-overview/#component-board">Board</a>. Instead, their spatial offsets and frame keys are calculated dynamically by the <a href="../00-overview/#component-board">Cradle</a> and embedded directly into a <a href="../02-sprites/">Sprite's State</a> as pure data. When the <a href="../02-sprites/#psyche">Sprite</a> is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.</p>
+<p>Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the <a href="../00-overview/#component-board">Board</a>. Instead, their spatial offsets and Frame keys are calculated dynamically by the <a href="../00-overview/#component-board">Cradle</a> and embedded directly into a <a href="../02-sprites/">Sprite's State</a>. When the <a href="../02-sprites/#psyche">Sprite</a> is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.</p>
 <p><strong>Required: Expressions</strong></p>
 <p>Due to the nature of Expressions as representations of a Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,</p>
 <ul>
@@ -5414,7 +5469,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>N/A</p>
 <p><strong>Frame: IndexFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ (id, 0, 0) ]</code> <em>(Note: Bypassed during active rendering; <code>SpriteFrame</code> handles the dynamic offset injection).</em></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code> <em>(Note: Bypassed during active rendering; SpriteFrame handles the dynamic offset injection).</em></li>
 <li><code>index(id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>"Phantom" State: AttachmentState(AssetState)</strong></p>
@@ -5426,19 +5481,34 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p><strong>Hitbox: None</strong></p>
 <p>N/A</p>
 <h4 id="cursor-projectiles">Cursor: Projectiles</h4>
-<p>Projectiles are spawned via the <code>shoot</code> Action (entered through the <code>attack</code> <a href="../04-intentions/">Intention</a> when the <code>longbow</code> <a href="../02-sprites/#equipment">Equipment</a> is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the <a href="../00-overview/#component-board">Board</a>.</p>
+<p>Projectiles are spawned on the <code>release</code> Frame of ranged <a href="../02-sprites/#equipment">Equipment</a> with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range. Projectiles will either impact a hitbox or trigger <a href="../05-mechanics/#core-mechanic-removemechanics">garbage-collection</a> and be removed from the <a href="../00-overview/#component-board">Board</a>.</p>
+<p>Projectiles are dependent on the <a href="../02-sprites/#sheet-equipment">Weapon</a> which is used to spawn them. This <a href="../05-mechanics/#dependencies">Relation</a> is compiled from Cursor Properties into the <a href="../05-mechanics/#dependency-relations">ProjectileIndex</a> and injected into <a href="../05-mechanics/#spatial-mechanic-combatmechanics">CombatMechanics</a>.</p>
+<p><strong>Behavior: Rotational</strong></p>
+<p>A Projectile Asset file contains a single Frame oriented at <span class="arithmatex">\(\theta = 0^\circ\)</span>. This Frame rotated about its center in increments of <span class="arithmatex">\(\Delta\theta\)</span> (where <span class="arithmatex">\(360 \bmod \Delta\theta = 0\)</span>):</p>
+<div class="arithmatex">\[
+--8&lt; -- &quot;static/tex/formulae/formula-004-projectile-hitbox-rotation.tex&quot;
+\]</div>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
-<p><strong>Frame: SingleFrame</strong></p>
+<p><strong>Frame: ProjectileFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]</code></li>
+<li><code>index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }</code></li>
 </ul>
 <p><strong>State: MotorState(AssetState)</strong></p>
 <ul>
+<li><code>position: Position</code></li>
 <li><code>initial: Position</code></li>
 <li><code>velocity: Velocity</code></li>
+<li><code>angle: int</code></li>
+<li><code>speed: int</code></li>
+<li><code>owner: str</code></li>
 </ul>
+<p><strong>Hitbox: RotatedHitbox</strong></p>
+<p>Projects each Hitbox <span class="arithmatex">\((x_0, y_0, w_0, l_0)\)</span> in <code>properties.hitboxes</code> around the frame center <span class="arithmatex">\((c_x, c_y) = (W / 2, L / 2)\)</span> by <span class="arithmatex">\(\Delta\theta = \text{state.angle}\)</span>:</p>
+<div class="arithmatex">\[
+--8&lt; -- &quot;static/tex/formulae/formula-005-projectile-hitbox-rotation.tex&quot;
+\]</div>
 <h3 id="category-effects">Category: Effects</h3>
 <ul>
 <li>Property File: <code>/src/assets/effects/**/*.yaml</code></li>
@@ -5518,8 +5588,8 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poison gas clouds).</p>
 <p><strong>Semantics: Reactions</strong></p>
 <ul>
-<li><code>bounce</code>: </li>
-<li><code>hinder</code>: </li>
+<li><code>bounce</code>: TODO</li>
+<li><code>hinder</code>: TODO</li>
 </ul>
 <p><strong>Model: Damage</strong></p>
 <ul>
@@ -5633,7 +5703,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <ul>
 <li>Property File: <code>/src/assets/sheets/**/*.yaml</code></li>
 </ul>
-<p><em>Sheets</em> are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the <a href="../00-overview/#component-engine">Engine Loop</a>; they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.</p>
+<p><em>Sheets</em> are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the <a href="../00-overview/#component-engine">Engine Loop</a>; they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the <a href="../00-overview/#application">Application</a> is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.</p>
 <p><strong>Semantics: Directions</strong></p>
 <ul>
 <li>Directions: <code>up</code>, <code>left</code>, <code>down</code>, <code>right</code></li>
@@ -5657,7 +5727,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </div>
 <div class="admonition note">
 <p class="admonition-title">LPC Specification</p>
-<p>While an arbitrary Action Set can be defined in <code>/src/data/config/actions/main.yaml</code>, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,</p>
+<p>While an arbitrary Action Set can be defined in <code>/src/data/configurations/assets/actions/main.yaml</code>, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,</p>
 <p>The Frames per Action for the LPC Spec are given below,</p>
 <ul>
 <li><code>cast</code>: Count = 7</li>
@@ -5696,7 +5766,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as <em>ActionSets</em>. Each Sheet may specify an ActionSet in its Property index file to use in the construction of its Frame space. See <a href="../appendices/01-schemas/#configuration-actions">Action Configuration Schema</a> for more details. </p>
 <p><strong>Model: Stack</strong></p>
 <p>A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the <a href="../00-overview/#component-screen">Screen</a>. A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
-<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#library-registry">Registry</a> using the <code>stack</code> property during the <a href="../12-architecture/#specification-initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
+<p>For example, the <code>src/assets/sheets/sprites/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/sprites/skins/male-ivory-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#library-registry">Registry</a> using the <code>stack</code> property during the <a href="../12-architecture/#specification-initialization">Application Initialization</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
 <div class="admonition note">
 <p class="admonition-title">Sheet Stacks</p>
 <p>It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.</p>
@@ -5714,10 +5784,17 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <ul>
 <li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
 </ul>
+<p><strong>Models: Sheets</strong></p>
+<p>All Sheet Instances inherit and extend the basic SheetState, building in sequence of a hierarchy of complexity.</p>
+<ul>
+<li>SheetState(AssetState): Base Sheet Model.</li>
+<li>CharacterState(SheetState): Adds Intentionality to Sheet State.</li>
+<li>SpriteState(CharacterState): Adds autonomous <a href="../05-mechanics/#intentional-mechanic-cognitionmechanics">Cognition</a> and <a href="../05-mechanics/#intentional-mechanic-navigationmechanics">Navigation</a> to CharacterState.</li>
+</ul>
 <h4 id="sheet-pixies">Sheet: Pixies</h4>
 <p>!!! @TODO(10-03)
     The whole concept of Pixies needs re-evaluated from the ground up before implementation. It is still uncertain how Pixie intentionality will differ from Sprite intentionality. </p>
-<p>Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
+<p>Pixies are low-level Sheet Assets excluded from <a href="../05-mechanics/#mechanics-intentional">Intentional Mechanics</a>. They possess simple States for modelling environmental flora and fauna.</p>
 <p><strong>Animation: StateAnimation</strong></p>
 <ul>
 <li><code>state.animation.frame += 1</code></li>
@@ -5728,8 +5805,17 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
-<p><strong>State: TBD</strong></p>
-<p>TBD</p>
+<p><strong>Models: SheetState(AssetState)</strong></p>
+<ul>
+<li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
+<li><code>animation: AnimationState</code><ul>
+<li><code>action: Actions</code></li>
+<li><code>direction: Directions</code></li>
+<li><code>frame: int</code></li>
+</ul>
+</li>
+</ul>
 <h4 id="sheet-sprites">Sheet: Sprites</h4>
 <p>Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.</p>
 <p>Sprite States are covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
@@ -5802,7 +5888,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

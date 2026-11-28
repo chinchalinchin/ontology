@@ -884,9 +884,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -950,9 +948,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2" id="__nav_15_2_label" tabindex="0">
@@ -1019,9 +1015,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_1" >
         
           
           <label class="md-nav__link" for="__nav_15_2_1" id="__nav_15_2_1_label" tabindex="0">
@@ -1362,9 +1356,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_2" >
         
           
           <label class="md-nav__link" for="__nav_15_2_2" id="__nav_15_2_2_label" tabindex="0">
@@ -1955,6 +1947,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1963,9 +1959,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15_2_3" >
         
           
           <label class="md-nav__link" for="__nav_15_2_3" id="__nav_15_2_3_label" tabindex="0">
@@ -2032,7 +2026,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../board/phases/refactor-01-20.md" class="md-nav__link">
+      <a href="../board/phases/refactor-01-02.md" class="md-nav__link">
         
   
   
@@ -2684,6 +2678,62 @@
     
   
     Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.05 - Beliefs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-06-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.06 - Goal Decomposition
   
 
     
@@ -3363,9 +3413,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -3516,9 +3564,7 @@
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
         
           
           <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
@@ -3902,37 +3948,25 @@
 <ol>
 <li><strong>Bootstrapping</strong>: Loads Configuration files via Pydantic TypeAdaptor, instantiates Service singletons, compiles <a href="../05-mechanics/#dependency-executors">Executors</a> and <a href="../05-mechanics/#dependency-relations">Relations</a></li>
 <li><strong>Cython</strong>: Initializes video, image, and typography subsystems.</li>
-<li><strong>Registry</strong>: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. <em>VRAM allocation is completely deferred.</em></li>
+<li><strong>Registry</strong>: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. <em>VRAM allocation is deferred.</em></li>
 <li><strong>Components</strong>: Instantiates <a href="../05-mechanics/">Mechanics</a> and an empty <a href="../00-overview/#component-board">Board</a>. </li>
 <li><strong>Ignition</strong>: The <a href="#specification-engine-loop">Engine Loop</a> begins. A <a href="../06-widgets/#events">MenuEvent</a> is injected into the <a href="../00-overview/#component-engine">Engine Bus</a> prior to ignition to immediately render the <a href="../06-widgets/#menu-data">Main Menu</a>.</li>
 </ol>
 <h4 id="phase-2-hydration">Phase 2: Hydration</h4>
 <p>When the User selects "<em>New Game</em>" or "<em>Load</em>" from the <a href="../06-widgets/#menu-data">Main Menu</a>, an <a href="../06-widgets/#concept-asychronicity">Event</a> is thrown to the <a href="../00-overview/#component-engine">Engine Bus</a>, signaling the onset of the <a href="../05-mechanics/#mechanics-world">World Mechanic context</a>.</p>
 <ol>
-<li><strong>Generation</strong>: The <a href="../06-widgets/#controllers">LoadController</a> calls the Migrator each frame. The Migrator applies calls the <a href="../00-overview/#service-factory">Factory</a> to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.</li>
+<li><strong>Generation</strong>: The <a href="../06-widgets/#controllers">LoadController</a> calls the Migrator each frame. The Migrator applies calls the <a href="../00-overview/#service-factories">AssetFactory</a> to generate batches of Assets from the State file. As it does so, the AssetFactory injects Frame, Animation, Hitbox, Properties, and State components, and then yields execution back to the Engine.</li>
 <li><strong>Prewarming</strong>: Concurrently, the Registry parses a queue of keys, loading Asset files into memory.</li>
-<li><strong>Allocation</strong>: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for the Painter's Algorithm.</li>
+<li><strong>Allocation</strong>: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for rendering.</li>
 <li><strong>Execution</strong>: The LoadController emits a <a href="../06-widgets/#events">TerminalEvent</a>, popping the loading screen, activating the Board, and unpausing the <a href="../05-mechanics/#mechanics-world">World Mechanics</a>.</li>
 </ol>
 <h3 id="specification-engine-loop">Specification: Engine Loop</h3>
 <p>The Engine delegates behavior to <a href="../05-mechanics/">Mechanics</a>. Rather than the <a href="../00-overview/#component-engine">Engine</a> passing arguments to a system, a Mechanic is responsible for querying the <a href="../00-overview/#component=board">Board</a> for the exact data it requires, processing the state, and optionally pushing Events to the Engine Bus.</p>
-<p>Mechanics are segregated into <code>core</code> pipelines and <code>world</code> pipelines. The <a href="../00-overview/#component-engine">Engine</a> processes these pipelines conditionally:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Apply Mechanics.</span>
-<span class="sd">    """</span>
-    <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">:</span>
-        <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="p">:</span>
-            <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
-</code></pre></div>
+<p>Mechanics are segregated into <code>core</code> pipelines and <code>world</code> pipelines by the <a href="../00-overview/#component-engine">Engine</a>.</p>
 <ul>
 <li><strong>Core Mechanics:</strong> Systems that must execute every tick regardless of the Board State. This includes <a href="../05-mechanics/#core">MenuMechanics</a> (to process input and layout traversals), <a href="../05-mechanics/#core">AnimationMechanics</a> (to keep Assets animating), and RemoveMechanics (to optimize memory).</li>
-<li><strong>World Mechanics:</strong> Systems that govern logic, physics, and behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>.</li>
+<li><strong>World Mechanics:</strong> Systems that govern logic, physics, and behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>. These Mechanics only execute if the Board is unpaused. When an <a href="../06-widgets/#events">Event</a> fires and a <a href="../06-widgets/#configuration-menus">Menu</a> is pushed to the <a href="../00-overview/#component-screen">Screen</a>, the <a href="../00-overview/#component-board">Board</a> is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.</li>
 </ul>
-<p>When an <a href="../06-widgets/#events">Event</a> fires and a Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.</p>
 <h3 id="specification-board-caches">Specification: Board Caches</h3>
 <h4 id="cache-spatial-grid">Cache: Spatial Grid</h4>
 <p>The Board utilizes several spatial hash grids <span class="arithmatex">\((c_x, c_y)\)</span>:</p>
@@ -3969,8 +4003,7 @@
 </ol>
 <h4 id="rendering-typography">Rendering: Typography</h4>
 <p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each Font declared in <code>/src/assets/fonts/**/*.yaml</code>, storing them as styled Cython wrappers. </p>
-<p>In <a href="../06-widgets/#configuration-menus">Menu Configurations</a>, Font are scoped at the <a href="../06-widgets/#widget-panes">Pane</a> level: any Fany declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.</p>
-<p>See <a href="#library-graphics">Library: Graphics</a> for more implementation details.</p>
+<p>In <a href="../06-widgets/#configuration-menus">Menu Configurations</a>, Font are scoped at the <a href="../06-widgets/#widget-panes">Pane</a> level: any Font declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.</p>
 <p><strong>Properties: FontProperties</strong></p>
 <ul>
 <li><code>size: int</code>: Font size (defaults to <code>24</code>).</li>
@@ -4006,9 +4039,9 @@
 <li><code>title</code>: Font used for headings.</li>
 </ul>
 <h3 id="specification-cython-libraries">Specification: Cython Libraries</h3>
-<p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine uses Cython to bridge this gap, adhering to a <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
+<p>The Engine delegates all intensive processing and calculation to pre-compiled Cython libraries, adhering to a <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <div class="admonition important">
-<p class="admonition-title">Zero Heap Allocation Flexibility</p>
+<p class="admonition-title">Zero Heap Allocation in the Inner Loop</p>
 <p>Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. </p>
 </div>
 <h4 id="library-models">Library: Models</h4>
@@ -4103,12 +4136,12 @@ y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2
 \lor
 (\frac{\mathbf{d} \cdot \hat{\mathbf{u}}}{\|\mathbf{d}\|} \ge \cos\alpha)
 \]</div>
-<ol>
-<li><strong><code>nearby</code></strong>: Euclidean distance check.</li>
-</ol>
+</li>
+<li>
+<p><strong><code>nearby</code></strong>: Euclidean distance check.</p>
 <p><span class="arithmatex">\(\mathbf{t}\)</span> lies within radius <span class="arithmatex">\(r\)</span> of <span class="arithmatex">\(\mathbf{s}\)</span> if and only if:</p>
 <div class="arithmatex">\[
-\|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 &lt; r^2
+\|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 \le r^2
 \]</div>
 </li>
 <li>
@@ -4380,7 +4413,7 @@ s_{n+1} = \max\big(0,\; \|\mathbf{v}_n\| - \mu_f \Delta t\big), \qquad \mathbf{v
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
