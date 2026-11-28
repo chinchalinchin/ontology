@@ -17,20 +17,7 @@ from app.static.semantics import (
     AssetInstances,
     Orientations
 )
-from app.models.state import (
-    CraftState,
-    PropertyState
-)
-from app.models.config import (
-    CompositionConfiguration, 
-    CompositionPseudoState
-)
-from app.models.state import (
-    StateSchema, 
-    ObjectStateInstances, 
-    CraftStateInstances, 
-    DoorState
-)
+from app.models.state import  PropertyState
 
 # Cython Libraries
 from libs.core.models import (

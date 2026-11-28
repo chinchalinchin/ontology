@@ -10,7 +10,6 @@ theme:
     accent: blue
   features:
     - content.code.copy
-    - navigation.expand
     - navigation.indexes
 nav:
   - Index: index.md
@@ -59,7 +58,7 @@ nav:
         - Phase n+1 - Towns: board/phases/implement/implement-n+1.md
       - Refactor:
         - Phase 01.01 - Orchestration: board/phases/refactor/refactor-01-01.md
-        - Phase 01.02 - Render Decoupling: board/phases/refactor-01-20.md
+        - Phase 01.02 - Render Decoupling: board/phases/refactor-01-02.md
         - Phase 02.01 - Frames: board/phases/refactor/refactor-02-01.md
         - Phase 02.02 - Registry: board/phases/refactor/refactor-02-02.md
         - Phase 02.03 - Equipment: board/phases/refactor/refactor-02-03.md
@@ -83,6 +82,8 @@ nav:
         - Phase 06.02 - Goals: board/phases/refactor/refactor-06-02.md
         - Phase 06.03 - Combat: board/phases/refactor/refactor-06-03.md
         - Phase 06.04 - Inventory: board/phases/refactor/refactor-06-04.md
+        - Phase 06.05 - Beliefs: board/phases/refactor/refactor-06-05.md
+        - Phase 06.06 - Goal Decomposition: board/phases/refactor/refactor-06-06.md
         - Phase 07.01 - Elevation Sorting: board/phases/refactor/refactor-07-01.md
         - Phase 07.02 - Platforms & Elevated Hitboxes: board/phases/refactor/refactor-07-02.md
         - Phase 07.03 - Gravity: board/phases/refactor/refactor-07-03.md

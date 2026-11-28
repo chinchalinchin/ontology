@@ -125,14 +125,19 @@ PROJECTILE_MAX_CHARGE_TICKS: int = 300
 # ---------------------------------------------------
 
 SRC_DIR: Final[Path] = Path(__file__).resolve().parent.parent.parent
+# --------------------------------------- APPLICATION DIRECTORIES
 ASSET_DIR: Final[Path] = SRC_DIR / "assets"
 DATA_DIR: Final[Path] = SRC_DIR / "data"
-DUMP_DIR: Final[Path] = DATA_DIR / "dumps"
-LOG_DIR: Final[Path] = DATA_DIR / "logs"
-CONFIG_DIR: Final[Path] = DATA_DIR / "config"
+OUT_DIR: Final[Path] = SRC_DIR / "out"
+# --------------------------------------- OUTPUT DIRECTORIES
+DUMP_DIR: Final[Path] = OUT_DIR / "dumps"
+LOG_DIR: Final[Path] = OUT_DIR / "logs"
+TEMPLATE_DIR: Final[Path] = OUT_DIR / "templates"
+# --------------------------------------- DATA DIRECTORIES
+CONFIG_DIR: Final[Path] = DATA_DIR / "configurations"
 STATE_DIR: Final[Path] = DATA_DIR / "state"
-TEMPLATE_DIR: Final[Path] = DATA_DIR / "templates"
 SAVE_DIR: Final[Path] = DATA_DIR / "save"
+# --------------------------------------- ASSET DIRECTORIES
 FONT_DIR: Final[Path] = ASSET_DIR / "fonts"
 
 APP_EXT: Final[str] = "main.yaml"
@@ -167,5 +172,7 @@ TITLE_FONT: Final[Path] = FONT_DIR / "title.ttf"
 TRANSLATOR_IMPLEMENTATION: Final[str] = os.getenv("ONTOLOGY_TRANSLATOR", "lambda")
 """Evaluation strategy for Transition conditions ('lambda' or 'compiler')."""
 
-LAMBDA_SIGNATURE: Final[str] = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, **kwargs: {cond}"
+# TODO: do not like the 'target' in the signature. ill-defined and a very clear placeholder for 
+#       a Goal category, which is already part of Sprite state.
+LAMBDA_SIGNATURE: Final[str] = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, assets=None,**kwargs: {cond}"
 """Function signature for Lambda transitions."""

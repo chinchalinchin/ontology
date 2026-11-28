@@ -1,0 +1,28 @@
+sheets:
+  players:
+    # ------------------------------------------------
+    # ------------------------------ PLAYER PROPERTIES
+    # ------------------------------------------------
+    player:
+      mass: 7
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: 
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-male-ivory
+        - feet-boots-black
+        - legs-robe-black
+        - torso-shirt-male-black
+        - torso-cape-black
+        - head-glasses
+        - head-beard-white
+        - hair-curls-white
+        - head-wizard-hat-moon
+      actions: lpc-full

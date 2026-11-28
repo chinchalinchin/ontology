@@ -37,7 +37,6 @@ class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore
     direction: Enumerated[Directions] = Directions.DOWN
-    speed: int = 10
     angle: int = 0
     speed: int = 200
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore

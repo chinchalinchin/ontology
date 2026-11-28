@@ -16,7 +16,7 @@ from typing import (
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.models.config.menus import CollectionTarget
+from app.models.configurations.menus import CollectionTarget
 from app.models.menus import MenuContext
 
 

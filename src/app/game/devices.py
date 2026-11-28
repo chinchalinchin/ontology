@@ -3,16 +3,24 @@
 @app.device
 
 # Ontology: Source - app.game.devices
+
+**IMPORTANT**: All `libs.core.input` imports should be routed through this module to isolate all input dependencies.
 """
 # Standard Libraries
 import logging
+from typing import (
+    Dict,
+    Optional,
+    Set,
+    Tuple
+)
 
 # Application Libraries
 from app.static.semantics import (
     DeviceContexts,
     Intentions
 )
-from app.models.config import DeviceMapping
+from app.models.configurations import DeviceMapping
 from app.models.state import (
     DevicePayload,
     WorldPayload,
@@ -39,6 +47,21 @@ class Device:
     def __init__(self, mapping: DeviceMapping):
         self.mapping = mapping
 
+    def context(self, map: str) -> None:
+        """Switches the active input mapping context."""
+        raise NotImplementedError
+
+    def pump(self) -> bool:
+        """
+        Pumps hardware and OS events once per render frame.
+        Returns True if an OS quit signal was observed, False otherwise.
+        """
+        raise NotImplementedError
+
+    def poll(self) -> DevicePayload:
+        """Resolves the active frame's input state into a DevicePayload."""
+        raise NotImplementedError
+
 
 class Keyboard(Device):
     """
@@ -46,14 +69,23 @@ class Keyboard(Device):
     singular triggers, and consecutive-tick hold accumulation per scancode.
     """
 
+    _context: Optional[str]
+    _scancodes: Tuple[int, ...]
+    _last_state: Dict[int, int]
+    _latched: Set[int]
+
     def __init__(self, mapping: DeviceMapping):
         super().__init__(mapping)
         self._context = None
+        self._scancodes = ()
+        self._last_state = {}
+        self._latched = set()
         self.context(DeviceContexts.WORLD)
 
     def context(self, map: str) -> None:
+        """Rebuilds active scancode bindings when switching between world and menu contexts."""
         # Guard clause: Do not wipe the input buffer if the context isn't changing
-        if getattr(self, '_context', None) == map:
+        if self._context == map:
             return
 
         self._context = map
@@ -70,18 +102,37 @@ class Keyboard(Device):
             self._scancodes = tuple(set(t_codes + i_codes))
 
         self._last_state = {code: 0 for code in self._scancodes}
+        self._latched.clear()
 
         logger.debug(f"SDL Scancodes: {self._scancodes}")
+
+    def pump(self) -> bool:
+        """
+        Pumps the SDL OS event queue once per render frame, latching non-repeat
+        keydown scancodes for consumption on the next fixed-timestep tick.
+        Returns True if an SDL_QUIT event was observed.
+        """
+        quit_requested, pressed = sdl.pump()
+        if pressed:
+            self._latched.update(c for c in pressed if c in self._last_state)
+        return quit_requested
+
+    def _is_rising_edge(self, code: int, current_dict: Dict[int, int]) -> bool:
+        """Returns True if scancode transitioned down via latched event or state delta."""
+        return (code in self._latched) or (
+            bool(current_dict.get(code)) and not self._last_state.get(code)
+        )
 
     def poll(self) -> DevicePayload:
         """
         Polls active SDL scancodes, accumulates consecutive press ticks per code,
         and emits rising-edge singular triggers alongside active intention holds.
         """
-        sdl.pump()
         current_state = sdl.poll(self._scancodes)
         current_dict = {
-            code: (self._last_state.get(code, 0) + 1) if state else 0
+            code: (
+                1 if code in self._latched else self._last_state.get(code, 0) + 1
+            ) if state else 0
             for code, state in zip(self._scancodes, current_state)
         }
 
@@ -96,12 +147,12 @@ class Keyboard(Device):
                 hold_ticks = current_dict.get(v, 0)
                 if hold_ticks:
                     world_payload.holds[k] = hold_ticks
-                    if world_payload.intention is None and not self._last_state.get(v):
-                        world_payload.intention = k
+                if world_payload.intention is None and self._is_rising_edge(v, current_dict):
+                    world_payload.intention = k
 
             # Edge-triggered, singular grip resolution (parameterizes Intentions.USE)
             for k, v in self.mapping.world.grips.items():
-                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                if v is not None and self._is_rising_edge(v, current_dict):
                     world_payload.grip = k
                     if not world_payload.intention:
                         world_payload.intention = Intentions.USE
@@ -109,7 +160,7 @@ class Keyboard(Device):
 
             # Edge-triggered, singular resolution
             for k, v in self.mapping.world.menus.items():
-                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                if v is not None and self._is_rising_edge(v, current_dict):
                     world_payload.menu = k
                     break
 
@@ -121,17 +172,18 @@ class Keyboard(Device):
         elif self._context == DeviceContexts.MENU:
             # Edge-triggered, singular resolution
             for k, v in self.mapping.menu.traversal.items():
-                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                if v is not None and self._is_rising_edge(v, current_dict):
                     menu_payload.traversal = k
                     break
 
             # Edge-triggered, singular resolution
             for k, v in self.mapping.menu.interactions.items():
-                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                if v is not None and self._is_rising_edge(v, current_dict):
                     menu_payload.interaction = k
                     break
 
         self._last_state = current_dict
+        self._latched.clear()
         return DevicePayload(world=world_payload, menu=menu_payload)
 
 

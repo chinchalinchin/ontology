@@ -1,28 +1,24 @@
-{% set bugs = [ 
-    'patch-b038'
-] %}
-{% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
 # Task: Ontology - Patch
 
 **Priorities**
 
-* **PATCHING** Review the [Bugs](#task-bug-reports) described below. Determine if a patch can be easily implemented. 
-    * **IMPLEMENT** If the bug can be fixed easily, then implement a fix according to the **Task Guidelines**.
-    * **BACKLOG** If the bug is complex and warrants more than a simple patch, provide an outline of the considerations that need to be taken into account and the general modifications that are necessary to solve the problem. Use the [Backlog Template](#template-backlog) to layout a new Phase to address the Bug.
+* **PATCHING** Review the [Bugs](#view-bug-reports) described below. Determine if a patch can be easily implemented. 
+    * **IMPLEMENT** If the bug can be fixed easily, then implement a fix according to the **Task Guidelines and Constraints**.
+    * **BACKLOG** If the bug is complex and warrants more than a simple patch, provide an outline of the considerations that need to be taken into account and the general modifications that are necessary to solve the problem. Use the [Backlog Template](#template-backlog) to layout a new Tasks to address the Bug.
 * **BUGHUNTING** If new, unrelated bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
 
 ## Task: Context
 
 This section contains **Constraints** and **Guidelines** that must be observed while accomplishing the **Task**.
 
-### Context: Changes
-
-#### Changes: Constraints 
+### Context: Constraints 
 
 {% include 'blocks/controls/constraint-quality.md' %}
 
 {% include 'blocks/controls/constraint-changes.md' %}
 
-#### Changes: Guidelines
+### Context: Guidelines
+
+{% include 'blocks/controls/guideline-bugs.md' %}
 
 {% include 'blocks/controls/guideline-models.md' %}

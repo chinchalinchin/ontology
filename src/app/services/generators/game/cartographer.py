@@ -159,11 +159,14 @@ class Cartographer:
                 ):
                     return fluid.id
 
-            pool = fluid.state.pool
-            if pool and pool.w > 0 and pool.l > 0:
-                if geometry.inside(water_pos.x, water_pos.y, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
-                    return fluid.id
-
+            # pool = fluid.state.pool
+            # if pool and pool.w > 0 and pool.l > 0:
+            #     if geometry.inside(water_pos.x, water_pos.y, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
+            #         return fluid.id
+            
+            if predicates.in_pool(water_pos, fluid):
+                return fluid.id
+            
             if fluid.state.length > 0 and predicates.in_stream(water_pos, fluid):
                 return fluid.id
 

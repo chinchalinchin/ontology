@@ -27,18 +27,22 @@ class Planner:
     Thin Python wrapper unpacking models and delegating to Cython rrt().
     """
     def __init__(
-        self, 
-        start: Position, 
-        target: Position, 
-        obstacles: List[Tuple[float, float, float, float]], 
-        step_size: float = 32.0, 
-        max_iter: int = 300
+        self,
+        start: Position,
+        target: Position,
+        obstacles: List[Tuple[float, float, float, float]],
+        step_size: float = 32.0,
+        max_iter: int = 300,
+        heading: Tuple[float, float] = (0.0, 0.0),
+        inertia: float = 0.0
     ):
         self.start = start
         self.target = target
         self.obstacles = obstacles
         self.step_size = step_size
         self.max_iter = max_iter
+        self.heading = heading
+        self.inertia = inertia
 
     def plan(self) -> List[Position]:
         """Executes the Cython RRT algorithm and returns the path if found."""
@@ -49,5 +53,8 @@ class Planner:
             float(self.target.y),
             self.obstacles,
             float(self.step_size),
-            int(self.max_iter)
+            int(self.max_iter),
+            float(self.heading[0]),
+            float(self.heading[1]),
+            float(self.inertia),
         )

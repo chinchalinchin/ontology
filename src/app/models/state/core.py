@@ -49,6 +49,7 @@ class MutatorTriggers:
     vision: bool = False
     submerged: bool = False
     falling: bool = False
+    interacted: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:

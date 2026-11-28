@@ -44,10 +44,13 @@ from app.game.logic.mechanics import (
     TelemetryMechanics,
     TransitionMechanics
 )
-from app.models.config import MechanicsInstance
-from app.services.translators import (
-    CompilerTranslator,
-    LambdaTranslator
+from app.models.configurations import MechanicsInstance
+from app.services.automaton import (
+    Backend, 
+    Compiler,
+    Lambda,
+    TransitionTranslator,
+    GoalTranslator
 )
 from app.static.semantics import (
     Devices,
@@ -87,8 +90,8 @@ class MechanicFactory:
     }
 
     TRANSLATOR_MAP = {
-        Translators.LAMBDA: LambdaTranslator,
-        Translators.COMPILER: CompilerTranslator,
+        Translators.LAMBDA: Lambda,
+        Translators.COMPILER: Compiler,
     }
 
     @classmethod
@@ -97,10 +100,23 @@ class MechanicFactory:
         return target_cls(mapping)
 
     @classmethod
-    def translator(cls, translation: str):
-        target_cls = cls.TRANSLATOR_MAP.get(translation, LambdaTranslator)
+    def backend(cls, implementation: str) -> Backend:
+        """Instantiates the configured ISL condition Backend via TRANSLATOR_MAP."""
+        target_cls = cls.TRANSLATOR_MAP.get(implementation)
+        if target_cls is None:
+            raise ValueError(
+                f"Unsupported translator implementation: '{implementation}'"
+            )
         return target_cls()
+    
+    @staticmethod
+    def transitions(implementation: str) -> TransitionTranslator:
+        return TransitionTranslator(backend=MechanicFactory.backend(implementation))
 
+    @staticmethod
+    def goals(implementation: str) -> GoalTranslator:
+        return GoalTranslator(backend=MechanicFactory.backend(implementation))
+    
     @classmethod
     def mechanics(
         cls,

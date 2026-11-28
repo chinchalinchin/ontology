@@ -9,10 +9,17 @@
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """
 # Standard Libraries
+from dataclasses import (
+    fields,
+    is_dataclass
+)
 from enum import Enum
 from typing import (
     Annotated, 
     Any, 
+    Callable,
+    Dict,
+    Type,
     TypeVar, 
     TYPE_CHECKING
 )
@@ -25,6 +32,7 @@ from pydantic import (
 )
 
 from libs.core.models import (
+    Boundary,
     Position, 
     Dimensions, 
     Hitbox, 
@@ -86,19 +94,68 @@ def serialize_vel(v: Any) -> Any:
     return {"vx": v.vx, "vy": v.vy}
 
 def serialize_hb(v: Any) -> Any:
+    """Serializes a Cython Hitbox into a plain dictionary."""
     if v is None or isinstance(v, dict):
         return v
-    pos = getattr(v, "position", None)
-    dim = getattr(v, "dimensions", None) or getattr(v, "dimension", None)
     return {
-        "position": serialize_pos(pos),
-        "dimensions": serialize_dim(dim)
+        "position": serialize_pos(v.position),
+        "dimensions": serialize_dim(v.dimensions)
     }
 
 def serialize_scale(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
     return {"pw": v.pw, "pl": v.pl}
+
+def serialize_boundary(v: Any) -> Any:
+    """Serializes a Cython Boundary into a plain dictionary."""
+    if v is None or isinstance(v, dict):
+        return v
+    return {
+        "position": serialize_pos(v.position),
+        "dimensions": serialize_dim(v.dimensions)
+    }
+
+_CYTHON_SERIALIZERS: Dict[Type[Any], Callable[[Any], Any]] = {
+    Position: serialize_pos,
+    Dimensions: serialize_dim,
+    Multiple: serialize_mul,
+    Velocity: serialize_vel,
+    Hitbox: serialize_hb,
+    Scale: serialize_scale,
+    Boundary: serialize_boundary,
+}
+
+def serialize(v: Any) -> Any:
+    """
+    Recursively converts typed state dataclasses, enums, containers, and Cython
+    extension types into plain YAML-safe Python primitives while omitting
+    internal underscore-prefixed runtime cache fields.
+    """
+    if v is None:
+        return None
+
+    serializer = _CYTHON_SERIALIZERS.get(type(v))
+    if serializer is not None:
+        return serializer(v)
+
+    if isinstance(v, Enum):
+        return v.value
+
+    if is_dataclass(v) and not isinstance(v, type):
+        return {
+            f.name: serialize(getattr(v, f.name))
+            for f in fields(v)
+            if not f.name.startswith("_")
+        }
+
+    if isinstance(v, dict):
+        return {serialize(k): serialize(val) for k, val in v.items()}
+
+    if isinstance(v, (list, tuple)):
+        return [serialize(item) for item in v]
+
+    return v
 
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TYPES

@@ -38,7 +38,7 @@ from app.models.adapters import (
     serialize_scale,
     serialize_vel,
 )
-from app.models.config import (
+from app.models.configurations import (
     ActionConfiguration,
     CompositionConfiguration,
     ConfigurationSchema,
@@ -420,7 +420,7 @@ def test_load_properties_hydrates_entire_schema(
     assert isinstance(maize.hitboxes, dict)
 
     # 8. Sheets & Equipment
-    player = mock_properties_schema.sheets.sprites["player"]
+    player = mock_properties_schema.sheets.players["player"]
     rat = mock_properties_schema.sheets.pixies["giant-rat"]
     sword = mock_properties_schema.sheets.weapons["sword"]
     buckler = mock_properties_schema.sheets.shields["buckler"]
@@ -673,11 +673,7 @@ def test_load_state_hydrates_models_and_referential_integrity(
 
         for instance_field in fields(state_cat):
             instance = instance_field.name
-            prop_map = (
-                getattr(prop_cat, AssetInstances.SPRITES.value)
-                if instance == AssetInstances.PLAYERS.value
-                else getattr(prop_cat, instance)
-            )
+            prop_map = getattr(prop_cat, instance)
 
             for entity_state in getattr(state_cat, instance):
                 assert entity_state.id in prop_map, (

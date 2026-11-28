@@ -184,11 +184,8 @@ Synthesized root Panes of Collection [Gizmos](#menus-gizmos) use CollectionState
 
 **CollectionState: Methods**
 
-* `get_item(slot_index: int) -> str`: Resolves the item key at $\omega + \text{slot\_index}$, or `""` if vacant.
-* `is_occupied(slot_index: int) -> bool`: Asserts $0 \le \omega + \text{slot\_index} < |\text{collection}|$.
-* `sync(pane_name: str, widgets: Dict[str, Widget]) -> None`: Sets occupied aperture slot buttons to `Statuses.IDLE` and vacant slots to `Statuses.DISABLED`.
-* `scroll(direction: str, slot_index: int) -> bool`: Advances or decrements $\omega$ when traversal crosses the active scroll boundary ($\pm 1$ on `WEST`/`EAST` for 1D strips where $C \le K$; $\pm K$ on `NORTH`/`SOUTH` for 2D grids where $C > K$).
-& `clamp_slot(slot_index: int) -> Optional[int]`: Clamps focus to the highest occupied slot index in the aperture window after pagination.
+* `get_item(slot_index: int)`: Resolves the item key at $\omega + \text{slot\_index}$.
+* `scroll(direction: str, slot_index) -> bool`: Advances or decrements $\omega$ when traversal crosses the active scroll boundary.
 
 ### Widget: Buttons
 
@@ -302,40 +299,55 @@ The following example demonstrates how to schematize a simple text display Menu 
 menus:
   text:
     controller: scroll
-    roots: 
+    roots:
       - instance: panes
-        id: neutral
+        id: dark-texture
         name: text-menu
         parameters:
-          position:
-            px: 0.175
-            py: 0.60
+          dimensions: 
+            pw: 0.65
+            pl: 0.25
+          justification: 
+            horizontal: center
+            vertical: end
+          alignment: 
+            horizontal: center
+            vertical: center
           layout: dock
-          alignment: center
           gap: 15
+          margins: 10
           font: dialogue
-          children: 
-            - instance: pages
-              id: dark-notification
+          children:
+            - id: dark-solid
+              instance: panes
               name: text-display
+              parameters:
+                dimensions: 
+                    pw: 0.40
+                    pl: 0.20
               bind:
                 schema: library
-                target: 
+                target:
                   plot: context.plot.current
                   persona: context.object.persona
                   lexicon: context.object.lexicon
             - instance: panes
-              id: transparent-slot
+              id: transparent
               name: text-scroll-buttons
               parameters:
+                dimensions:
+                    pw: 0.08
+                    pl: 0.15
                 layout: stack
-                alignment: center
+                alignment: 
+                    horizontal: center
+                    vertical: center
                 gap: 5
                 children:
                   - instance: buttons
                     id: arrow-up
                     name: text-scroll-up
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrollup
@@ -343,7 +355,7 @@ menus:
                   - instance: buttons
                     id: arrow-down
                     name: text-scroll-down
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrolldown
@@ -376,9 +388,9 @@ Widgets populate their State by evaluating their [Binding](#menus-binding) paths
 
 ### Menus: Bindings
 
-Widgets display live Asset State information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated user interface logic from overcrowding the codebase. In other words, [Menu Controllers](#controllers) do not have to worry about managing animation states or updating Widget State references.
+Widgets display live Asset State information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated user interface logic from overcrowding the Codebase. In other words, [Menu Controllers](#controllers) do not have to worry about managing AnimationStates or updating Widget State references.
 
-However, since Menus are unpacked by the Provider into Widgets, otherwise indistinguishable from standard Assets to the [Engine](./00-overview.md#component-engine) and [Screen](./00-overview.md#component-screen), every Widget bound to Asset State declares and utilizes a *Binding*.
+However, since Menus are unpacked by the [Provider](#service-provider) into Widgets, otherwise indistinguishable from standard Assets to the [Engine](./00-overview.md#component-engine) and [Screen](./00-overview.md#component-screen), every Widget bound to Asset State declares and utilizes a *Binding*.
 
 Widget Bindings to Asset State are generated inside of the [Provider](#service-provider) via the [Binder](#service-binder) factory. Each Binding requires a `schema` and a nested `target` dictionary.
 
@@ -439,9 +451,9 @@ bind:
 
 ```
 
-Each Binding *expects* the nested paths in the `target` dictionary to resolve to valid domain entities in the Menu Context based on the schema. For example, if `schema == meter`, the path mapped to `target.meter` must ultimately resolve to an entity whose data structure exactly matches the Binding schema, i.e. a MeterState.
+Each Binding *expects* the nested paths in the `target` dictionary to resolve to valid domain references in the Menu Context based on the schema. For example, if `schema == meter`, the path mapped to `target.meter` must ultimately resolve to a data structure that exactly matches the Binding schema, i.e. a MeterState.
 
-For example, in the View (HUD) Menu, a Widget is bound to the Player's health meter:
+For example, in the [View Menu](#menu-data), a Widget is bound to the Player's health meter:
 
 ```yaml
 -   instance: meters
@@ -453,38 +465,20 @@ For example, in the View (HUD) Menu, a Widget is bound to the Player's health me
             meter: context.sprite.meters.health
 ```
 
-By decoupling the layout from the logic, Widgets do not need to know what is controlling them; they only require a declarative Binding to know what data they are displaying.
+Widgets do not need to know what is controlling them; they only require a declarative Binding to know what data they are displaying.
 
 **Selection Bindings**
 
-Selection Bindings define how Widgets interact with user input and game state. Rather than pointing to external game state, their `target` dictionary maps internal Menu commands:
+Selection Bindings define how Widgets interact with [Device Input](./02-sprites.md#devices) and [Asset State](./00-overview.md#core-state). In other words, a Selection Binding maps Menu commands.
 
-* `selection`: The specific action or command a Control Widget emits when selected by the user (e.g., `scrollup`).
+* `selection`: The specific action or command a Control Widget emits when selected by a [Device](./02-sprites.md#devices).
 * `selector`: A direct pointer to the unique `name` of another Widget in the Menu, or a destination key. Used when a Control Widget needs to mutate or read another Widget's state.
 
-In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `scrollup` and `scrolldown`. Because these buttons control the Page widget, their `selector` bindings are set to `text-display`—the unique name of the target Page.
+In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `scrollup` and `scrolldown`. These Buttons control the `text-display` Pane widget via their `selector`  Bindings.
 
-When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the `ScrollController`). The Controller uses the `selector` binding to perform an $O(1)$ dictionary lookup for the target widget and applies the `selection` action:
+When a Button is selected, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) route the [Device Payload](./02-sprites.md#devices) to the appropriate Controller (in this case, the [ScrollController](#menus-controllers), keyed to the Menu by its unique ID, `scroll`). The Controller uses the `selector` binding to perform a lookup for the target Widget and applies the `selection` action.
 
-```python
-class ScrollController(Controller):
-
-    def select(self, name: str, menu: Menu, board: Board, bus: collections.deque):
-        widget = menu.widgets[name]
-        
-        selection = widget.binding.selection
-        target_key = widget.binding.selector
-        
-        if not target_key or target_key not in menu.widgets:
-            return
-            
-        target_widget = menu.widgets[target_key]
-        
-        # apply selection logic to target_widget...
-
-```
-
-Bindings are enumerated and summarized below:
+Selection Bindings are enumerated and summarized below:
 
 * `selection`: Menu Action commands.
     * `SCROLLUP`: Call `scrollup()` on a PaneState.
@@ -500,10 +494,11 @@ Bindings are enumerated and summarized below:
     * `selections == MENU`: Selector is the target Menu.
     * `selections in [NEW, LOAD]`: TODO
 
-
 ### Menus: Gizmos 
 
-A Gizmo is a macro node declared in the Menu Tree. Before the Layout evaluates spatial geometry, the Provider delegates Gizmo MenuNodes to a specialize *Fabricator Service*, transforming the Gizmo Node into concrete structures of Panes, Buttons, Meters and Icons with a synthesizedState attached to the root pane of the Gizmo.
+A Gizmo is a macro node declared in the Menu Tree. Before the Layout evaluates spatial geometry, the Provider delegates Gizmo MenuNodes to a specialized [Fabricator Service](#service-fabricator), transforming the Gizmo Node into concrete structures of Panes, Buttons, Meters and Icons with a synthesized State attached to the root Pane of the Gizmo.
+
+**Example: Gizmo Declaration**
 
 ```yaml
 - id: weapons
@@ -531,12 +526,14 @@ The Binding of a Gizmo's synthesized root Pane is determined by the Binding's `s
 
 Collection Gizmos do not use explicit scroll arrow buttons. Instead, aperture slot buttons are directly traversable and paginate automatically when directional input crosses the aperture boundary:
 
-* **1D Strip Gizmos ($C \le K$, used in `Menu: Equipment`)**: (Used in the [Equipment Menu](#menu-data)) `west` and `east` traverse horizontally within the strip and shift `offset` by $\pm 1$ at the left ($c = 0$) and right ($c = K - 1$) boundaries when $|\text{collection}| > C$. `north` and `south` immediately traverse between adjacent equipment rows via [Traversal Graph](#concept-traversibility).
-* **2D Grid Gizmos ($C > K$)**: (Used in the [Pouch and Pack Menus](#menu-data)) `north` and `south` shift `offset` by $\pm K$ (one row) at the top ($r = 0$) and bottom ($r = R - 1$) boundaries.
+* **1D Strip Gizmos ($C \le K$)**: `west` and `east` traverse horizontally within the strip and shift `offset` by $\pm 1$ at the left ($c = 0$) and right ($c = K - 1$) boundaries when $|\text{collection}| > C$. `north` and `south` immediately traverse between adjacent equipment rows via [Traversal Graph](#concept-traversibility).
+* **2D Grid Gizmos ($C > K$)**: `north` and `south` shift `offset` by $\pm K$ (one row) at the top ($r = 0$) and bottom ($r = R - 1$) boundaries.
 
 ## Menu: Services
 
 ### Service: Provider
+
+* Address: `app.services.generators.menus.provider`
 
 The Provider, similiar to the [Decomposer](./03-compositions.md#service-decomposer), is responsible for unpacking Menu Configurations into flat lists of Assets for the [Engine](./00-overview.md#component-engine). However, unlike the Decomposer, the Provider must also generate a Traversal graph, inject bindings into Widgets and pass the result to a Menu.
 
@@ -544,13 +541,19 @@ To start, ScreenPosition is a *configuration-time* concept, not a *runtime* conc
 
 ### Service: Binder
 
+* Address: `app.services.generators.menu.provider`
+
 The Binder Service instantiates Bindings and generates the callable functions leveraged by Widgets for their State Closures.
 
 ### Service: Fabricator
 
+* Address: `app.services.generators.menu.fabricator`
+
 The Fabricator Service synthesizes Gizmo Widgets and their Pane Bindings.
 
 ### Service: Layout
+
+* Address: `app.services.generators.menu.layout`
 
 Consider a `stack` Pane with two children `dock` Panes, each with three Buttons, represented by the matrix, `[[a,b,c], [d, e, f]]`. Consider the problem of the Menu `focus` residing on the `b` Button element when the user presses `south`. In this case, the Menu must shift focus to the `e` element. The `graph` attribute of the Menu holds this relational struture. 
 
@@ -563,55 +566,57 @@ As this example illustrates, a Menu must have access to the Traversal graph. Thi
 
 To generate the Render List, when a Menu is triggered, the Layout Module executes the following sequence:
 
-1. **Quantize 9-Slice Spans (Post-Order)**: Recursively walk the Menu Tree bottom-up (`Layout._quantize`). Leaf and child Pane dimensions are resolved first; each parent Pane bounds its requested `(w_req, l_req)` below by the aggregate footprint of its children (`DOCK`, `STACK`, or `OVERLAY` plus `gap` and `margins`) before quantizing `multiple` (`nx`, `ny`) and `span` to 9-slice tile multiples.
-2. **Resolve Root Pane Anchors**: Convert each root Pane's `span` and `justification` to absolute screen coordinates `(x, y)`.
-3. **Align Children (Pre-Order)**: Recursively position child Widgets relative to their parent Pane's anchor along the Pane's `layout` axis (`dock`, `stack`, or `overlay`) using `Layout._resolve_axis`.
-4. **Flatten**: Return the flattened list of instantiated `Widget` objects.
+1. **Quantize 9-Slice Spans (Post-Order)**: Recursively walk the Menu Tree bottom-up. Leaf and child Pane dimensions are resolved first; each parent Pane bounds its requested Dimensions below by the aggregate footprint of its children before quantizing its 9-slice tile multiples.
+2. **Resolve Root Pane Anchors**: Convert each root Pane Dimensions to absolute screen coordinates `(x, y)`.
+3. **Align Children (Pre-Order)**: Recursively position child Widgets relative to their parent Pane's anchor along the Pane's `layout` axis.
+4. **Flatten**: Return the flattened list of instantiated Widget objects.
 
 **Interface: Traversal Graph**
 
 To construct the Traversal Graph, the Layout Service evaluates Axis-Aligned Bounding Box (AABB) overlaps across traversable Buttons:
 
-* **Graph Inclusion**: Passive display slots (`status == Statuses.DISABLED`) are excluded from `menu.graph`. All Gizmo aperture slot buttons (`SelectBinding` with `selection == Selections.SLOT`) are always indexed into Traversal Graph regardless of initial vacancy so dynamic collection changes and pagination never leave stale or missing graph edges.
+* **Graph Inclusion**: Disabled Slots are excluded from the Traversal Graph. All Gizmo aperture slot buttons (SelectBinding with `selection == Selections.SLOT`) are always indexed into Traversal Graph regardless of initial vacancy so dynamic collection changes and pagination never leave stale or missing graph edges.
 * **Cardinal Raycast**: For each Button, the Layout Service links the nearest overlapping Button along each cardinal axis (`north`, `south`, `east`, `west`).
-* **Runtime Traversal**: When directional input is polled, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) first checks whether focus resides on a Gizmo aperture boundary that can scroll. Otherwise, it looks up the neighbor in `menu.graph` and shifts focus only if `neighbor.state.status != Statuses.DISABLED`.
+* **Runtime Traversal**: When the [Device](./02-sprites.md#devices) is polled, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) first checks whether focus resides on a Gizmo aperture boundary that can scroll. Otherwise, it looks up the neighbor in the Traversal Graph and shifts focus only if its Neighbor is not Disabled.
 
 ## Board: Overlays
 
 The [Board](./00-overview.md#component-board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
 
-The HUD is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop. The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,
+The View is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop. The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,
 
-* `board.menus: List[Menu]`: A LIFO stack for *Modal* interfaces (Inventory, Dialogue, Trade). When `len(board.menus) > 0`, world mechanics are paused, and `MenuMechanics` intercepts device polling for traversal.
-* `board.overlays: List[Menu]`: A flat list for *Non-blocking* interfaces (HUD, Floating Damage Numbers, Action Prompts). These do not pause the board and do not receive input focus. They passively observe `UpdateEvent` emissions from the Event Bus.
+* `board.menus: List[Menu]`: A LIFO stack for *modal* interfaces (Inventory, Dialogue, Trade). When Menus exist, [World Mechanics](05-mechanics.md#mechanics-world) are paused, and [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) intercepts device polling for Widget Traversal.
+* `board.overlays: List[Menu]`: A flat list for the *non-blocking* [View Menu](#menu-data). These do not pause the [Board](./00-overview.md#component-board) and do not receive Menu `focus`. They passively observe UpdateEvent emissions from the Event Bus.
 
 ### Menu: Data
 
-1. Dialogue:
-    * **Payload**: `DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)`
-    * **Events**: `UpdateEvent` (canvas paging and line progression), `TerminalEvent` (closing dialogue loop)
-2. Editor: TODO
-    * **Payload**: `EditorContext` (TBD)
+1. Dialogue: Menu for displaying [Library](./08-narratives.md#service-library) Dialogue.
+    * **Context**: `DialogueContext(plot, sprite, object)`
+    * **Events**: `UpdateEvent`, `TerminalEvent`
+2. Editor: Menu for editing [Board States](./00-overview.md#component-board)
+    * **Context**: `EditorContext(TODO)`
     * **Events**: TODO
-3. **Equipment, Pouch & Pack (Inventory Menus)**: Instantiated from the world loop via `MenuEvent('equipment')`, `MenuEvent('pouch')`, and `MenuEvent('pack')` in `PlayerMechanics`:
-    * **Payload**: `InventoryContext(inventory: Inventory, slots: Slots, active_grip: str = "right")`
-    * **`equipment`**: Displays passive `Gear` slots (`armor`, `shield`) and three 1x4 strip Gizmos mapping `inventory.sheathe` $\to$ `slots.equipment.weapon`, `inventory.belt` $\to$ `slots.equipment.tool`, and `inventory.bag` $\to$ `slots.equipment.utility`.
-    * **`pouch`**: Displays interactive `right` and `left` Grip buttons (`Selections.GRIP`) and a 2x4 grid Gizmo mapping `inventory.pouch` $\to$ `slots.grip.<active_grip>`.
-    * **`pack`**: Displays two 2x4 grid Gizmos for `inventory.pack` (`materials`) and `inventory.sack` (`crops`) alongside the Craft Formulae pane.
-    * **Events**: `TerminalEvent` (closing menu and unpausing world). Slot icon updates and Gizmo pagination evaluate reactively through `IconBinding` and `ApertureBinding` closures without emitting `UpdateEvent`.
-4. Market: TODO
-    * **Payload**: `MarketContext(buyer: Inventory, seller: Inventory)` (TBD)
+3. Pouch: Menu for attaching [Inventory](./02-sprites.md#model-inventory) to [Grip](./02-sprites.md#model-slots).
+    * **Context**: `InventoryContext(inventory, slots, grip)`
+    * **Events**: `UpdateEvent`, `TerminalEvent`
+4. Pack: Menu for navigating [Inventory](./02-sprites.md#model-inventory) and displaying [Craft Formula](./03-compositions.md#category-crafts).
+    * **Context**: `InventoryContext(inventory, slots, grip)`
+    * **Events**: `UpdateEvent`, `TerminalEvent`
+5. Equipment: Menu for attaching [Equipment](./02-sprites.md#sheet-equipment) to [Slots](./02-sprites.md#model-slots)
+    * **Context**: `InventoryContext(inventory, slots, grip)`
+    * **Events**: `UpdateEvent`, `TerminalEvent`
+6. Market: Menu for Sprite-to-Sprite [bartering](./04-intentions.md)
+    * **Context**: `MarketContext(buyer, seller)`
     * **Events**: TODO
-5. Main: Instantiated at ignition by injecting a `MenuEvent('main')` directly onto the Engine event bus before world simulation begins.
-    * **Payload**: `MainContext(registry: Registry)`
-    * **Events**: `StateEvent` (triggers `Migrator` hydration for New/Load), `MenuEvent` (opens `options` or `editor` submenus)
-    * **Outputs**: `<board-key>` / save slot target for state migration
-6. Options: Generic settings modal invoked from the Main Menu or Pause Menu.
-    * **Payload**: `MenuContext` (generic or inherited context)
-    * **Events**: `UpdateEvent` (live preview text stamping on display canvas), `TerminalEvent` (returns to previous menu)
-7. Pause: Modal menu triggered from the world loop via `MenuEvent('pause')` in `PlayerMechanics`. Pauses the engine tick by setting `board.paused = True`.
-    * **Payload**: `PauseContext(board: Board)`
-    * **Events**: `TerminalEvent` (unpauses game simulation), `StateEvent` (triggers state rehydration for loads), `MenuEvent` (opens `options` submenu or resets board to return to `main`)
-8. View: Also known as the Heads-Up Display (HUD). Created during engine bootstrap and stored in `board.overlays` rather than the modal `board.menus` stack. It renders on top of world assets every frame without pausing simulation or intercepting input traversal.
-    * **Payload**: `ViewContext(sprite: SpriteState)`
-    * **Events**: None (passively evaluates live state bindings each tick)
+7. Main: Main entrypoint for the [Application](./00-overview.md#application)
+    * **Context**: `MainContext(registry)`
+    * **Events**: `StateEvent`, `MenuEvent('load')`, `MenuEvent('options')`
+8. Options: Menu for configuring settings.
+    * **Context**: `MenuContext()`
+    * **Events**: `UpdateEvent`, `TerminalEvent`
+9. Pause: Menu for saving and loading [Board State](./00-overview.md#component-board)
+    * **Context**: `PauseContext(board)`
+    * **Events**: `TerminalEvent`, `StateEvent`, `MenuEvent('options')`
+10. View: Heads-up display Menu.
+    * **Context**: `ViewContext(sprite)`
+    * **Events**: None

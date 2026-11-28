@@ -4,6 +4,7 @@
 @app.library
 @workflow.collisions
 @workflow.navigation
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.libs.core.math.test_geometry
 
@@ -75,19 +76,64 @@ def test_geometry_intersects_multi_hitbox_second_match():
     assert result == (hb1_hit, hb2[0])
 
 
-def test_geometry_onscreen():
-    pos = Position(100, 100)
+@pytest.mark.workflow_rendering
+def test_geometry_camera():
+    """Verify geometry.camera clamps to board bounds and centers sub-viewport layers."""
+    screen = Dimensions(800, 600)
+    board = Dimensions(1600, 1200)
     dim = Dimensions(32, 32)
 
-    p_pos = Position(100, 100)
-    p_dim = Dimensions(32, 32)
-    screen = Dimensions(480, 480)
+    # Top-left clamp
+    cam = geometry.camera(Position(100, 100), dim, screen, board)
+    assert (cam.x, cam.y) == (0, 0)
 
-    assert geometry.onscreen(pos, dim, p_pos, p_dim, screen) is True
+    # Bottom-right clamp
+    cam = geometry.camera(Position(1500, 1100), dim, screen, board)
+    assert (cam.x, cam.y) == (800, 600)
 
-    far_pos = Position(2000, 2000)
-    assert geometry.onscreen(far_pos, dim, p_pos, p_dim, screen) is False
+    # Free middle tracking
+    cam = geometry.camera(Position(800, 600), dim, screen, board)
+    assert (cam.x, cam.y) == (416, 316)
 
+    # Sub-viewport centering on both axes
+    small_board = Dimensions(128, 192)
+    square_screen = Dimensions(480, 480)
+    cam = geometry.camera(Position(64, 96), dim, square_screen, small_board)
+    assert (cam.x, cam.y) == (-176, -144)
+
+    # Asymmetric centering (X smaller than viewport, Y larger than viewport)
+    asym_board = Dimensions(200, 1000)
+    cam = geometry.camera(Position(100, 800), dim, square_screen, asym_board)
+    assert (cam.x, cam.y) == (-140, 520)
+
+
+@pytest.mark.workflow_rendering
+def test_geometry_onscreen():
+    """
+    Verify geometry.onscreen matches Screen.camera clamping and small-layer centering (Bug B047).
+    """
+    dim = Dimensions(32, 32)
+    screen = Dimensions(1280, 720)
+    board = Dimensions(1920, 1080)
+
+    # 1. Top-left boundary clamp: player at (0, 0) clamps camera to [0, 1280) x [0, 720)
+    p_pos = Position(0, 0)
+    p_dim = Dimensions(64, 64)
+    assert geometry.onscreen(Position(800, 200), dim, p_pos, p_dim, screen, board) is True
+    assert geometry.onscreen(Position(1300, 200), dim, p_pos, p_dim, screen, board) is False
+
+    # 2. Bottom-right boundary clamp: camera clamps to [640, 1920) x [360, 1080)
+    br_player = Position(1900, 1050)
+    assert geometry.onscreen(Position(700, 400), dim, br_player, p_dim, screen, board) is True
+    assert geometry.onscreen(Position(600, 400), dim, br_player, p_dim, screen, board) is False
+
+    # 3. Sub-viewport centering: 200x200 board inside 480x480 screen -> [-140, 340)
+    small_board = Dimensions(200, 200)
+    square_screen = Dimensions(480, 480)
+    assert geometry.onscreen(Position(0, 0), dim, Position(100, 100), dim, square_screen, small_board) is True
+    assert geometry.onscreen(Position(190, 190), dim, Position(100, 100), dim, square_screen, small_board) is True
+    assert geometry.onscreen(Position(400, 400), dim, Position(100, 100), dim, square_screen, small_board) is False
+    
 
 def test_geometry_cone():
     assert geometry.cone(0, 0, 0, 10, 100, 0.5, "down") is True
@@ -102,9 +148,13 @@ def test_geometry_cone():
 
 
 def test_geometry_nearby():
+    """Verify geometry.nearby uses inclusive closed-ball distance (<=) and rejects negative radii."""
     assert geometry.nearby(0, 0, 3, 4, 10) is True
-    assert geometry.nearby(0, 0, 3, 4, 5) is False
+    assert geometry.nearby(0, 0, 3, 4, 5) is True
+    assert geometry.nearby(0, 0, 3, 4, 4) is False
     assert geometry.nearby(0, 0, 10, 10, 5) is False
+    assert geometry.nearby(0, 0, 0, 0, 0) is True
+    assert geometry.nearby(0, 0, 0, 0, -1) is False
 
 
 def test_geometry_bounded():

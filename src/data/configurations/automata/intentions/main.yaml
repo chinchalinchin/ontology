@@ -1,0 +1,283 @@
+intentions:
+  # ----------------------------------------------------------------------------------
+  attack:
+    - next: attack
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
+        - not functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.TARGET
+          or sprite.layer != sprite.goal.layer
+          or not sprites.get(sprite.goal.name)
+          or sprites.get(sprite.goal.name).mutators.triggers.dead
+  # ----------------------------------------------------------------------------------
+  barter:
+    - next: threaten
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: need to expose a Materializer function to the
+        #       to the execution environment to calculate
+        #       precise inventory cost.
+        - sprite.inventory.pouch.get(sprite.goal.name, 0) < sprite.memory.prices.get(sprite.goal.name, 0)
+        - sprite.psyche.motivation == constants.Motivations.SURVIVAL
+    - next: idle
+      conditions:
+        - not sprite.goal or sprite.goal.category != constants.Goals.RESOURCE
+  # ----------------------------------------------------------------------------------
+  build:
+    - next: idle
+      conditions:
+        - not sprite.goal or sprite.goal.category != constants.Goals.PROPERTY
+  # ----------------------------------------------------------------------------------
+  escape:
+    - next: escape
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.POSITION
+        - sprite.layer == sprite.goal.layer
+        - sprite.mutators.triggers.frightened
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.POSITION
+          or sprite.layer != sprite.goal.layer
+          or not sprite.mutators.triggers.frightened
+  # ----------------------------------------------------------------------------------
+  find:
+    - next: interact
+      conditions:
+        - sprite.goal
+        - sprite.goal.category in [
+            constants.Goals.OBJECT,
+            constants.Goals.DOOR
+          ]
+        - sprite.layer == sprite.goal.layer
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: speak
+      conditions:
+        - sprite.goal
+        - sprite.psyche.dialogue
+        - sprite.goal.category == constants.Goals.SUBJECT
+        - sprite.layer == sprite.goal.layer
+        - sprite.mutators.triggers.vision
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
+        - sprite.memory.relationships.get(sprite.goal.name)
+        - sprite.memory.relationships[sprite.goal.name] in [
+            constants.Relationships.FRIEND,
+            constants.Relationships.FAMILY
+          ]
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category not in [
+            constants.Goals.SUBJECT,
+            constants.Goals.OBJECT,
+            constants.Goals.DOOR
+          ]
+          or sprite.layer != sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  follow:
+    - next: speak
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.SUBJECT
+        - sprite.psyche.dialogue
+        - sprite.layer == sprite.goal.layer
+        - sprites.get(sprite.goal.name)
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.SUBJECT
+          or sprite.layer != sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  hunt:
+    - next: attack
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.TARGET
+          or sprite.layer != sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  idle:
+    - next: escape
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.POSITION
+        - sprite.layer == sprite.goal.layer
+        - sprite.mutators.triggers.frightened
+    - next: wander
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.POSITION
+        - sprite.layer == sprite.goal.layer
+        - not sprite.mutators.triggers.frightened
+    - next: find
+      conditions:
+        - sprite.goal
+        - sprite.goal.category in [
+            constants.Goals.SUBJECT,
+            constants.Goals.OBJECT,
+            constants.Goals.DOOR
+          ]
+        - sprite.layer == sprite.goal.layer
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  interact:
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category not in [
+            constants.Goals.OBJECT,
+            constants.Goals.DOOR
+          ]
+          or sprite.layer != sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  mine:
+    - next: build
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: expose a Materializer function to the
+        #       execution environment to calculate
+        #       exact cost for transition
+        - sprite.inventory.pack.get(sprite.goal.name, 0) > 0
+    - next: mine
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: expose a Materializer function to the
+        #       execution environment to calculate
+        #       exact cost for transition
+        - sprite.inventory.pack.get(sprite.goal.name, 0) == 0
+    - next: idle
+      conditions:
+        - not sprite.goal or sprite.goal.category != constants.Goals.RESOURCE
+  # ----------------------------------------------------------------------------------
+  mock:
+    - next: threaten
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.MOCK
+    - next: idle
+      conditions:
+        - not sprite.goal or sprite.goal.category != constants.Goals.TARGET
+  # ----------------------------------------------------------------------------------
+  return:
+    - next: idle
+      conditions:
+        - not sprite.goal or sprite.goal.category != constants.Goals.POSITION
+  # ----------------------------------------------------------------------------------
+  scavenge:
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  speak:
+    - next: idle
+      conditions:
+        - sprite.mutators.triggers.frightened
+    - next: idle
+      conditions:
+        - sprite.goal
+        - sprite.goal.name == constants.RequiredAssets.PLAYER
+    - next: idle
+      conditions:
+        - sprite.goal
+        - sprite.goal.category != constants.Goals.SUBJECT
+    - next: idle
+      conditions:
+        - not sprite.psyche.expression
+  # ----------------------------------------------------------------------------------
+  sprint:
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  threaten:
+    - next: attack
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+        - functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET
+        - sprite.layer == sprite.goal.layer
+        - not functions.is_near(
+            sprite.position,
+            sprite.goal.position,
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.TARGET
+          or sprite.layer != sprite.goal.layer
+  # ----------------------------------------------------------------------------------
+  wander:
+    - next: idle
+      conditions:
+        - not sprite.goal
+          or sprite.goal.category != constants.Goals.POSITION
+          or sprite.layer != sprite.goal.layer
+          or sprite.mutators.triggers.frightened

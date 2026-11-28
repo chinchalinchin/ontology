@@ -512,6 +512,7 @@ def write(
     cdef TexturePtr tex
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
     cdef int margin_px_w, margin_px_h, wrap_width
+    cdef int w, ox, oy, max_dist_sq
     cdef bytes b_content
     cdef SDL_Surface* text_surface = NULL
     cdef SDL_Texture* text_tex = NULL
@@ -519,6 +520,7 @@ def write(
     cdef SDL_Texture* outline_tex = NULL
     cdef SDL_Rect dst_rect
     cdef SDL_Rect outline_rect
+    cdef SDL_Rect clip_rect
 
     tex, sx, sy, sw, sl, dx, dy, dw, dl = asset
     
@@ -542,7 +544,7 @@ def write(
         SDL_FreeSurface(text_surface)
         return
         
-    dst_rect.y = margin_px_h    
+    dst_rect.y = sy + margin_px_h    
     dst_rect.w = text_surface.w
     dst_rect.h = text_surface.h
     
@@ -553,28 +555,44 @@ def write(
     else:
         dst_rect.x = sx + margin_px_w
 
-    # Pass 1: Render outline behind the primary text
-    if font.outline_ptr != NULL and font.outline_width > 0:
+    # Pass 1: Render outline behind the primary text using base font.ptr so
+    # glyph advances and wrapped line breaks match text_surface identically.
+    if font.outline_width > 0:
         outline_surface = TTF_RenderUTF8_Blended_Wrapped(
-            font.outline_ptr, b_content, font.outline_color, wrap_width + (2 * font.outline_width)
+            font.ptr, b_content, font.outline_color, wrap_width
         )
         if outline_surface != NULL:
             outline_tex = SDL_CreateTextureFromSurface(_renderer, outline_surface)
-            outline_rect.x = dst_rect.x - font.outline_width
-            outline_rect.y = dst_rect.y - font.outline_width
             outline_rect.w = outline_surface.w
             outline_rect.h = outline_surface.h
 
     # Bake onto the target texture
+    clip_rect.x = sx
+    clip_rect.y = sy
+    clip_rect.w = sw
+    clip_rect.h = sl
+
     SDL_SetRenderTarget(_renderer, tex.ptr)
+    SDL_RenderSetClipRect(_renderer, &clip_rect)
 
     if outline_tex != NULL:
         SDL_SetTextureBlendMode(outline_tex, SDL_BLENDMODE_BLEND)
-        SDL_RenderCopy(_renderer, outline_tex, NULL, &outline_rect)
+        w = font.outline_width
+        max_dist_sq = (w * w) + w
+        # Stamp across a filled discrete disk (r <= sqrt(w^2 + w)) so w=1 covers all
+        # 8 cardinal/diagonal neighbors and w>=2 leaves no hollow interior gaps.
+        for oy in range(-w, w + 1):
+            for ox in range(-w, w + 1):
+                if (ox == 0 and oy == 0) or ((ox * ox) + (oy * oy)) > max_dist_sq:
+                    continue
+                outline_rect.x = dst_rect.x + ox
+                outline_rect.y = dst_rect.y + oy
+                SDL_RenderCopy(_renderer, outline_tex, NULL, &outline_rect)
 
     SDL_SetTextureBlendMode(text_tex, SDL_BLENDMODE_BLEND)
     SDL_RenderCopy(_renderer, text_tex, NULL, &dst_rect)
 
+    SDL_RenderSetClipRect(_renderer, NULL)
     SDL_SetRenderTarget(_renderer, NULL)
     
     # Cleanup surfaces and intermediate textures

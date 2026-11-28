@@ -31,6 +31,7 @@ class Configurations(StrEnum):
 class FrameRecipe(StrEnum):
     BINARY          = "binary"
     CARDINAL        = "cardinal"
+    CHARACTER       = "character"
     DIRECTED        = "directed"
     FLUID           = "fluid"
     ICON            = "icon"
@@ -51,6 +52,7 @@ class FrameRecipe(StrEnum):
     
 class AnimationRecipe(StrEnum):
     NONE            = "none"
+    CHARACTER       = "character"
     STATE           = "state"
     SPRITE          = "sprite"
     FREQUENCY       = "frequency"

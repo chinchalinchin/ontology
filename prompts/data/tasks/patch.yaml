@@ -1,0 +1,67 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: maintain/patch.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      bugs: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: false
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      bugs: []
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-backlog
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: 'Application - Core'
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Application - Devices'
+            scan:
+              domain: [ user ]
+              app: [ device ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [  ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

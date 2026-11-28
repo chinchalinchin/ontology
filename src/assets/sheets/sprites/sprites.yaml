@@ -1,0 +1,40 @@
+sheets:
+  sprites:
+    # ------------------------------------------------
+    # ------------------------------ SPRITE PROPERTIES
+    # ------------------------------------------------
+    jasilynn:
+      mass: 25
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: 
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-female-ivory
+        - torso-dress-red
+        - hair-long-black
+        - head-crown-gold
+        - feet-boots-black
+      actions: lpc-full
+    # ------------------------------------------------
+    archaxes:
+      mass: 50
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes:
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-male-ivory
+      actions: lpc-full

@@ -3,7 +3,6 @@
 @test.unit
 @app.mechanic
 @category.sheets
-@modality.intention
 @workflow.player
 
 # Ontology: Tests - tests.unit.app.game.logic.mechanics.intentional.test_player
@@ -28,7 +27,6 @@ from app.static.semantics import (
 pytestmark = [
     pytest.mark.app_mechanic,
     pytest.mark.category_sheets,
-    pytest.mark.modality_intention,
     pytest.mark.workflow_player,
 ]
 

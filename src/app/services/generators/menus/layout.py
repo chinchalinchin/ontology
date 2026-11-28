@@ -29,7 +29,7 @@ from app.static.semantics import (
     Statuses,
     Selections
 )
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     AxisAlignment,
     MenuNode,
     PaneParameters

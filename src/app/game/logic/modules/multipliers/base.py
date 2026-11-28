@@ -21,7 +21,7 @@ from app.assets.base import Asset
 from app.game.logic.relations import MaterialIndex
 from app.models.state import CraftState
 from app.models.properties import CraftProperties
-from app.models.config import Recipe
+from app.models.configurations import Recipe
 from app.models.abstracts import Singleton  
 from app.services.factories.assets import AssetFactory
 

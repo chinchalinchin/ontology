@@ -22,7 +22,7 @@ from typing import (
 # Application Libraries
 from app.static.semantics import Fonts
 from app.game.menus.bindings.base import Binding
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     LibraryTarget,
     TextTarget
 )

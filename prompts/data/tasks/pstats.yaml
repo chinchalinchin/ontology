@@ -9,17 +9,17 @@ tools:
   views:
     # --------------------------------------------
     manager:
-      docs: true
-      templates: true
+      docs: false
+      templates: false
     # --------------------------------------------
     metrics:
       pstats: true
     # --------------------------------------------
     source:
-      filter: true
+      filter: false
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------

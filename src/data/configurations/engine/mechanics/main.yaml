@@ -1,0 +1,63 @@
+mechanics:
+  core:
+    - key: menu
+      executors: []
+      relations: []
+    - key: animation
+      executors: []
+      relations: []
+    - key: remove
+      executors: []
+      relations: []
+  world:
+    - key: player
+      executors: []
+      relations: 
+        - projectiles
+    - key: cognition
+      executors:
+        - goal
+      relations: []
+    - key: transition
+      executors:
+        - intention
+      relations: []
+    - key: navigation
+      executors: []
+      relations: []
+    - key: motion
+      executors: []
+      relations: []
+    - key: interaction
+      executors: []
+      relations: []
+    - key: social
+      executors: []
+      relations: []
+    - key: collision
+      executors: []
+      relations: []
+    - key: fluid
+      executors: []
+      relations:
+        - shorelines
+    - key: season
+      executors:
+        - annual
+        - perennial
+        - centennial
+      relations: []
+    - key: combat
+      executors: []
+      relations:
+        - projectiles
+    - key: switch
+      executors: []
+      relations: []
+    - key: projectile
+      executors: []
+      relations: []
+    - key: plot
+      executors:
+        - plot
+      relations: []

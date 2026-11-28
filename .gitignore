@@ -19,7 +19,4 @@ site/**
 **/uv.lock
 
 !**/.gitkeep
-!**/templates/*-dump.md
-!**/prompts/blocks/**
-!**/prompts/board/**
-!/**/.gitkeep
+!**/templates/*-dump.md.j2

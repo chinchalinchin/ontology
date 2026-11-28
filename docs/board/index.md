@@ -38,7 +38,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   * **Refactor:**
     * *Phase 01:*
       * [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
-      * [x]: [Phase 01.02: Render Decoupling](./phase/refactor/refactor-01-02.md)
+      * [x]: [Phase 01.02: Render Decoupling](./phases/refactor/refactor-01-02.md)
     * *Phase 02:*
       * [x]: [Phase 02.01: Frames](./phases/refactor/refactor-02-01.md)
       * [x]: [Phase 02.02: Registry](./phases/refactor/refactor-02-02.md)
@@ -63,9 +63,11 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 04.06: Pane Generation](./phases/refactor/refactor-04-06.md)
     * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
-      * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
+      * [~]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
       * [x]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
       * [x]: [Phase 06.04: Inventory](./phases/refactor/refactor-06-04.md)
+      * [ ]: [Phase 06.05: Beliefs](./phases/refactor/refactor-06-05.md)
+      * [ ]: [Phase 06.06: Goal Decomposition](./phases/refactor/refactor-06-06.md)
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)

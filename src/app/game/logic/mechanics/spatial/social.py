@@ -2,9 +2,7 @@
 @domain.concrete
 @domain.logic
 @app.mechanic
-@category.sheets
 @physics.space
-@modality.intention
 
 # Ontology: Source - app.game.logic.mechanics.spatial.social
 """

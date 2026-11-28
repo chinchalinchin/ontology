@@ -6,6 +6,7 @@
 @workflow.combat
 @workflow.collisions
 @workflow.navigation
+@workflow.rendering
 
 # Ontology: Libraries - libs.core.math.geometry
 
@@ -24,6 +25,96 @@ from libs.core.models cimport (
     Hitbox, 
     Boundary
 )
+
+# -----------------------------------------------------------------------------
+# PERSPECTIVE GEOMETRY
+# -----------------------------------------------------------------------------
+
+cdef inline void c_camera(
+    int fx,
+    int fy,
+    int fw,
+    int fl,
+    int sw,
+    int sl,
+    int bw,
+    int bl,
+    int* cam_x,
+    int* cam_y
+) noexcept nogil:
+    """
+    Computes clamped camera viewport origin (cam_x, cam_y) in pure C.
+    Centers layers smaller than viewport dimensions via negative offsets.
+    """
+    cdef int cx, cy, max_x, max_y
+
+    if bw < sw:
+        cx = -((sw - bw) >> 1)
+    else:
+        cx = fx + (fw >> 1) - (sw >> 1)
+        max_x = bw - sw
+        if cx < 0:
+            cx = 0
+        elif cx > max_x:
+            cx = max_x
+
+    if bl < sl:
+        cy = -((sl - bl) >> 1)
+    else:
+        cy = fy + (fl >> 1) - (sl >> 1)
+        max_y = bl - sl
+        if cy < 0:
+            cy = 0
+        elif cy > max_y:
+            cy = max_y
+
+    cam_x[0] = cx
+    cam_y[0] = cy
+
+
+cpdef Position camera(
+    Position focus,
+    Dimensions dim,
+    Dimensions screen,
+    Dimensions board
+):
+    """
+    Calculates clamped camera viewport coordinates for a focus entity.
+    Centers layers smaller than viewport dimensions via negative offsets.
+    """
+    cdef int cam_x, cam_y
+    c_camera(
+        focus.x, focus.y, dim.w, dim.l,
+        screen.w, screen.l, board.w, board.l,
+        &cam_x, &cam_y
+    )
+    return Position(x=cam_x, y=cam_y)
+
+
+cpdef bint onscreen(
+    Position pos,
+    Dimensions dim,
+    Position p_pos,
+    Dimensions p_dim,
+    Dimensions screen,
+    Dimensions board
+):
+    """
+    Evaluates whether an asset bounding box intersects the clamped camera viewport.
+    Clamps camera coordinates to board bounds and centers layers smaller than the
+    screen viewport to match Screen.camera semantics.
+    """
+    cdef int cam_x, cam_y
+    c_camera(
+        p_pos.x, p_pos.y, p_dim.w, p_dim.l,
+        screen.w, screen.l, board.w, board.l,
+        &cam_x, &cam_y
+    )
+    return (
+        pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
+        pos.y < cam_y + screen.l and pos.y + dim.l > cam_y
+    )
+
 
 # -----------------------------------------------------------------------------
 # BASIC GEOMETRY
@@ -63,20 +154,6 @@ cpdef tuple intersects(
                 return (hb1, hb2)
                 
     return None
-
-
-cpdef bint onscreen(
-    Position pos, 
-    Dimensions dim, 
-    Position p_pos, 
-    Dimensions p_dim, 
-    Dimensions screen
-):
-    cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
-    cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
-    
-    return (pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
-            pos.y < cam_y + screen.l and pos.y + dim.l > cam_y)
 
 
 cpdef bint cone(
@@ -124,12 +201,13 @@ cpdef bint nearby(
     int radius
 ):
     """
-    Zero-allocation squared distance check. 
+    Zero-allocation inclusive closed-ball squared distance check.
     """
+    if radius < 0:
+        return False
     cdef int dx = tx - sx
     cdef int dy = ty - sy
-    return (dx * dx + dy * dy) < (radius * radius)
-
+    return (dx * dx + dy * dy) <= (radius * radius)
 
 cpdef tuple bounded(
     int a_x, 

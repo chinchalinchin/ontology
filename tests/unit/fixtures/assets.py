@@ -19,7 +19,7 @@ from app.assets.base import (
     Taxonomy,
 )
 from app.game.logic.relations import MaterialIndex
-from app.models.config import (
+from app.models.configurations import (
     ConfigurationSchema,
     MenuNode,
 )
@@ -122,16 +122,11 @@ def mock_asset(
         )
         substrate = mock_material_index.substrate(instance)
 
-        if instance != AssetInstances.PLAYERS.value:
-            prop_map = getattr(
-                getattr(mock_properties_schema, category),
-                instance,
-            )
-        else:
-            prop_map = getattr(
-                getattr(mock_properties_schema, category),
-                AssetInstances.SPRITES.value,
-            )
+        prop_map = getattr(
+            getattr(mock_properties_schema, category),
+            instance,
+        )
+
 
         if category == AssetCategories.WIDGETS.value:
             if asset_state is None:

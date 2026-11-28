@@ -11,7 +11,7 @@ Select Binding implementation.
 from typing import Optional
 
 # Application Libraries
-from app.models.config.menus import SelectTarget
+from app.models.configurations.menus import SelectTarget
 from app.game.menus.bindings.base import Binding
 from app.static.semantics import Statuses
 

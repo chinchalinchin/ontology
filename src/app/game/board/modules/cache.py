@@ -22,6 +22,7 @@ from typing import (
 import app.static.settings as settings
 import app.game.logic.predicates as predicates
 from app.assets.base import Asset
+from app.models.state.core import AssetState
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
@@ -29,7 +30,10 @@ from app.static.semantics import (
 )
 
 # Cython Libraries
-from libs.core.models import Position
+from libs.core.models import (
+    Dimensions,
+    Position
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,31 +51,49 @@ class Cache:
     cached_tilemap: Dict[str, Dict[str, Dict[Tuple[int, int], Asset]]]
     cached_fluidmap: Dict[str, Dict[Tuple[int, int], List[Asset]]]
     cached_characters: Dict[str, Any]
+    cached_states: Dict[str, Dict[str, AssetState]]
+    cached_sizes: Dict[str, Dimensions]
+    assets_by_name: Dict[str, Asset]
     shorelines: Dict[str, List[Asset]]
     all_categories: Dict[str, List[Asset]]
     all_instances: Dict[str, List[Asset]]
 
 
     def __init__(self) -> None:
-        self.init_layer()
+        """Initializes all categorical, instance, spatial grid, and layer-scoped stores."""
+        self.clear()
 
 
-    def init_layer(self, layer: Optional[str] = None) -> None:
+    @staticmethod
+    def _asset_extent(asset: Asset) -> Tuple[int, int]:
         """
-        Initializes cache buckets for a specific layer, or resets all caches if layer is None.
+        Computes the far-corner (max_x, max_y) world extent contributed by an asset.
+        """
+        position = asset.state.position
+        if position is None:
+            return (0, 0)
+
+        if asset.category == AssetCategories.TILES:
+            multiple = asset.state.multiple
+            if multiple is None:
+                return (0, 0)
+            ext_w = int(position.x) + (multiple.nx * asset.properties.dimensions.w)
+            ext_l = int(position.y) + (multiple.ny * asset.properties.dimensions.l)
+            return (ext_w, ext_l)
+
+        if asset.dimensions:
+            ext_w = int(position.x) + asset.dimensions.w
+            ext_l = int(position.y) + asset.dimensions.l
+            return (ext_w, ext_l)
+
+        return (0, 0)
+
+
+    def init_layer(self, layer: str) -> None:
+        """
+        Initializes cache buckets for a specific layer.
         """
         if layer is None:
-            self.cached_categories = {}
-            self.cached_instances = {}
-            self.cached_layers = {}
-            self.cached_renderables = {}
-            self.cached_weights = {}
-            self.cached_tilemap = {}
-            self.cached_fluidmap = {}
-            self.cached_characters = {}
-            self.shorelines = {}
-            self.all_categories = {}
-            self.all_instances = {}
             return
 
         self.cached_categories.setdefault(layer, {})
@@ -84,6 +106,8 @@ class Cache:
             AssetInstances.CANOPY: {}
         })
         self.cached_fluidmap.setdefault(layer, {})
+        self.cached_states.setdefault(layer, {})
+        self.cached_sizes.setdefault(layer, Dimensions(w=0, l=0))
         self.shorelines.setdefault(layer, [])
 
 
@@ -169,27 +193,19 @@ class Cache:
         Indexes a batch of assets across all multi-tier dictionaries and spatial grids.
         """
         affected_fluid_layers: Set[str] = set()
+        batch_extents: Dict[str, List[int]] = {}
 
         for asset in assets:
             layer = asset.state.layer
             cat = asset.category
             inst = asset.instance
 
+            # Always register in global catalogues regardless of layer deployment
             self.all_categories.setdefault(cat, []).append(asset)
             self.all_instances.setdefault(inst, []).append(asset)
 
-            if layer not in self.cached_categories:
-                self.init_layer(layer)
-
-            self.cached_categories[layer].setdefault(cat, []).append(asset)
-            self.cached_instances[layer].setdefault(inst, []).append(asset)
-            self.cached_layers[layer].append(asset)
-
-            if cat != AssetCategories.TILES:
-                self.cached_renderables[layer].append(asset)
-
-            if predicates.is_weight(asset):
-                self.cached_weights[layer].append(asset)
+            if asset.name:
+                self.assets_by_name[asset.name] = asset
 
             if cat == AssetCategories.SHEETS and inst in (
                 AssetInstances.SPRITES,
@@ -198,11 +214,44 @@ class Cache:
                 if asset.name:
                     self.cached_characters[asset.name] = asset.state
 
+            # Layerless assets (e.g., stateless Equipment wrappers) skip layer-scoped caches
+            if layer is None:
+                continue
+
+            if layer not in self.cached_categories:
+                self.init_layer(layer)
+
+            self.cached_categories[layer].setdefault(cat, []).append(asset)
+            self.cached_instances[layer].setdefault(inst, []).append(asset)
+            self.cached_layers[layer].append(asset)
+
+            if asset.name:
+                self.cached_states[layer][asset.name] = asset.state
+
+            if cat != AssetCategories.TILES:
+                self.cached_renderables[layer].append(asset)
+
+            if predicates.is_weight(asset):
+                self.cached_weights[layer].append(asset)
+
             if inst == AssetInstances.SHORELINES:
                 self.shorelines[layer].append(asset)
 
             if inst == AssetInstances.FLUIDS:
                 affected_fluid_layers.add(layer)
+
+            # Update cached layer dimensions monotonically when the layer is not dirty
+            if layer in self.cached_sizes:
+                ext_w, ext_l = self._asset_extent(asset)
+                bounds = batch_extents.get(layer)
+                if bounds is None:
+                    cur = self.cached_sizes[layer]
+                    bounds = [cur.w, cur.l]
+                    batch_extents[layer] = bounds
+                if ext_w > bounds[0]:
+                    bounds[0] = ext_w
+                if ext_l > bounds[1]:
+                    bounds[1] = ext_l
 
             if cat == AssetCategories.TILES:
                 w = asset.properties.dimensions.w
@@ -224,6 +273,12 @@ class Cache:
                         if inst not in self.cached_tilemap[layer]:
                             self.cached_tilemap[layer][inst] = {}
                         self.cached_tilemap[layer][inst][(cx, cy)] = asset
+
+        # Commit updated layer dimensions once per modified layer
+        for layer, (max_w, max_l) in batch_extents.items():
+            cur = self.cached_sizes[layer]
+            if max_w > cur.w or max_l > cur.l:
+                self.cached_sizes[layer] = Dimensions(w=max_w, l=max_l)
 
         for layer in affected_fluid_layers:
             self.rebuild_fluid(layer)
@@ -296,6 +351,9 @@ class Cache:
                     if a not in removal_set
                 ]
 
+            # Invalidate cached layer size so extents recompute lazily after eviction
+            self.cached_sizes.pop(layer, None)
+
         # 2. Global catalogue filters
         for cat in affected_categories:
             if cat in self.all_categories:
@@ -311,6 +369,20 @@ class Cache:
                     if a not in removal_set
                 ]
 
+        for asset in removals:
+            if asset.name and self.assets_by_name.get(asset.name) is asset:
+                del self.assets_by_name[asset.name]
+
+            # Identity-safe eviction preserves reciprocal Door projections on other layers
+            layer = asset.state.layer
+            if (
+                layer is not None
+                and asset.name
+                and layer in self.cached_states
+                and self.cached_states[layer].get(asset.name) is asset.state
+            ):
+                del self.cached_states[layer][asset.name]
+
         # 3. Character cache evictions
         for name in removal_names:
             if name in self.cached_characters:
@@ -322,7 +394,7 @@ class Cache:
                 self.rebuild_fluid(layer)
 
 
-    def relayer(self, asset: Asset, new_layer: str) -> None:
+    def relayer(self, asset: Asset, new_layer: Optional[str]) -> None:
         """
         Atomically shifts an asset's cache indexing across layers.
         """
@@ -335,27 +407,43 @@ class Cache:
         cat = asset.category
         inst = asset.instance
 
-        if old_layer in self.cached_categories and cat in self.cached_categories[old_layer]:
-            if asset in self.cached_categories[old_layer][cat]:
-                self.cached_categories[old_layer][cat].remove(asset)
+        if old_layer is not None:
+            if old_layer in self.cached_categories and cat in self.cached_categories[old_layer]:
+                if asset in self.cached_categories[old_layer][cat]:
+                    self.cached_categories[old_layer][cat].remove(asset)
 
-        if old_layer in self.cached_instances and inst in self.cached_instances[old_layer]:
-            if asset in self.cached_instances[old_layer][inst]:
-                self.cached_instances[old_layer][inst].remove(asset)
+            if old_layer in self.cached_instances and inst in self.cached_instances[old_layer]:
+                if asset in self.cached_instances[old_layer][inst]:
+                    self.cached_instances[old_layer][inst].remove(asset)
 
-        if old_layer in self.cached_layers and asset in self.cached_layers[old_layer]:
-            self.cached_layers[old_layer].remove(asset)
+            if old_layer in self.cached_layers and asset in self.cached_layers[old_layer]:
+                self.cached_layers[old_layer].remove(asset)
 
-        if old_layer in self.cached_renderables and asset in self.cached_renderables[old_layer]:
-            self.cached_renderables[old_layer].remove(asset)
+            if old_layer in self.cached_renderables and asset in self.cached_renderables[old_layer]:
+                self.cached_renderables[old_layer].remove(asset)
 
-        if old_layer in self.cached_weights and asset in self.cached_weights[old_layer]:
-            self.cached_weights[old_layer].remove(asset)
+            if old_layer in self.cached_weights and asset in self.cached_weights[old_layer]:
+                self.cached_weights[old_layer].remove(asset)
 
-        if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
-            self.shorelines[old_layer].remove(asset)
+            if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
+                self.shorelines[old_layer].remove(asset)
+
+            if (
+                old_layer in self.cached_states
+                and asset.name
+                and self.cached_states[old_layer].get(asset.name) is asset.state
+            ):
+                del self.cached_states[old_layer][asset.name]
+
+            self.cached_sizes.pop(old_layer, None)
 
         asset.state.layer = new_layer
+
+        # Detaching an asset from all layers requires no target layer registration
+        if new_layer is None:
+            if inst == AssetInstances.FLUIDS and old_layer is not None:
+                self.rebuild_fluid(old_layer)
+            return
 
         if new_layer not in self.cached_categories:
             self.init_layer(new_layer)
@@ -363,6 +451,9 @@ class Cache:
         self.cached_categories[new_layer].setdefault(cat, []).append(asset)
         self.cached_instances[new_layer].setdefault(inst, []).append(asset)
         self.cached_layers[new_layer].append(asset)
+
+        if asset.name:
+            self.cached_states[new_layer][asset.name] = asset.state
 
         if cat != AssetCategories.TILES:
             self.cached_renderables[new_layer].append(asset)
@@ -373,8 +464,18 @@ class Cache:
         if inst == AssetInstances.SHORELINES:
             self.shorelines[new_layer].append(asset)
 
+        if new_layer in self.cached_sizes:
+            ext_w, ext_l = self._asset_extent(asset)
+            cur = self.cached_sizes[new_layer]
+            if ext_w > cur.w or ext_l > cur.l:
+                self.cached_sizes[new_layer] = Dimensions(
+                    w=max(cur.w, ext_w),
+                    l=max(cur.l, ext_l)
+                )
+
         if inst == AssetInstances.FLUIDS:
-            self.rebuild_fluid(old_layer)
+            if old_layer is not None:
+                self.rebuild_fluid(old_layer)
             self.rebuild_fluid(new_layer)
 
 
@@ -382,9 +483,60 @@ class Cache:
         """
         Clears all indices and resets layer stores.
         """
-        self.init_layer()
+        self.cached_categories = {}
+        self.cached_instances = {}
+        self.cached_layers = {}
+        self.cached_renderables = {}
+        self.cached_weights = {}
+        self.cached_tilemap = {}
+        self.cached_fluidmap = {}
+        self.cached_characters = {}
+        self.cached_states = {}
+        self.cached_sizes = {}
+        self.assets_by_name = {}
+        self.shorelines = {}
+        self.all_categories = {}
+        self.all_instances = {}
 
     # ------------------------------------------------ GETTERS
+
+    def get_asset(self, name: str, layer: Optional[str] = None) -> Optional[Asset]:
+        """
+        Retrieves an asset in O(1) by unique deployment name, optionally
+        verifying membership on the specified layer.
+        """
+        asset = self.assets_by_name.get(name)
+        if asset is None:
+            return None
+        if layer is not None and asset.state.layer != layer:
+            return None
+        return asset
+
+    def get_size(self, layer: str) -> Dimensions:
+        """
+        Returns cached layer dimensions in O(1), lazily recomputing after
+        evictions or relayer invalidations.
+        """
+        cached = self.cached_sizes.get(layer)
+        if cached is not None:
+            return cached
+
+        layer_assets = self.cached_layers.get(layer)
+        if layer_assets is None:
+            return Dimensions(w=0, l=0)
+
+        max_w = 0
+        max_l = 0
+        for asset in layer_assets:
+            ext_w, ext_l = self._asset_extent(asset)
+            if ext_w > max_w:
+                max_w = ext_w
+            if ext_l > max_l:
+                max_l = ext_l
+
+        size = Dimensions(w=max_w, l=max_l)
+        self.cached_sizes[layer] = size
+        return size
 
     def get_categories(self, category: str, layer: Optional[str] = None) -> List[Asset]:
         if layer is not None:
@@ -454,6 +606,10 @@ class Cache:
 
     def get_characters(self) -> Dict[str, Any]:
         return self.cached_characters
+
+    def get_states(self, layer: str) -> Dict[str, AssetState]:
+        """Returns the O(1) layer-scoped mapping of asset names to AssetStates."""
+        return self.cached_states.get(layer, {})
 
     def get_fluid_bucket(self, layer: str, cx: int, cy: int) -> Optional[List[Asset]]:
         return self.cached_fluidmap.get(layer, {}).get((cx, cy))

@@ -1,8 +1,8 @@
 # Ontology Docs: Sprites
 
-Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the game and thus have many unique attributes and methods; the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
+Everything that is rendered in the [Application](./00-overview.md#application) is an [Asset](./01-assets.md). Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset in the [Application] and thus have many unique attributes and methods; the [Engine Loop](./00-overview.md#component-engine) can be understood mainly as a medium for the Sprite States to interact and react to one another, the Player included. 
 
-## Specification: Sprites
+## Sprites: Specification
 
 ### Category: Sheets
 
@@ -10,23 +10,30 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 See [Sheets](./01-assets.md#category-sheets) for a complete description of the Asset Category.
 
-#### Sheet: Sprite
+#### Sheet: Player
 
-**State: SpriteState**
+The Player Sheet extends the basic [SheetState](./01-assets.md#category-sheets) with dimensions of *Intentionality*. 
+
+**State: CharacterState**
 
 * `position: Position`
 * `velocity: Velocity`
-* `layer: str`
-* `intention: Intentions`
+* `meters: Meters`
 * `character: Character`
     * `strength: int`
     * `defense: int`
     * `speed: int` (Maximum magnitude of Velocity vector)
     * `impulse: int` (Amount of acceleration applied to Velocity per game-tick)
 * `animation: AnimationState`
-    * `action: str`
-    * `direction: str`
+    * `action: Actions`
+    * `direction: Directions`
     * `frame: int`
+* `goal: Goal`
+    * `name: str`
+    * `layer: str`
+    * `category: Goals`
+    * `position: Position`
+    * `dormant: bool`
 * `slots: Slots`
     * `equipment: Equipment`
         * `armor: ArmorPalette`
@@ -51,9 +58,21 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
     * `magic: Meter`
         * `current: int`
         * `maximum: int`
-* `mutators: Mutators`
-    * `triggers: MutatorTriggers`
-    * `parameters: MutatorParameters`
+
+**Animation: CharacterAnimation**
+
+TODO
+
+**Frame: CharacterFrame**
+
+TODO
+
+#### Sheet: Sprite
+
+Sprite Sheets extend the Player's CharacterState with dimensions of *Autonomy*. Sprite States are hooked into a variety of [automata](./04-intentions.md) that govern how they change change.
+
+**State: SpriteState(CharacterState)**
+
 * `memory: Memory`
     * `doors: Dict[str, str]`
     * `goals: Dict[str, Goal]`
@@ -67,11 +86,6 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
     * `expression: AttachmentState`
     * `motivation: Motivations`
     * `persona: str` (*Key for [Library](./08-narratives.md#service-library) dialogue retrieval*)
-* `goal: Goal`
-    * `name: str`
-    * `layer: str`
-    * `category: Goals`
-    * `position: Position`
 * `trajectory: Trajectory`
     * `target: Position`
     * `vertices: List[Position]`
@@ -107,14 +121,12 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ##### Model: Trajectory
 
-Sprite Pathfinding is managed via its Trajectory. When a direct line of sight to a  Goal is blocked, [NavigationMechanics](./05-mechanics.md#mechanics-intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./12-architecture.md#math) and populates the trajectory buffer:
+Sprite Pathfinding is managed via its Trajectory. When a direct line of sight to a Goal is blocked, [NavigationMechanics](./05-mechanics.md#mechanics-intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./12-architecture.md#math) and populates the trajectory buffer.
 
 * `target`: The immediate physical coordinate $(x, y)$ that [MotionMechanics](./05-mechanics.md#core-mechanic-motionmechanics) steers toward on the current tick. If line of sight to the Goal is clear, then the Sprite steers directly towards its Goal. If the line of sight is blocked, then the Sprite iterates over the `vertices` in its Trajectory.
 * `vertices`: The FIFO queue of intermediate RRT coordinates, adjusted for sensory anchor displacement.
 * `stalled`: Boolean flag set when RRT fails to resolve a valid route, signaling deliberative systems of an impassable obstruction.
 * `cooldown`: Tick accumulator enforcing a backoff interval before retrying path generation against impassable geometries.
-
-Sprite Trajectories are managed by the [NavigationMechanics](./05-mechanics.md#intentional-mechanic-navigationmechanics).
 
 ##### Model: Meters
 
@@ -132,7 +144,7 @@ Represents the Sprite's current and potential capacity for "*magic*"
 
 **Field: Strength**
 
-TODO
+Strength is used during [CombatMechanics](./05-mechanics.md#spatial-mechanic-combatmechanics) to calculate damage dealt by an attacking Sprite, and to calculate the speed of launched [Projectiles](./01-assets.md#cursor-projectiles).
 
 **Field: Defense**
 
@@ -148,19 +160,17 @@ Impulse determines the rate of change of a Sprite's Velocity vector.
 
 ##### Model: Mutators
 
-Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
+Mutators are attributes that alter Sprite behavior. 
 
 **Behavior: Conditionality**
 
-Mutators are *condition-driven*. They may also be *parameterized*; In other words, all Mutators are *conditional* but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. 
-
-* Parameterized Mutators: `fear`, `vision`, `action`, `hand`, `squeeze`, `community`
-* Conditional Mutators: `animated`, `dead`
+Mutators are *condition-driven*. These conditions may be *parameterized*.
 
 **Fields: Triggers**
 
 * `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the Engine Loop.
 * `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `meters.health.current == 0`
+* `triggers.interacted`: Triggered when a Sprite completes an `interact` Action with an Object, cleared after leaving `interact`.
 * `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
     * If the Sprite's health dips below `fear.limit`
     * If the Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
@@ -188,21 +198,23 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 
 ##### Model: Animation
 
-Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the [Assets documentation](./01-assets.md#category-sheets).
+Animations are tuples of (Action, Direction, Frame). Action and Direction are defined in the [Assets documentation](./01-assets.md#category-sheets).
 
 ##### Model: Psyche
 
-The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche State when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite State. The complete Psyche state for a Sprite is given by the tuple,
+The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. The Psyche encodes alterations and modulations of the Sprite State.
 
 $$
 (\text{Dialogue}, \text{Persona}, \text{Expression}, \text{Motivation})
 $$
 
+All Sprite Assets, with the exception of the [Player](#sheet-player), are given a Psyche State when deployed onto the Board.
+
 **Field: Dialogue**
 
-The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-narratives.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menu-data) if the Player enters into the `speak` Intention with the Sprite. 
+The Dialogue field of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the key that will be exchanged at the [Library](./08-narratives.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menu-data) if the Player enters into the `speak` Intention with the Sprite. 
 
-In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#configuration-menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
+In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#configuration-menus). Instead, Sprite-to-Sprite Dialogue is managed by [RumorMechanics](./05-mechanics.md).
 
 **Field: Persona**
 
@@ -236,11 +248,12 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 * `memory.goals: Dict[str, Goal]`: Episodic store of true strategic [Goals](#model-goal). Keyed by the Asset `name`. Strategic memory stores no intermediate [Trajectory](#model-trajectory) waypoints.
 * `memory.sprites: Dict[str, Position]`: Map of last-known Sprite locations keyed by Asset `name`.
-* `memory.doors: Dict[str, str]`: Map of [Doors](./01-assets.md#object-doors) the Sprite has used, keyed by `name`.
+* `memory.doors: Dict[str, Dict[str, str]]`: Map of traversed [Doors](./01-assets.md#object-doors) keyed by origin Layer and Door `name` to destination Layer.
 * `memory.prices: Dict[str, Dict[str, float]]`: Subjective Sprite valuations for [Inventory](#model-inventory).
 * `memory.property: Dict[str, Position]`: Locations of Sprite-owned structures, keyed by `name`.
 * `memory.relationships: Dict[str, Relationships]`: Sprite social relationships, keyed by `name`.
 * `memory.rumors: List[str]`: Lexicon dialogue keys received via conversation.
+* `memory.stack: List[Goal]`: LIFO Commitment Stack of parent Goals suspended by prerequisite sub-Goals.
 
 **Semantics: Relationships**
 
@@ -252,7 +265,7 @@ Sprites keep a dictionary keyed by Inventory Slot and Key for the Inventory's as
 
 **Behavior: Price Discovery**
 
-When two Sprites enter the `speak` Intention within a certain radius of each other, the `SpeechMechanic` does the following:
+When two Sprites enter the `speak` Intention within a certain radius of each other, [SocialMechanics](./05-mechanics.md#mechanics-spatial) does the following:
 
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
@@ -276,6 +289,7 @@ $$
 **Fields: Equipment**
 
 Active pieces of [Equipment](#instance-equipment) injected into Sprite Frame.
+
 * `armor`: (*Gear*) Passive defense.
 * `shield`: (*Gear*) Active blocking (`intention = block`).
 * `weapon`: Active combat (`intention = attack`), equipped from `inventory.sheathe`.
@@ -291,9 +305,9 @@ Active usable items drawn from the [Pouch](#field-inventory)
 
 ##### Model: Inventory
 
-The Inventory represents items and content the Sprite has "*on its person*", but is not currently slotted. In other words, Inventory is *storage*. 
+The Inventory represents items and content the Sprite has "*on its person*" (present-at-hand), but is not currently slotted. In other words, Inventory is *storage*. 
 
-The Inventory is partitioned into containers for Inventory that only has a single instance, known as *Gear*, and containers for Inventory that can be accumulated, e.g. Crops, Materials, etc. 
+The Inventory is partitioned into containers for Inventory that only has a single instance and can only be equipped one at a time, known as *Gear*, containers for slottable Equipment, and containers for Inventory that can be accumulated, e.g. Crops, Materials, etc. 
 
 The diagram below shows the mapping between Slots and Inventory fields.
 
@@ -307,7 +321,7 @@ $$
 
 **Field: Bag**
 
-Container for Utilities , slottable into `slots.equipment.utility`.
+Container for Utilities, slottable into `slots.equipment.utility`.
 
 **Field: Belt**
 
@@ -331,12 +345,12 @@ Container for Weapons, slottable into `slots.equipment.weapon`.
 
 #### Sheet: Equipment
 
-Equipment is a grouping of several [Sheet Instances](./01-assets.md#category-sheets) that share the common feature of having no [State](./00-overview.md#core-state). Instead, their rendering is dependent on a Sprite State. Equipment is not an Asset Category in and of itself, but a label applied to particular Instances of Sheets in the Hierarchy. 
+Equipment is a grouping of several [Sheet Instances](./01-assets.md#category-sheets) that share the common feature of having no [State](./00-overview.md#core-state). Instead, their rendering is dependent on a Sprite State.
 
-*Equipment: Armor, Tools, Utilities, Weapons, Shields
+* Equipment: Armor, Tools, Utilities, Weapons, Shields
 
 !!! important "Equipment Sheet Specification"
-    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#category-sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
+    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#category-sheets) equipping it. In other words, the Frames coordinates and dimensions in an Equipment Sheet must correspond exactly to Frames in a Sprite Sheet. This does not mean Equipment Frames must be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ##### Equipment: Frame
 
@@ -366,7 +380,7 @@ When this Sprite's Frame `keys()` interface is called, it will return a list of 
 
 When Equipment is configured in the Sheet Property index file, the Equipment `actions` property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the return result. 
 
-Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects State transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the `attack` Intention (or the `build` Intention, etc.). The translation between [Intention](./04-intentions.md) and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
+Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects State transitions. When a piece of Equipment is active, it directly determines which Animation Action States are enterable from the `attack` Intention (or the `build` Intention, etc.). The translation between [Intention](./04-intentions.md) and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
 
 ```python
 sprite.state.animation.action = AnimationMap.action(
@@ -378,54 +392,26 @@ sprite.state.animation.action = AnimationMap.action(
 !!! note "Equipment"
     Equipment Properties are stored in the [Board](./00-overview.md#component-board) database, *not* the Sprite Asset.
 
-#### Sheet: Player
+## Devices
 
-A Player is a special type of Sprite Sheet. It may be thought of as a "*pseudo*"-Asset. It has no Properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique [State](./00-overview.md#core-state) and isolated [Intention](./04-intentions.md) management Mechanics. 
+The [Board](./00-overview.md#component-board) contains a Device, which polls for User input. The Device uses a Mapping to translate the polling data into a structured DevicePayload, resolving hardware inputs based on their discrete or continuous nature. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between Device Payload State and (Intention, Goal) state.
 
-The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
+**Keyboard**
 
-!!! important "Player Required"
-    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
+The input State of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
 
-**State: PlayerState**
-
-* `position: Position`
-* `velocity: Velocity`
-* `layer: str`
-* `meters: Meters`
-* `character: Character`
-* `animation: AnimationState`
-    * `action: Actions`
-    * `direction: Direftions`
-    * `frame: int`
-* `goal: Goal`
-* `intention: Intentions` 
-* `slots: Slots`
-* `inventory: Inventory`
-
-!!! note "PlayerState vs. SpriteState"
-    The PlayerState is a *truncated* SpriteState, i.e. it lacks the complex data structures for managing its `intention`.
-
-##### Field: Player Goals & Intentions
+#### Device: Player Goals & Intentions
 
 Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
 
 * **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
-* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
-
-## Devices
-
-The [Board](./00-overview.md#component-board) contains a Device, which polls for user input. The Device uses a Mapping to translate the polling data into a structured `DevicePayload`, resolving hardware inputs based on their discrete or continuous nature. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
-
-**Keyboard**
-
-The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
+* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete State transitions. Overlapping Intention inputs are collapsed into a single value based on Configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ### Device: Contexts
 
-The Device class implements a stateful context flag (`world`, `menu`). Each Device mapping includes a nested mapping for each separate context, which strictly segregates the resulting `DevicePayload`:
+The Device contains a context flag (`world`, `menu`) to determine how input should be polled and processed. The Device Configuration contains a mapping for each context.
 
-* `world`: Resolves a World Payload containing a singular Intention, a singular Grip trigger (`left` or `right`, which defaults `intention` to `use` and sets `mutators.parameters.hand`), a singular Menu trigger (`pause`, `equipment`, `pouch`, `pack`, `trade`), and a polymorphic list of Goals.
+* `world`: Resolves a World Payload containing a singular Intention, a singular Grip trigger (`left` or `right`), a singular Menu trigger (`pause`, `equipment`, `pouch`, `pack`, `trade`), and a polymorphic list of Goals.
 * `menu`: Resolves a Menu Payload containing a singular Traversal direction and a singular Interaction.
 
 When the [Board](./00-overview.md#component-board) Menus are populated, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) toggles the device context to `menu`, ensuring the [SDL polling](./12-architecture.md#specification-cython-libraries) only evaluates and returns Menu commands.

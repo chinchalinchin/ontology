@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.mechanic
+@app.module
 @physics.motion
 @physics.fields
 @workflow.gravity

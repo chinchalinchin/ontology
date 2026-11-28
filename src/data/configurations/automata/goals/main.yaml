@@ -1,0 +1,146 @@
+goals:
+  subject:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - not sprite.psyche.dialogue
+          or not sprites.get(sprite.goal.name)
+          or sprites.get(sprite.goal.name).mutators.triggers.dead
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: [ confusion ]
+      responses: [ store ]
+      conditions:
+        - not sprite.mutators.triggers.vision
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          ) or sprite.trajectory.stalled
+  target:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - not sprites.get(sprite.goal.name) or sprites.get(sprite.goal.name).mutators.triggers.dead
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: [ confusion ]
+      responses: [ store ]
+      conditions:
+        - not sprite.mutators.triggers.vision
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          ) or sprite.trajectory.stalled
+  position:
+    complete:
+      reflexes: []
+      responses: []
+      conditions:
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          ) or (
+            sprite.intention == constants.Intentions.ESCAPE
+            and not sprite.mutators.triggers.frightened
+          )
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: []
+      responses: []
+      conditions:
+        - sprite.trajectory.stalled or (
+            sprite.intention == constants.Intentions.WANDER
+            and (
+              sprite.mutators.triggers.frightened
+              or functions.any_memories_visible(
+                sprite,
+                sprites,
+                [ constants.Goals.TARGET, constants.Goals.SUBJECT ]
+              )
+            )
+          )
+  door:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: []
+      responses: [ forget, unwind ]
+      conditions:
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name) or sprite.trajectory.stalled
+  object:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name) or sprite.mutators.triggers.interacted
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: []
+      responses: [ store ]
+      conditions:
+        - sprite.trajectory.stalled
+  property:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - sprite.goal.name in sprite.memory.property
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: []
+      responses: [ store ]
+      conditions:
+        - sprite.trajectory.stalled
+  resource:
+    complete:
+      reflexes: []
+      responses: [ forget ]
+      conditions:
+        - sprite.layer == sprite.goal.layer
+        - not assets.get(sprite.goal.name)
+    layered:
+      reflexes: []
+      responses: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reflexes: []
+      responses: [ store ]
+      conditions:
+        - sprite.trajectory.stalled

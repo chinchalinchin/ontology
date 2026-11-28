@@ -1,5 +1,5 @@
 """
-@domain.system
+@domain.logic
 @app.semantics
 @workflow.cli
 

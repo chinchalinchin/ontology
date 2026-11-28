@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 from app.static.semantics import (
     Actions,
+    Directions,
     StaticIntentions,
     AssetInstances,
     Intentions,
@@ -31,7 +32,7 @@ from app.static.semantics import (
 from app.game.logic.modules.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
-from app.services.translators.base import Executor
+from app.services.automaton import TransitionExecutor
 
 # --------------------------------------------------------------
 
@@ -47,11 +48,11 @@ class TransitionMechanics(Mechanic):
     """
 
     @property
-    def executor(self) -> Optional[Executor]:
+    def executor(self) -> Optional[TransitionExecutor]:
         return self.executors.get(Executors.INTENTION)
 
     @executor.setter
-    def executor(self, executor: Optional[Executor]) -> None:
+    def executor(self, executor: Optional[TransitionExecutor]) -> None:
         if executor is None:
             self.executors.pop(Executors.INTENTION, None)
         else:
@@ -64,6 +65,7 @@ class TransitionMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
+        """Evaluates Intention transitions and projects Action/Direction state."""
         sprites = board.instances(AssetInstances.SPRITES)
         sprites_dict = board.characters()
         player = board.player()
@@ -71,13 +73,27 @@ class TransitionMechanics(Mechanic):
         for sprite in sprites:
             prev_action = sprite.state.animation.action
 
+            # Dead sprites lock into LPC die-up playback and bypass ISL transitions (B085)
+            if sprite.state.mutators.triggers.dead:
+                sprite.state.intention = Intentions.IDLE
+                sprite.state.animation.action = Actions.DIE
+                sprite.state.animation.direction = Directions.UP
+                if prev_action != Actions.DIE:
+                    sprite.state.animation.frame = 0
+                    sprite.state.animation.tick = 1
+                sprite.state.mutators.triggers.animated = True
+                continue
+
             # 1. Evaluate State ISL Conditions
             if self.executor and sprite.state.intention:
                 next_intent = self.executor.evaluate(
                     current_state=sprite.state.intention,
-                    locals={'sprite': sprite.state, 'sprites': sprites_dict}
+                    locals={
+                        'sprite': sprite.state,
+                        'sprites': sprites_dict,
+                        'assets': board.states(sprite.state.layer),
+                    }
                 )
-
                 current_intent = sprite.state.intention
 
                 if next_intent and next_intent != current_intent:
@@ -104,6 +120,7 @@ class TransitionMechanics(Mechanic):
                 sprite.state,
                 board.equipment
             )
+            # TODO: why is this here? why is this not part of AnimationMap.action? 
             if action is None:
                 logger.debug(
                     f"Transition({sprite.name}): Reverting inadmissible active "

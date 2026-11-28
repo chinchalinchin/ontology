@@ -13,7 +13,7 @@ Unit tests for the Fabricator service.
 import pytest
 
 # Application Libraries
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     ApertureTarget,
     CollectionTarget,
     GizmoParameters,

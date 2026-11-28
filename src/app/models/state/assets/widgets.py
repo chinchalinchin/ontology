@@ -91,6 +91,19 @@ class PaneState(WidgetState):
             return ""
         return self.content_function()
 
+    @content.setter
+    def content(self, value:  Optional[Union[
+        Callable[[], Union[str, List[str]]],
+        List[str],
+        str
+    ]]) -> None:
+        if isinstance(value, Callable):
+            self.content_function = value
+        if isinstance(value, list):
+            self.content_function = lambda: value
+        if isinstance(value, str):
+            self.content_function = lambda: [ value ]
+
     @property
     def _pagecount(self) -> int:
         content = self.content

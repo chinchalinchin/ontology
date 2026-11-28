@@ -4,13 +4,13 @@
 @asset.state
 @category.sheets
 
-# Ontology: Source - app.models.state.sheets
+# Ontology: Source - app.models.state.assets.sheets
 
 Sheet State Models.
 """
 # Standard Libraries
 from typing import (
-    Dict, 
+    Dict,
     List,
     Optional
 )
@@ -18,7 +18,9 @@ from dataclasses import dataclass, field
 
 # Application Libraries
 from app.static.semantics import (
-    Intentions, 
+    Goals,
+    Intentions,
+    Motivations,
     Relationships,
     ItemPalette,
     ArmorPalette,
@@ -30,7 +32,7 @@ from app.static.semantics import (
     CropPalette
 )
 from app.models.adapters import (
-    PydanticPosition as Position, 
+    PydanticPosition as Position,
     PydanticVelocity as Velocity,
     Enumerated
 )
@@ -42,12 +44,11 @@ from app.models.state.assets.cursors import AttachmentState
 
 # Cython Libraries
 from libs.core.models import (
-    Velocity as CoreVelocity, 
+    Velocity as CoreVelocity,
     Position as CorePosition
 )
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- SPRITE STATE FIELDS
 
 @dataclass(slots=True)
 class Character:
@@ -96,11 +97,11 @@ class Inventory:
     sheathe: List[Enumerated[WeaponPalette]] = field(default_factory=list)
     # Dict Fields (i.e. inventory that can be accumulated)
     pouch: Dict[
-        Enumerated[ItemPalette], 
+        Enumerated[ItemPalette],
         int
     ] = field(default_factory=dict)
     pack: Dict[
-        Enumerated[MaterialPalette], 
+        Enumerated[MaterialPalette],
         int
     ] = field(default_factory=dict)
     sack: Dict[
@@ -113,69 +114,62 @@ class Inventory:
 @dataclass(slots=True)
 class Psyche:
     persona: Optional[str] = None
-    motivation: Optional[str] = None
+    motivation: Optional[Enumerated[Motivations]] = None
     expression: Optional[AttachmentState] = None
     dialogue: Optional[str] = None
 
 @dataclass(slots=True)
 class Goal:
     name: Optional[str] = None
-    category: Optional[str] = None
-    layer: Optional[str] = None 
-    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    category: Optional[Enumerated[Goals]] = None
+    layer: Optional[str] = None
+    position: Position = field(default_factory=lambda: CorePosition(0, 0))  # type: ignore
+    dormant: bool = False
 
 @dataclass(slots=True)
 class Memory:
-    goals: Optional[Dict[str, Goal]] = field(default_factory=dict)
-    rumors: Optional[List[str]] = field(default_factory=list)
-    prices: Optional[Dict[str, float]] = field(default_factory=dict)    
-    relationships: Optional[Dict[str, Enumerated[Relationships]]] = None
-    property: Optional[Dict[str, Position]] = None # type: ignore
-    sprites: Optional[Dict[str, Position]] = None # type: ignore
-    doors: Optional[Dict[str, str]] = None
-
-    def __post_init__(self) -> None:
-        if self.goals is None:
-            self.goals = {}
-        if self.sprites is None:
-            self.sprites = {}
-        if self.relationships is None:
-            self.relationships = {}
-        if self.property is None:
-            self.property = {}
-        if self.rumors is None:
-            self.rumors = []
-        if self.doors is None:
-            self.doors = {} 
-        if self.prices is None: 
-            self.prices = {}
+    goals: Dict[str, Goal] = field(default_factory=dict)
+    rumors: List[str] = field(default_factory=list)
+    prices: Dict[str, float] = field(default_factory=dict)
+    relationships: Dict[str, Enumerated[Relationships]] = field(default_factory=dict)
+    property: Dict[str, Position] = field(default_factory=dict)  # type: ignore
+    sprites: Dict[str, Position] = field(default_factory=dict)  # type: ignore
+    doors: Dict[str, Dict[str, str]] = field(default_factory=dict)
+    stack: List[Goal] = field(default_factory=list)
 
 @dataclass(slots=True)
 class Trajectory:
-    target: Optional[Position] = None # type: ignore
-    vertices: List[Position] = field(default_factory=list) # type: ignore
+    target: Optional[Position] = None  # type: ignore
+    vertices: List[Position] = field(default_factory=list)  # type: ignore
     stalled: bool = False
     cooldown: int = 0
 
-
-# ---------------------------------------------------
-# -------------------------------------  SHEET STATES
-# ---------------------------------------------------
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class SheetState(AssetState):
-    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
+    """Base animated Sheet state (Pixies)."""
+    position: Position = field(default_factory=lambda: CorePosition(0, 0))  # type: ignore
+    velocity: Velocity = field(default_factory=lambda: CoreVelocity(0.0, 0.0))  # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
-    intention: Optional[Enumerated[Intentions]] = Intentions.IDLE
-    character: Optional[Character] = field(default_factory=Character)
-    slots: Optional[Slots] = field(default_factory=Slots)
-    inventory: Optional[Inventory] = field(default_factory=Inventory)    
-    meters: Optional[Meters] = field(default_factory=Meters)
-    goal: Optional[Goal] = field(default_factory=Goal)
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
-class SpriteState(SheetState):
-    memory: Optional[Memory] = field(default_factory=Memory)
-    psyche: Optional[Psyche] = field(default_factory=Psyche)
+class CharacterState(SheetState):
+    """Intentional Sheet state with equipment, inventory, meters, and Goal (Players)."""
+    intention: Enumerated[Intentions] = Intentions.IDLE
+    character: Character = field(default_factory=Character)
+    slots: Slots = field(default_factory=Slots)
+    inventory: Inventory = field(default_factory=Inventory)
+    meters: Meters = field(default_factory=Meters)
+    goal: Optional[Goal] = None
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class SpriteState(CharacterState):
+    """Autonomous Character state with Memory, Psyche, and Trajectory (Sprites)."""
+    memory: Memory = field(default_factory=Memory)
+    psyche: Psyche = field(default_factory=Psyche)
     trajectory: Trajectory = field(default_factory=Trajectory)

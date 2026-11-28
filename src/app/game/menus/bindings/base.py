@@ -22,7 +22,7 @@ from typing import (
 
 # Application Libraries
 from app.models.menus import MenuContext
-from app.models.config.menus import BindingTarget
+from app.models.configurations.menus import BindingTarget
 
 class Binding(ABC):
     """

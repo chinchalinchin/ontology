@@ -6,12 +6,14 @@ from app.assets.animations.effects import (
     FrequencyAnimation
 )
 from app.assets.animations.sheets import (
-    SpriteAnimation
+    SpriteAnimation,
+    CharacterAnimation
 )
 
 __all__ = [
     'NoAnimation',
     'FrequencyAnimation',
     'StateAnimation',
-    'SpriteAnimation'
+    'SpriteAnimation',
+    'CharacterAnimation'
 ]

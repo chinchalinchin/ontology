@@ -186,7 +186,7 @@ def test_migrator_build_generator_assets_and_post_hydration(
     assert player is not None
     assert player.category == AssetCategories.SHEETS.value
     assert player.instance == AssetInstances.PLAYERS.value
-    assert player.properties is mock_properties_schema.sheets.sprites["player"]
+    assert player.properties is mock_properties_schema.sheets.players["player"]
 
     # 3. Post-Hydration Perimeters & Fluid propagation
     for layer in mock_migrator.board.layers():

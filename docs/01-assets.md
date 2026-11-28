@@ -10,9 +10,9 @@ This document serves to specify the Asset architecture and provide key definitio
 
 ## Assets: Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization and hydration phases](./12-architecture.md#specification-initialization) of the [Application](./00-overview.md#application) read in all of these files recursively. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization and hydration phases](./12-architecture.md#specification-initialization) of the [Application](./00-overview.md#application) read in these files recursively. 
 
-The Property indices are used to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
+The Property indices are used to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application). The Property indices in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is indexing. 
 
 !!! important "Schema Merge"
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#library-registry).
@@ -25,7 +25,7 @@ The Property indices are used to index each Asset file into the [Registry](./00-
 
 IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#library-registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not rendered entities.
 
-Names are used to uniquely identify an instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the [Board](./00-overview.md#component-board). 
+Names are used to uniquely identify a specific Instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the [Board](./00-overview.md#component-board). 
 
 In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its image file.
 
@@ -33,9 +33,9 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 
 **Properties & State**
 
-*Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./12-architecture.md#rendering-sort) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
+*Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their Dimensions and Hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying the width and length of their image file, and a Priority property, that specifies the [statically configured sort key](./12-architecture.md#rendering-sort) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
-*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.
+*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the [perspective-based render sorting](./12-architecture.md#rendering-sort), given as an integer.
 
 !!! @TODO(08-04)
     Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their States have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
@@ -49,12 +49,12 @@ In addition, all Assets have a `mutators` attribute that is used to augment the 
 **Model: Mutators**
 
 * `parameters`: 
-    * `action: bool`: The radius of the Asset's action.
-    * `vision: bool`: The radius of Asset's vision.
-* `triggers`: Boolean flags. 
-    * `animated: bool`: Flag for receiving animation updates.
-    * `dead: bool`: Flag for receiving Mechanic updates.
-    * `submerged: bool`: Flag for receiving Frame channels.
+    * `action: bool`: Radius of interaction.
+    * `vision: bool`: Radius of perception.
+* `triggers`: 
+    * `animated: bool`: Flag governing animation progression.
+    * `dead: bool`: Flag indicating death.
+    * `submerged: bool`: Flag governing aquatic Frame modulation.
 
 **Base Model: AssetProperties**
 
@@ -81,7 +81,7 @@ All Asset States inherit fields from this model.
   * In [Effects](#category-effects), temporal progression is governed by `frequency` (`delay`, `amount`, `cooldown`, `persist`).
   * In [Sheets](#category-sheets), temporal progression is governed by `actions` (`count`, `delay`).
 
-Frame Space is a representation of the different dispositions assumed by Asset Categories; Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are differences are manifested in the atlasing strategy used by Asset Frame. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#component-board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
+Frame Space is a representation of the different dispositions assumed by Asset Categories; Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These differences are manifested in the atlasing strategy used by Asset Frame. This atlased space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#component-board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
 
 An *Animation* represents a strategy for navigating the Frame space over time. Animations project the internal State changes in an Asset onto a particular trajectory through its Frame space. When an Asset implements an Animation, this is accompanied by its State possessing an `animation` State field. The purpose of this field is to mutate over time and thus describe the trajectory of the Asset through its Frame space.
 
@@ -108,11 +108,11 @@ If an Asset's visual representation changes instantaneously as a direct function
 
 #### Concept: Physicality
 
-Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, An Asset's Mass determines its behavior within the physics of the game,
+Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, an Asset's Mass determines its behavior within the physics of the game.
  
 * $m > 0$: **Dynamic Body**. Participates in momentum calculations.
 * $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.
-* $m = -1$: **Sensor**. The Engine detects the spatial collisions for logical conditions, but ignores it entirely during collision resolution.
+* $m = -1$: **Sensor**. [The Engine](./00-overview.md#component-engine) detects the collisions for logical conditions, but ignores it entirely during collision resolution.
 
 See [SpatialMechanics](./05-mechanics.md#mechanics-spatial) for more information.
 
@@ -120,7 +120,7 @@ See [SpatialMechanics](./05-mechanics.md#mechanics-spatial) for more information
 
 **Rendering**
 
-World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority, known respectively as Elevation, Substrates, Perspective and Priority,
+[Rendering](./12-architecture.md#rendering-sort) evaluates spatial geometry using the Painter's Algorithm. The sort is based on elevation, intra-elevation substrate plane, ground perspective, and coplanar priority, known respectively as Elevation, Substrate, Perspective and Priority,
 
 $$
 \text{sort_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground}(A),\; A.\text{properties.priority}\Big)
@@ -135,10 +135,9 @@ See [Rendering documentation](./12-architecture.md#rendering-sort) for more info
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto the Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their [rendering order](./12-architecture.md#rendering-sort). These values are hydrated onto the Asset directly via the[MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration).
 
 --8<-- "static/md/asset-substrates.md"
-
 
 Because `substrate` is an independent secondary component of the rendering sort key `(elevation, substrate, ground, priority)`, Assets rendered on negative intra-elevation substrates (such as [Bridges](#craft-bridges) on `substrate = -1` or [Shorelines](#category-geography) on `substrate = -2`) retain their true topological `elevation` ($E \ge 0$) for spatial queries and collision partitioning.
 
@@ -150,7 +149,7 @@ The *Material Space* is further subdivded into non-overlapping Genera,
 
 --8<-- "static/md/material-genera.md"
 
-Each Genera refers to a range of Material Value. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, if an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.
+Each Genera refers to a range of Material Values. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, if an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.
 
 Chromatics, being a discrete shade of color, requires a Host Material, to accept its payload. 
 
@@ -166,7 +165,7 @@ See [Material documentation](./03-compositions.md#material) for more information
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The Property and State [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
 
 !!! note "Abstraction"
-    The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
+    The Asset Hierarchy can be thought of as a data abstraction governing the Asset schemas, which in turn drive the ECS instantiation. 
 
 !!! note "Metaphysics"
     An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: Properties *encode* an Asset, State *exemplifies* an Asset. 
@@ -206,10 +205,10 @@ An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attr
 
 * `id: str`: Uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
 * `name: str`: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
-* `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
-* `instance: str`: Determines what State model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
+* `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` Property index file.
+* `instance: str`: Determines what State model is employed by the Asset. An Asset's State is hydrated from the `data/state/<board>/**/*.yaml` directory.
 
-`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./12-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
+(Category, Instance) collectively map to the components (Frame, Animation, Hitbox, Properties, State) injected into an Asset class during the [Application initialization](./12-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
 
 The State and Property model of an Asset can be calculated (and *is* calculated in this way, during [Application Initialization](./12-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
@@ -229,11 +228,11 @@ The formula for an Asset, i.e. the list of components which go into a particular
     * `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Interface for Assets whose Frame key depends on an external State, i.e. an [Environ Tile](#tile-environ) depending on the [Board Season](./09-ecology.md#principle-seasonality).
     * `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Interface for rendering Frame channels.
 5. **Behavior: Hitbox:** Stateless strategy for resolving Asset Hitboxes from the Asset's internal data structure.
-    * `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Interface for the elevation in which the Asset Hitboxes participate.
-    * `get(properties: AssetProperties, state: AssetState, elevation: int) -> List[Hitbox]`: Interface for active Hitboxes at the requested elevation.
+    * `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Interface for the Elevation in which the Asset Hitboxes participate.
+    * `get(properties: AssetProperties, state: AssetState, elevation: int) -> List[Hitbox]`: Interface for active Hitboxes at the requested Elevation.
 
 !!! note "Stacks and Offsets"
-    An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#category-sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).
+    An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#category-sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the Frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).
 
 ## Assets: Categories
 
@@ -241,15 +240,15 @@ The formula for an Asset, i.e. the list of components which go into a particular
 
 * Property File: `/src/assets/tiles/**/*.yaml`
 
-Tiles are static Assets that form environmental foundation of the game. 
+Tiles are static Assets that form the environmental foundation of the game. 
 
-**Behavior: Rendering**
+**Behavior: Multliplication**
 
 When a Tile is drawn, it is rendered as a `multiple` of the unit Tile, usings the Dimensions configured in the Asset directory to expand the multiplied area.
 
 **Behavior: Friction**
 
-Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#mechanics-spatial) to determine the rate of velocity decay for Frictive Assets traversing their area.
+Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#mechanics-spatial) to determine the rate of Velocity decay for Frictive Assets traversing their area.
 
 **Properties: TileProperties(AssetProperties)**
 
@@ -273,9 +272,9 @@ A Environ Tile represents the environment. They participate in climatic events a
 
 **Behavior: Rendering**
 
-Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy, regardless any calculations involving `elevation`, `substrate`, `ground`, or `priority`. 
+Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy.
 
-Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See [Rendering documentation](./12-architecture.md#specification-graphics) for more information.
+Moreover, they are not included in the core [rendering loop](./12-architecture.md#rendering-sort); Instead, they are prerendered once and drawn from cache. See [Rendering documentation](./12-architecture.md#specification-graphics) for more information.
 
 **Behavior: Seasonality**
 
@@ -297,7 +296,7 @@ For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconst
 Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their `elevation` or `priority`. 
 
 !!! important "Widget Exception"
-    The *single* exception to this rule is Widgets. Canopy Tiles are an [World](./05-mechanics.md#mechanics-world) Asset, and thus their render order is superseded by Widgets.
+    The *single* exception to this rule is Widgets. Canopy Tiles are a [World](./05-mechanics.md#mechanics-world) Asset, and thus their render order is superseded by Widgets.
 
 **Frame: SingleFrame**
 
@@ -351,7 +350,7 @@ Objects have different States. `count` enumerates the number of possible States 
 * `position: Position`
 * `material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]` 
 
-All Objects extend this base Model..
+All Objects extend this base Model.
 
 **Frame: ObjectFrame**
 
@@ -364,11 +363,11 @@ N/A
 
 #### Object: Chests
 
-*Chests* are Objects with a binary state whose Frame can be changed by the Player or Sprite entering the `interact` [Intention](./04-intentions.md) while in the immediate proximity of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
+*Chests* are Objects with a binary State whose Frame can be changed by the Player or Sprite entering the `interact` [Intention](./04-intentions.md) while in the immediate proximity of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
-A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
+A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory keys.
 
-When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
+When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **State: ContainerState**
 
@@ -382,11 +381,11 @@ When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the
 **Frame: BinaryFrame**
 
 * `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
-* `keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"`
+* `keys(id, state): returns "{id}-{state.material}-{Switches.ON}" if state.switch else {id}-{state.material}-{Switches.OFF}"`
 
 #### Object: Crates
 
-Crates are Objects who state can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) for more information on game physics.
+Crates are Objects who State can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) for more information on game physics.
 
 **State: MotiveState**
 
@@ -590,12 +589,12 @@ Stairs are Crafts that transition the elevation of dynamic Assets.
 
 The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity,
 
-- `stairs.state.blueprint == Directions.RIGHT and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == Directions.RIGHT  and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == Directions.DOWN and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == DIRECTION.DOWN and asset.state.velocity.vy > 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.RIGHT and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+*  `stairs.state.blueprint == Directions.RIGHT  and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+* `stairs.state.blueprint == Directions.DOWN and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+* `stairs.state.blueprint == DIRECTION.DOWN and asset.state.velocity.vy > 0: asset.state.elevation -= stairs.state.delta`
 
 **State: StairState**
 
@@ -607,16 +606,26 @@ The direction of the elevation transition calculation is dependent on the direct
 
 Cursors are Assets that bind to other Asset States.
 
+**Properties: CursorProperties(AssetProperties)**
+
+* `frames: List[str]`
+* `rotation: int = 90`: $\Delta\theta \in (0, 360]$ dividing $360^\circ$ into $N = 360 // \text{rotation}$ Frames.
+* `weapons: List[WeaponPalette]`
+* `hitboxes: List[Hitbox]`
+
+!!! @TODO(03-05) "Cursor Redundancy"
+    Expressions utilize `frames` to index their Frame atlas. Projectils utilize `weapons` to index their Frame atlas. Both fields are Lists of strings. There appears to be a potential for simplification and solidification of the Cursor properties, i.e. these fields should be merged into a common Cursor `indices` property, to prevent verbosity and property sprawl/polymorphism.
+
 #### Cursor: Expressions
 
-Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the [Board](./00-overview.md#component-board). Instead, their spatial offsets and frame keys are calculated dynamically by the [Cradle](./00-overview.md#component-board) and embedded directly into a [Sprite's State](./02-sprites.md) as pure data. When the [Sprite](./02-sprites.md#psyche) is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.
+Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the [Board](./00-overview.md#component-board). Instead, their spatial offsets and Frame keys are calculated dynamically by the [Cradle](./00-overview.md#component-board) and embedded directly into a [Sprite's State](./02-sprites.md). When the [Sprite](./02-sprites.md#psyche) is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.
 
 **Required: Expressions**
 
 Due to the nature of Expressions as representations of a Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,
 
-- bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
-- buffs: TODO
+* bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
+* buffs: TODO
 
 **Animation: None**
 
@@ -624,7 +633,7 @@ N/A
 
 **Frame: IndexFrame**
 
-* `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
+* `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; SpriteFrame handles the dynamic offset injection).*
 * `index(id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **"Phantom" State: AttachmentState(AssetState)**
@@ -639,21 +648,43 @@ N/A
 
 #### Cursor: Projectiles
 
-Projectiles are spawned via the `shoot` Action (entered through the `attack` [Intention](./04-intentions.md) when the `longbow` [Equipment](./02-sprites.md#equipment) is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the [Board](./00-overview.md#component-board).
+Projectiles are spawned on the `release` Frame of ranged [Equipment](./02-sprites.md#equipment) with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range. Projectiles will either impact a hitbox or trigger [garbage-collection](./05-mechanics.md#core-mechanic-removemechanics) and be removed from the [Board](./00-overview.md#component-board).
+
+Projectiles are dependent on the [Weapon](./02-sprites.md#sheet-equipment) which is used to spawn them. This [Relation](./05-mechanics.md#dependencies) is compiled from Cursor Properties into the [ProjectileIndex](./05-mechanics.md#dependency-relations) and injected into [CombatMechanics](./05-mechanics.md#spatial-mechanic-combatmechanics).
+
+**Behavior: Rotational**
+
+A Projectile Asset file contains a single Frame oriented at $\theta = 0^\circ$. This Frame rotated about its center in increments of $\Delta\theta$ (where $360 \bmod \Delta\theta = 0$):
+
+$$
+--8< -- "static/tex/formulae/formula-004-projectile-hitbox-rotation.tex"
+$$
 
 **Animation: None**
 
 N/A
 
-**Frame: SingleFrame**
+**Frame: ProjectileFrame**
 
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }`
 
 **State: MotorState(AssetState)**
 
+* `position: Position`
 * `initial: Position`
 * `velocity: Velocity`
+* `angle: int`
+* `speed: int`
+* `owner: str`
+
+**Hitbox: RotatedHitbox**
+
+Projects each Hitbox $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` around the frame center $(c_x, c_y) = (W / 2, L / 2)$ by $\Delta\theta = \text{state.angle}$:
+
+$$
+--8< -- "static/tex/formulae/formula-005-projectile-hitbox-rotation.tex"
+$$
 
 ### Category: Effects
 
@@ -730,8 +761,8 @@ Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poi
 
 **Semantics: Reactions**
 
-* `bounce`: 
-* `hinder`: 
+* `bounce`: TODO
+* `hinder`: TODO
 
 **Model: Damage**
 
@@ -862,7 +893,7 @@ Resources do not cycle through animations. Their appearance updates when [Season
 
 * Property File: `/src/assets/sheets/**/*.yaml`
 
-*Sheets* are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the [Engine Loop](./00-overview.md#component-engine); they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.
+*Sheets* are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the [Engine Loop](./00-overview.md#component-engine); they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the [Application](./00-overview.md#application) is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.
 
 **Semantics: Directions**
 
@@ -890,7 +921,7 @@ A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*
     For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and Frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
 
 !!! note "LPC Specification"
-    While an arbitrary Action Set can be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
+    While an arbitrary Action Set can be defined in `/src/data/configurations/assets/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
 
     The Frames per Action for the LPC Spec are given below,
 
@@ -935,7 +966,7 @@ Many Sheet Assets reuse the same Action specification. Common Action specificati
 
 A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the [Screen](./00-overview.md#component-screen). A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [application bootstrap](./12-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/sprites/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/sprites/skins/male-ivory-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [Application Initialization](./12-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note "Sheet Stacks"
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -953,26 +984,39 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
+**Models: Sheets**
+
+All Sheet Instances inherit and extend the basic SheetState, building in sequence of a hierarchy of complexity.
+
+* SheetState(AssetState): Base Sheet Model.
+* CharacterState(SheetState): Adds Intentionality to Sheet State.
+* SpriteState(CharacterState): Adds autonomous [Cognition](./05-mechanics.md#intentional-mechanic-cognitionmechanics) and [Navigation](./05-mechanics.md#intentional-mechanic-navigationmechanics) to CharacterState.
+
 #### Sheet: Pixies
 
 !!! @TODO(10-03)
     The whole concept of Pixies needs re-evaluated from the ground up before implementation. It is still uncertain how Pixie intentionality will differ from Sprite intentionality. 
 
-Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
+Pixies are low-level Sheet Assets excluded from [Intentional Mechanics](./05-mechanics.md#mechanics-intentional). They possess simple States for modelling environmental flora and fauna.
 
 **Animation: StateAnimation**
 
-- `state.animation.frame += 1`
-- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
+* `state.animation.frame += 1`
+* `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
 **Frame: StateFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
-**State: TBD**
+**Models: SheetState(AssetState)**
 
-TBD
+* `position: Position`
+* `velocity: Velocity`
+* `animation: AnimationState`
+    * `action: Actions`
+    * `direction: Directions`
+    * `frame: int`
 
 #### Sheet: Sprites
 

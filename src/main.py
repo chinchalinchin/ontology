@@ -1,4 +1,5 @@
 """
+@domain.system
 @workflow.cli
 @workflow.entrypoints
 

@@ -2,44 +2,52 @@
 @domain.concrete
 @domain.logic
 @app.mechanic
-@category.sheets
 @modality.intention
 @workflow.cognition
 
 # Ontology: Source - app.game.logic.mechanics.intentional.cognition
 
-CognitionMechanics implementation. Manage Sprite Goals.
+CognitionMechanics implementation. Manages Sprite Goals via a four-stage
+cognitive pipeline: Sense -> Resolve -> Acquire (IDLE-only) -> Sync.
 """
 from __future__ import annotations
 
 # Standard Libraries
-import random
-from typing import TYPE_CHECKING
 import collections
 import logging
+from typing import (
+    Any,
+    Optional,
+    Sequence,
+    Tuple,
+    TYPE_CHECKING
+)
 
 if TYPE_CHECKING:
     from app.game.board import Board
 
 # Application Libraries
 from app.assets.base import Asset
-from app.static.semantics import (
-    Intentions, 
-    Goals, 
-    Motivations,
-    AssetInstances,
-    ExpressionsPalette,
-    Expressions
-)
 from app.game.logic.mechanics import Mechanic
-from app.models.state import (
-    DevicePayload, 
-    Goal
+from app.game.logic.modules.cognition import (
+    SocialInstinct,
+    SurvivalInstinct,
+    GoalResolver,
+    CombatInstinct,
+    Instinct,
+    Perception,
+    Recall,
+    ExploreInstinct
 )
-
-# Cython Libraries
-import libs.core.math.geometry as geometry
-from libs.core.models import Position
+from app.models.state import DevicePayload
+from app.services.automaton import GoalEvaluator
+from app.static.semantics import (
+    AssetInstances,
+    Executors,
+    Goals,
+    Intentions,
+    Outcomes
+)
 
 # -----------------------------------------------------
 
@@ -47,118 +55,257 @@ logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------
 
-WANDER = "wander"
-
-# -----------------------------------------------------
 
 class CognitionMechanics(Mechanic):
     """
     ## CognitionMechanics
 
-    The central Mechanic for managing the frequency of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
+    Deliberative cognitive pipeline managing Sprite Goals across four stages
+    per tick:
+      1. Sense: Perception scan, fear evaluation, and active Goal tracking.
+      2. Resolve: Survival preemption or declarative GoalResolver classification.
+      3. Acquire (IDLE-only): Survival -> Recall (stack -> goals) -> Drives -> Explore.
+      4. Sync: Post-resolution / post-acquisition visibility and layer subsumption.
     """
+    perception: Perception
+    recall: Recall
+    resolver: Optional[GoalResolver]
+    survival: Tuple[Instinct, ...]
+    drives: Tuple[Instinct, ...]
+    exploratory: Tuple[Instinct, ...]
 
-    @staticmethod
-    def log_goal(sprite: Asset, verb: str = "transformed", level: str = "info"):
-        if level == "info":
-            logger.info(
-                f"{sprite.name} {verb} Goal(" 
-                f"category={sprite.state.goal.category}, "
-                f"name = {sprite.state.goal.name}, "
-                f"layer = {sprite.state.goal.layer}, "
-                f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
+    def __init__(
+        self,
+        perception: Optional[Perception] = None,
+        recall: Optional[Recall] = None,
+        resolver: Optional[GoalResolver] = None,
+        survival: Optional[Sequence[Instinct]] = None,
+        drives: Optional[Sequence[Instinct]] = None,
+        exploratory: Optional[Sequence[Instinct]] = None
+    ):
+        super().__init__()
+        self.perception = perception if perception is not None else Perception()
+        self.recall = recall if recall is not None else Recall()
+        self.resolver = resolver
+        self.survival = (
+            tuple(survival) if survival is not None
+            else (SurvivalInstinct(),)
+        )
+        self.drives = (
+            tuple(drives) if drives is not None
+            else (CombatInstinct(), SocialInstinct())
+        )
+        self.exploratory = (
+            tuple(exploratory) if exploratory is not None
+            else (ExploreInstinct(),)
+        )
+
+    def set_executor(self, key: str, executor: Any) -> None:
+        """Registers an Executor and binds GoalResolver for Executors.GOAL."""
+        super().set_executor(key, executor)
+        if key == Executors.GOAL:
+            self.resolver = (
+                GoalResolver(evaluator=executor)
+                if executor is not None
+                else None
             )
-        elif level == "debug":
-            logger.debug(
-                f"{sprite.name} {verb} Goal(" 
-                f"category={sprite.state.goal.category}, "
-                f"name = {sprite.state.goal.name}, "
-                f"layer = {sprite.state.goal.layer}, "
-                f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
-            )
 
+    @property
+    def executor(self) -> Optional[GoalEvaluator]:
+        """Typed GoalEvaluator bound to Executors.GOAL."""
+        return self.executors.get(Executors.GOAL)
+
+    @executor.setter
+    def executor(self, executor: Optional[GoalEvaluator]) -> None:
+        if executor is None:
+            self.executors.pop(Executors.GOAL, None)
+            self.resolver = None
+        else:
+            self.executors[Executors.GOAL] = executor
+            self.resolver = GoalResolver(evaluator=executor)
 
     @staticmethod
-    def nearby(p1: Position, p2: Position, radius: int) -> bool:
-        """
-        ### nearby(p1: Position, p2: Position, radius: int)
+    def log_goal(
+        sprite: Asset,
+        verb: str = "transformed",
+        level: int = logging.INFO
+    ) -> None:
+        """Logs the Sprite's current active Goal at the specified log level."""
+        goal = sprite.state.goal
+        if goal is None:
+            return
+        logger.log(
+            level,
+            f"{sprite.name} {verb} Goal("
+            f"category={goal.category}, "
+            f"name={goal.name}, "
+            f"layer={goal.layer}, "
+            f"position=({goal.position.x}, {goal.position.y}))"
+        )
 
-        Quick Euclidean check if two points are within radius of one another.
+    def _sense(self, sprite: Asset, board: Board) -> None:
         """
-        return geometry.nearby(p1.x, p1.y, p2.x, p2.y, radius)
-
-    
-    @staticmethod
-    def complete(sprite: Asset, board: Board) -> bool:
+        Stage 1 (Sense): Scans same-layer environment, updates fear trigger,
+        and tracks active Goal coordinates without cross-layer telepathy.
         """
-        ### complete(sprite: Asset, board: Board)
+        self.perception.scan(sprite, board)
+        self.perception.fear(sprite, board)
+        self.perception.track(sprite, board)
 
-        Determines if a Sprite's goal is resolved without mutating state.
+    def _resolve(self, sprite: Asset, board: Board) -> bool:
+        """
+        Stage 2 (Resolve): Applies Survival preemption when frightened outside
+        ESCAPE, or evaluates the compiled Goal Resolution Matrix via GoalResolver.
+        Returns True if sprite.state.goal changed during resolution.
         """
         goal = sprite.state.goal
+        if goal is None:
+            return False
 
-        if not goal:
-            return True
-
-        if goal.category == Goals.TARGET:
-            target_state = board.character(goal.name)
-            return target_state is None or target_state.mutators.triggers.dead
-
-        if goal.category == Goals.SUBJECT:
-            return sprite.state.psyche.dialogue is None
-
-        if goal.category == Goals.POSITION:
-            return CognitionMechanics.nearby(
-                sprite.state.goal.position, 
-                sprite.state.position,
-                sprite.state.mutators.parameters.action.radius
+        # Survival preemption: shelf non-transient active Goals non-dormant
+        # without emitting a confusion reflex so TransitionMechanics exits to IDLE
+        is_escape_goal = (
+            goal.category == Goals.POSITION
+            and goal.name == Intentions.ESCAPE.value
+        )
+        if (
+            sprite.state.mutators.triggers.frightened
+            and sprite.state.intention != Intentions.ESCAPE
+            and not is_escape_goal
+        ):
+            if (
+                goal.category not in (Goals.POSITION, Goals.DOOR)
+                and goal.name
+            ):
+                goal.dormant = False
+                sprite.state.memory.goals[goal.name] = goal
+            sprite.state.goal = None
+            logger.info(
+                f"{sprite.name} preempted Goal("
+                f"category={goal.category}, name={goal.name}) due to fear"
             )
-        
-        elif goal.category == Goals.OBJECT:
-            # TODO:
             return True
 
-        elif goal.category == Goals.PROPERTY:
-            # TODO:
-            return True
+        if self.resolver is None:
+            return False
 
+        was_stalled = sprite.state.trajectory.stalled
+        excluded = self.perception.stalled_doors(
+            sprite.name,
+            sprite.state.layer
+        )
+        outcome = self.resolver.resolve(sprite, board, excluded=excluded)
+        if outcome is None:
+            return False
 
-    @staticmethod
-    def door(sprite: Asset, board: Board) -> Asset:
-        """
-        Locates mapped or nearby unmapped transition doors to reach destination layers.
-        """
-        # 1. Search for a mapped door leading to target layer
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-        target_door = None
-        for door_name, outlayer in sprite.state.memory.doors.items():
-            if outlayer == sprite.state.goal.layer:
-                target_door = board.asset(door_name, sprite.state.layer)
-                if target_door:
-                    break
-                        
-        # 2. Explore unmapped doors if no mapped path exists
-        if not target_door:
-
-            target_door = next((
-                d for d in board.instances(
-                    AssetInstances.DOORS, 
-                    sprite.state.layer
-                ) if d.name not in sprite.state.memory.doors 
-                and CognitionMechanics.nearby(
-                    d.state.position, 
-                    sprite.state.position,
-                    vision_radius
+        if outcome == Outcomes.LOST and goal.name and was_stalled:
+            if goal.category == Goals.DOOR:
+                self.perception.mark_stalled_door(
+                    sprite_name=sprite.name,
+                    layer=goal.layer or sprite.state.layer,
+                    door_name=goal.name
                 )
-            ), None)
+            elif goal.category in (
+                Goals.OBJECT,
+                Goals.RESOURCE,
+                Goals.PROPERTY,
+            ):
+                self.perception.mark_stalled_static(
+                    sprite_name=sprite.name,
+                    layer=goal.layer or sprite.state.layer,
+                    goal_name=goal.name
+                )
 
-        return target_door
+        return sprite.state.goal is not goal
+
+    def _acquire(self, sprite: Asset, board: Board) -> bool:
+        """
+        Stage 3 (Acquire): Executes strictly when intention == IDLE and
+        goal is None, selecting the first Goal across five monotonic tiers:
+          1. Survival Instincts
+          2. Commitment Stack (Recall: memory.stack LIFO)
+          3. Episodic Memory (Recall: non-dormant memory.goals)
+          4. Drive Instincts
+          5. Exploratory Instincts
+        """
+        if (
+            sprite.state.intention != Intentions.IDLE
+            or sprite.state.goal is not None
+        ):
+            return False
+
+        # Tier 1: Survival Instincts
+        for instinct in self.survival:
+            goal = instinct.generate(sprite, board)
+            if goal is not None:
+                sprite.state.goal = goal
+                self.log_goal(sprite, verb="acquired")
+                return True
+
+        # Tiers 2 & 3: Commitment Stack (LIFO) -> Episodic Memory
+        recalled = self.recall.remember(sprite, board)
+        if recalled is not None:
+            sprite.state.goal = recalled
+            return True
+
+        # Tier 4: Drive Instincts
+        for instinct in self.drives:
+            goal = instinct.generate(sprite, board)
+            if goal is not None:
+                sprite.state.goal = goal
+                self.log_goal(sprite, verb="acquired")
+                return True
+
+        # Tier 5: Exploratory Instincts
+        for instinct in self.exploratory:
+            goal = instinct.generate(sprite, board)
+            if goal is not None:
+                sprite.state.goal = goal
+                self.log_goal(sprite, verb="acquired")
+                return True
+
+        return False
 
     
-    def update(self, 
-        board: Board, 
-        delta: float, 
-        bus: collections.deque, 
+    def _sync(
+        self,
+        sprite: Asset,
+        board: Board,
+        resolved_changed: bool,
+        acquired: bool
+    ) -> None:
+        """
+        Stage 4 (Sync): Refreshes Perception.track whenever Stage 2 or Stage 3
+        changed the active Goal, and validates newly acquired Stage 3 Goals via
+        GoalResolver so cross-layer Door subsumption completes on the same tick.
+        """
+        if not (resolved_changed or acquired):
+            return
+
+        if sprite.state.goal is None:
+            sprite.state.mutators.triggers.vision = False
+            return
+
+        self.perception.track(sprite, board)
+
+        if acquired and self.resolver is not None:
+            previous_goal = sprite.state.goal
+            excluded = self.perception.stalled_doors(
+                sprite.name,
+                sprite.state.layer
+            )
+            outcome = self.resolver.resolve(sprite, board, excluded=excluded)
+            if outcome is not None and sprite.state.goal is not previous_goal:
+                if sprite.state.goal is not None:
+                    self.perception.track(sprite, board)
+                else:
+                    sprite.state.mutators.triggers.vision = False
+
+    def update(
+        self,
+        board: Board,
+        delta: float,
+        bus: collections.deque,
         payload: DevicePayload
     ) -> None:
         """
@@ -166,465 +313,22 @@ class CognitionMechanics(Mechanic):
 
         Mechanic interface for receiving information from the Engine.
         """
-        sprites = board.instances(AssetInstances.SPRITES)
-        
-        for sprite in sprites:
-            # Skip the player
-            if sprite.name == board.player().name:
+        player = board.player()
+        player_name = player.name if player is not None else None
+
+        for sprite in board.instances(AssetInstances.SPRITES):
+            # Skip the player (B074 safe guard when board.player() is None)
+            if player_name is not None and sprite.name == player_name:
                 continue
 
-            # Phase A: Resolution
-            self._resolve(sprite, board)
-            # Phase B: Scan
-            self._scan(sprite, board)
-            # Phase B: Memory
-            self._remember(sprite, board)
-            # Phase C: Ideate
-            self._ideate(sprite, board)
-            # Phase D: Acquistion
-            self._motivate(sprite, board)
-            # Phase E: Tracking
-            self._track(sprite, board)
-            # Phase F: Projection
-            self._project(sprite, board)
-
-
-    def _resolve(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _resolve(sprite: Asset, board: Board)
-
-        Evaluates whether the current Goal has been satisfied or invalidated.
-        """
-        goal = sprite.state.goal
-        action_radius = sprite.state.mutators.parameters.action.radius
-
-        if not goal:
-            return
-
-        # Clear stale wander goal when TransitionMechanics switches intention
-        if sprite.state.intention in (
-            Intentions.FIND, 
-            Intentions.HUNT
-        ):
-            if goal.name == WANDER:
-                CognitionMechanics.log_goal(sprite, verb="dropped")
-                sprite.state.goal = None
-                return
-            
-        # ------------------------------------------------------------------------
-        # ------------------------------------------------- TARGET GOAL RESOLUTION
-        # ------------------------------------------------------------------------
-        if goal.category == Goals.TARGET:
-            target_state = board.character(goal.name)
-
-            if target_state is None or target_state.mutators.triggers.dead:
-                CognitionMechanics.log_goal(sprite, verb="resolved")
-                sprite.state.goal = None
-                if goal.name in sprite.state.memory.goals.keys():
-                    sprite.state.memory.goals.pop(goal.name)
-
-            elif self.nearby(
-                goal.position, 
-                sprite.state.position, 
-                action_radius
-            ) and not sprite.state.mutators.triggers.vision:
-                CognitionMechanics.log_goal(sprite, verb="abandoned")
-                sprite.state.memory.goals[goal.name] = goal
-                sprite.state.goal = None
-
-        # ------------------------------------------------------------------------
-        # ------------------------------------------------ SUBJECT GOAL RESOLUTION
-        # ------------------------------------------------------------------------
-        elif goal.category == Goals.SUBJECT:
-            if not sprite.state.psyche.dialogue:
-                CognitionMechanics.log_goal(sprite, verb="resolved")
-                sprite.state.goal = None
-                if goal.name in sprite.state.memory.goals.keys():
-                    sprite.state.memory.goals.pop(goal.name)
-
-            elif self.nearby(
-                goal.position, 
-                sprite.state.position, 
-                action_radius
-            ) and not sprite.state.mutators.triggers.vision:
-                CognitionMechanics.log_goal(sprite, verb="abandoned")
-                sprite.state.goal = None
-                sprite.state.memory.goals[goal.name] = goal
-                sprite.state.psyche.expression = board.cradle.spawn_expression(
-                    ExpressionsPalette.BUBBLES, 
-                    Expressions.CONFUSION, 
-                    sprite
-                )
-
-        # ------------------------------------------------------------------------
-        # ----------------------------------------------- POSITION GOAL RESOLUTION
-        # ------------------------------------------------------------------------
-        elif goal.category == Goals.POSITION:
-            if self.nearby(
-                goal.position, 
-                sprite.state.position, 
-                action_radius
-            ):
-                CognitionMechanics.log_goal(sprite, verb="resolved")
-                sprite.state.goal = None
-                
-        # ------------------------------------------------------------------------
-        # ------------------------------------------------- OBJECT GOAL RESOLUTION
-        # ------------------------------------------------------------------------
-        elif goal.category == Goals.OBJECT:
-            # If the Sprite's layer no longer matches the door's layer, 
-            # InteractionMechanics successfully pushed them through.
-            # TODO: what if the sprite is seeking a Chest on a different layer?
-            #       this resolution is dependent on the goal being a Door Object.
-            #       may need to differentiate Goal Categories between Doors and Chest...
-            if sprite.state.layer != goal.layer:
-                CognitionMechanics.log_goal(sprite, verb="resolved")
-                sprite.state.goal = None
-                sprite.state.memory.goals.pop(goal.name, None)
-
-        # ------------------------------------------------------------------------
-        # ---------------------------------------------- PROPERTY GOAL RESOLUTION
-        # ------------------------------------------------------------------------
-        elif goal.category == Goals.PROPERTY:
-            # TODO:
-            pass
-
-
-    def _scan(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _scan(sprite: Asset, board: Board)
-
-        Scan the board and update memory.
-        """
-        if sprite.state.mutators.parameters is None:
-            return
-        
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-
-        for other_name, other_state in board.characters().items():
-            if other_name == sprite.name: 
+            if sprite.state.mutators.triggers.dead:
                 continue
 
-            # STRICT LAYER CHECK: Cannot see across dimensions
-            if other_state.layer != sprite.state.layer:
-                continue
-
-            # ------------------------------------------------------------------------
-            # ------------------------------------------------- SPRITE LOCATION MEMORY
-            # ------------------------------------------------------------------------
-            if self.nearby(
-                other_state.position, 
-                sprite.state.position, 
-                vision_radius
-            ):
-                sprite.state.memory.sprites[other_name] = other_state.position
-
-                if other_name in sprite.state.memory.goals:
-                    mem_goal = sprite.state.memory.goals[other_name]
-                    mem_goal.position.x = other_state.position.x
-                    mem_goal.position.y = other_state.position.y
-                    mem_goal.layer = other_state.layer
-
-
-    def _remember(self, sprite, board: Board) -> None:
-        """
-        ### _remember(sprite: Asset, board: Board)
-
-        Pops the remembered goals onto the stack.
-        """
-        if sprite.state.intention not in [
-            Intentions.IDLE,
-            Intentions.HUNT, 
-            Intentions.FIND
-        ]: 
-            return
-        
-        if not sprite.state.goal and not sprite.state.memory.goals:
-            return
-
-        if not sprite.state.goal:
-            action_radius = sprite.state.mutators.parameters.action.radius
-            
-            selected_key = None
-            for key, candidate in sprite.state.memory.goals.items():
-                # If we reached the target's last-known coordinates and found it empty,
-                # leave it dormant in memory until any_memories_visible spots it.
-                if candidate.category in (
-                    Goals.TARGET, 
-                    Goals.SUBJECT
-                ):
-                    if self.nearby(
-                        candidate.position, 
-                        sprite.state.position, 
-                        action_radius
-                    ) and not sprite.state.mutators.triggers.vision:
-                        continue
-                selected_key = key
-                break
-
-            if selected_key:
-                sprite.state.goal = sprite.state.memory.goals.pop(selected_key)
-                CognitionMechanics.log_goal(sprite, verb="remembered")
-
-
-    def _ideate(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _ideate(sprite: Asset, board: Board)
-
-        Spontaneously generates goals for a Sprite. Initializes the conditions for the Sprite to transition through different loops of the Intention Transition Matrix.
-
-        #### Speak Loops
-
-        1. `idle:find`:
-            - sprite.goal
-            - sprite.goal.category == constants.Goals.SUBJECT
-        2. `find:speak`:
-            - sprite.state.psyche.dialogue
-            - sprite.goal.category == constants.Goals.SUBJECT
-        3. `speak:idle`:
-            - not sprite.psyche.expression
-
-        !!! note
-            sprite.psyche.expression = f(sprite.state.intention)
-
-            In other words, sprite.psyche.expression is a *side effect* of `speak`.
-
-        !!! todo
-            There is a clear "accumulation"-cycle here. 
-
-            1. (**ACQUISITION**) Sprite has goal in `idle` (self._remember, self._ideate). 
-            2. Sprite transitions into `find`. (TransitionMechanics)
-            3. (**IDEATION**) Sprite acquires state field (self._ideate).\
-            4. Sprite transitions into `speak` (TransitionMechanics)
-            5. (**TRANSMISSION**) Sprite transmits state field (Mechanic implementations).
-                - Side Effects (Mechanics implementations)
-            6. Sprite transitions into `idle` (TransitionMechanics).
-
-        """
-        if sprite.state.intention != Intentions.IDLE:
-            return
-        
-        # Prevent endless targeting and memory leaks if we already have a dialogue goal
-        if sprite.state.goal and ( 
-            sprite.state.goal.category == Goals.SUBJECT
-        ): return
-
-        if sprite.state.mutators.parameters is None:
-            return
-        
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-
-        # ------------------------------------------------------------------------
-        # -------------------------------------------------- SPEAK LOOP GENERATION
-        # ------------------------------------------------------------------------ 
-        if sprite.state.psyche.dialogue:
-            for other_name, other_state in board.characters().items():
-                if other_name == sprite.name: 
-                    continue
-
-                if other_state.layer != sprite.state.layer:
-                    continue
-
-                if self.nearby(
-                    other_state.position, 
-                    sprite.state.position, 
-                    vision_radius
-                ):
-                    if sprite.state.goal and (
-                        sprite.state.goal.name 
-                        not in sprite.state.memory.goals.keys()
-                    ):
-                        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
-                    
-                    sprite.state.goal = Goal(
-                        name=other_name, 
-                        category=Goals.SUBJECT, 
-                        layer=other_state.layer,
-                        position=Position(x=other_state.position.x, y=other_state.position.y)
-                    )
-                    CognitionMechanics.log_goal(sprite, verb="ideated")
-                    return
-
-
-    def _motivate(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _motivate(sprite: Asset, board: Board)
-
-        Scans the environment for targets matching the Sprite's motivation.
-        """
-        if sprite.state.intention != Intentions.IDLE:
-            return
-        
-        if sprite.state.mutators.parameters is None:
-            return
-
-        if sprite.state.goal:
-            return
-
-        motivation = sprite.state.psyche.motivation
-
-        # ------------------------------------------------------------------------
-        if motivation == Motivations.CONQUEST:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.PROFIT:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.SURVIVAL:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.LOVE:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.REVENGE:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.REBELLION:
-            # TODO
-            pass
-
-        # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.SAFETY:
-            # TODO
-            pass
-
-
-    def _track(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _track(sprite: Asset, board: Board)
-
-        Updates the goal position if the target is visible. Freezes it if not.
-        """
-        goal = sprite.state.goal
-
-        if not goal:
-            return
-
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-        target_state = None
-
-        # ------------------------------------------------------------------------ 
-        if goal.category in [
-            Goals.TARGET,
-            Goals.SUBJECT
-        ]:
-            target_state = board.character(goal.name)
-            if target_state:
-                goal.layer = target_state.layer
-
-        # ------------------------------------------------------------------------ 
-        elif goal.category in [
-            Goals.POSITION,
-            Goals.OBJECT, 
-            Goals.PROPERTY
-
-        ]:
-            if not sprite.state.mutators.triggers.vision:
-                CognitionMechanics.log_goal(sprite, verb="tracked")
-
-            sprite.state.mutators.triggers.vision = True
-            return
-
-        # ------------------------------------------------------------------------ 
-        # CROSS-LAYER GOAL MANAGEMENT
-        # ------------------------------------------------------------------------ 
-        if goal and goal.layer and goal.layer != sprite.state.layer: 
-            # Search for a mapped door leading to target layer
-            target_door = self.door(sprite, board)
-                        
-            # Subsume parent goal into episodic memory
-            sprite.state.memory.goals[goal.name] = goal
-
-            if target_door:
-                # Path found. Inject prerequisite OBJECT door goal.
-                sprite.state.goal   = Goal(
-                    name            = target_door.name,
-                    category        = Goals.OBJECT,
-                    layer           = sprite.state.layer,
-                    position        = Position(
-                        x           = target_door.state.position.x, 
-                        y           = target_door.state.position.y
-                    )
-                )
-                CognitionMechanics.log_goal(sprite, verb="tracked")
-            else:
-                CognitionMechanics.log_goal(sprite, verb="abandoned")
-                sprite.state.goal = None
-
-            return
-        
-        # ------------------------------------------------------------------------ 
-        # SAME-LAYER GOAL TRACKING
-        # ------------------------------------------------------------------------
-        if target_state and self.nearby(
-            target_state.position, 
-            sprite.state.position, 
-            vision_radius
-        ):
-            # Target is visible: check LOS obscuration
-            sprite.state.mutators.triggers.vision = True
-            sprite.state.goal.position.x = target_state.position.x
-            sprite.state.goal.position.y = target_state.position.y
-
-        elif target_state:
-            # Target lost: freeze coordinates at last known position
-            sprite.state.mutators.triggers.vision = False
-
-
-    def _project(self, sprite: Asset, board: Board) -> None:
-        """
-        ### _project(sprite: Asset, board: Board)
-
-        Alters the spatial coordinates of the Goal based on abstract Intentions.
-        """
-        intention = sprite.state.intention
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-
-        if intention == Intentions.ESCAPE and sprite.state.mutators.triggers.vision:
-            # Invert the target vector to run away
-            dx = sprite.state.position.x - sprite.state.goal.position.x
-            dy = sprite.state.position.y - sprite.state.goal.position.y
-            
-            # Extrapolate a point far in the opposite direction
-            sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
-            sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
-
-        elif intention == Intentions.WANDER: 
-            if not sprite.state.goal or self.complete(sprite, board):
-                offset_x = random.randint(-vision_radius, vision_radius)
-                offset_y = random.randint(-vision_radius, vision_radius)
-
-                # Query board boundaries for the sprite's active layer
-                layer_sizes = board.size(sprite.state.layer)
-                max_w = layer_sizes[0].w
-                max_l = layer_sizes[0].l
-
-                # Account for entity boundaries to avoid placing origin on map edge
-                sprite_w = sprite.dimensions.w
-                sprite_l = sprite.dimensions.l
-                bound_w = max(0, max_w - sprite_w)
-                bound_l = max(0, max_l - sprite_l)
-
-                raw_x = sprite.state.position.x + offset_x
-                raw_y = sprite.state.position.y + offset_y
-
-                clamped_x = max(0, min(raw_x, bound_w if max_w > 0 else raw_x))
-                clamped_y = max(0, min(raw_y, bound_l if max_l > 0 else raw_y))
-
-                sprite.state.goal = Goal(
-                    name=WANDER, # TODO: enumerate
-                    category=Goals.POSITION,
-                    layer=sprite.state.layer,
-                    position=Position(x=int(clamped_x), y=int(clamped_y))
-                )
-                CognitionMechanics.log_goal(sprite, verb="randomized")
+            # Stage 1: Sense
+            self._sense(sprite, board)
+            # Stage 2: Resolve
+            resolved_changed = self._resolve(sprite, board)
+            # Stage 3: Acquire (IDLE only)
+            acquired = self._acquire(sprite, board)
+            # Stage 4: Sync
+            self._sync(sprite, board, resolved_changed, acquired)

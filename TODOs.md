@@ -1,693 +1,247 @@
-# Erosion of ECS Polymorphism via `isinstance` and ID Branching
+## 1. Engine Profile Analysis (`world-01` UAT)
 
-Although `Asset` (`src/app/assets/base.py`, line 139) is designed as a uniform component container, core systems bypass its strategy interfaces:
+At 6,059 rendered frames and 6,337 world simulation ticks (approximately 101 seconds at 60 FPS, averaging 1.05 fixed-timestep substeps per world frame), `Engine.start` spends **73.54%** of wall time idle in `time.sleep` (12,077 calls, or 1.99 calls/frame from hybrid sleep-plus-spin pacing) and **25.27%** in active execution.
 
-* **`Screen` Inspects Concrete State Types**: `Screen._assemble` (`src/app/game/screen.py`, line 157) checks `if not isinstance(asset.state, SheetState):` to suppress missing frame warnings for sparse equipment sheets. `Screen._widgets`, `Screen.stamp`, `Screen.bake`, and `Screen.release` (lines 213, 224, 250, 286, 294) repeatedly check `isinstance(widget.state, PaneState)`.
+### Active Frame Budget Breakdown
 
-* **`Widget` Subclasses `Asset` to Override `dimensions`**: `src/app/game/menus/core.py` (lines 37–49) defines `class Widget(Asset)` solely to attach `binding` and branch on `if isinstance(self.state, PaneState): return self.state.span`.
+| Subsystem | Wall Time | Share of Active CPU (25.27%) | Calls | Calls / Tick or Frame |
+| --- | --- | --- | --- | --- |
+| **`Engine._play` (Total)** | **14.98%** | **59.3%** | 6,563 | 1.08 / frame |
+| — `CollisionMechanics.update` | 6.05% | 23.9% | 6,337 | 1.00 / tick |
+| — `MotionMechanics.update` | 2.71% | 10.7% | 6,337 | 1.00 / tick |
+| — `NavigationMechanics.update` | 2.65% | 10.5% | 6,337 | 1.00 / tick |
+| — All other Core + World Mechanics + `device.poll` | 3.44% | 13.6% | — | (each under 1.0% node / 0.5% edge) |
+| **`Engine._render` (Total)** | **9.00%** | **35.6%** | 6,059 | 1.00 / frame |
+| — `Screen.interface` (`_widgets` $\to$ `widgets.keys`) | 3.90% | 15.4% | 6,059 | 12.02 `keys` / frame |
+| — `Screen.draw` (`_assemble`) | 3.77% | 14.9% | 6,053 | 1.00 / world frame |
+| — `Screen.present` | 1.24% | 4.9% | 6,059 | 1.00 / frame |
+| **`Device.pump`** | **1.11%** | **4.4%** | 6,059 | 1.00 / frame |
+| **`Engine.start` bookkeeping / `_drain` / `_telemetry**` | **0.18%** | **0.7%** | — | — |
 
-* **Hardcoded Entity IDs and `getattr` Guards in Sheet Components**:
-  * `SpriteFrame.keys` (`src/app/assets/frames/sheets.py`, line 103) checks `if id != RequiredAssets.PLAYER.value and state.psyche.expression:`.
-  * `SpriteAnimation.animate` (`src/app/assets/animations/sheets.py`, line 32) is type-annotated for `state: SpriteState`, yet uses `if getattr(state, 'psyche', None) is None: return state` because `Player` is hydrated with `SheetState` (which lacks `psyche`) while sharing `SpriteAnimation` and `SpriteFrame`.
-  * Meanwhile, `SheetState` (`src/app/models/state/assets/sheets.py`, lines 128–136) bundles `intention`, `character`, `inventory`, `meters`, and `goal` onto the base class for all `Sheets`, forcing `Pixies` (`docs/01-assets.md`, *Sheet: Pixies*) to inherit full character/inventory structures if they use `SheetState`.
+*Measurement caveat:* `cProfile` instruments Python function entry/exit, inflating the relative cost of high-call-count pure-Python methods relative to Cython `nogil` and C/SDL routines. However, the raw call counts are exact and reveal five concrete structural inefficiencies.
 
-* **Remediation**: Separate `SheetState` (strictly `position`, `velocity`, `animation`), `CharacterState(SheetState)` (adding `character`, `slots`, `inventory`, `meters`, `intention`, `goal` for `Player`), and `SpriteState(CharacterState)` (adding `psyche`, `memory`, `trajectory`). Give `Player` and `Sprite` distinct `Frame` and `Animation` recipes (or let `PlayerFrame` be `SpriteFrame` without expression overlays and `SpriteFrame` subclass `PlayerFrame`), eliminating `getattr` and `id != "player"` checks.
+### Primary Bottlenecks & Inefficiencies
 
+#### 1. Redundant Per-Tick Querying of Immutable Craft Hitboxes (1.94 Million Python Calls)
 
----
+* **Evidence:** `crafts:elevations` is invoked **1,027,576×** (1.42%) and `crafts:get` is invoked **910,106×** (2.01%)—together accounting for **3.43% of total wall time (13.6% of active CPU)**.
+* **Root cause:** `Board.weights(layer, elevation)` filters `self._cache.get_weights(layer)` with a list comprehension calling `w.hitbox.elevations(w.properties, w.state)` on every call, and `base.collisions` calls `crafts.get(...)` on every pass. From `collision:update` alone, both methods execute **583,004×** (`92.00` calls/tick), meaning 92 static Craft assets have their elevation membership and hitbox lists re-evaluated on every tick.
+* **Additional amplification in `CollisionMechanics`:** `base.collisions` is called **95,853×** (`15.13` calls/tick). Running broad-phase/narrow-phase collision across every `(layer, elevation)` partition—including static-only elevation tiers or inactive layers with zero dynamic bodies—drives `CollisionMechanics` to **40.4% of all `_play` time**.
+* **Fix direction:** Index static `weights` by `(layer, elevation)` inside `Board._cache` (rebuilding only on `add`/`remove`/`relayer` or elevation change), cache static Craft primitive tuples, and skip `base.collisions` for any `(layer, elevation)` bucket containing zero dynamic ($m \gt 0$) bodies.
 
+#### 2. Per-Sprite Obstacle Rebuilding in `NavigationMechanics` (#1 Scaling Hazard)
 
-# Temporal Coupling and Encapsulation Leaks in `Board`
+* **Evidence:** `navigation:_navigate` is called **6,337×** across 6,337 ticks—confirming this UAT trace ran with **$N = 1$ autonomous Sprite**. For that single Sprite, `navigation:obstacles` ran **6,079×** (95.9% of ticks) and consumed **1.94%** wall time (**74.3%** of all navigation cost), contributing the remaining ~444k calls to `crafts:elevations` and ~327k calls to `crafts:get`.
+* **Root cause:** `NavigationMechanics._navigate` invokes `self.obstacles(...)` on every tick *inside the per-sprite loop*, even when line-of-sight is clear and RRT never executes. Each call re-extracts all weights, allocates new Minkowski-inflated Python float tuples for every static obstacle and perimeter, and recomputes `_fluid_obstacles` (including 2D AABB bridge `subtract` carving) from scratch.
+* **Scaling impact:** At $O(N \cdot |\mathcal{O}|)$ per tick, scaling `world-01` from $N = 1$ to **$N = 15\text{--}20$ Sprites** drives `navigation:obstacles` alone to **29%–39% of wall time**, saturating the frame budget before RRT or collisions even scale.
+* **Fix direction:** Cache uninflated static weight, perimeter, and bridge-carved fluid AABBs per `(layer, elevation)` (invalidating only on Fluid dirty-check shifts or `add`/`remove`), and memoize inflated obstacle lists per `(layer, elevation, pad_x, pad_y)` across sprites within a tick.
 
-* **Nullable Late-Bound Dependencies Violating Type Annotations**: In `src/app/game/board/core.py` (lines 69–77), `plot: PlotState`, `device: Device`, and `cradle: Cradle` are annotated as non-optional, while `self.materializer` is unannotated. In `Board.__init__` (lines 90–95), all five are initialized to `None` and mutated later via setter methods (`set_device`, `set_cradle`, `set_plot`, `set_migrator`). Any mechanic or handler invoked before all setters run encounters `AttributeError` on `None`.
-* **11 Private Cache Structures Exposed on `Board**`: Lines 111–155 of `src/app/game/board/core.py` expose `_cached_categories`, `_cached_instances`, `_cached_layers`, `_cached_renderables`, `_cached_weights`, `_cached_tilemap`, `_cached_fluidmap`, `_cached_characters`, `_all_categories`, `_all_instances`, and `_shorelines` directly from `self._cache`. External callers inspecting these properties bypass `Board`'s query API and couple directly to `Cache` implementation details.
+#### 3. Per-Tick Sensor Primitive Extraction in `MotionMechanics`
 
----
+* **Evidence:** `fields:update` accounts for **2.40%** of wall time (**88.6%** of `MotionMechanics.update`), leaving just **0.31%** for actual velocity integration, kinematics, dynamics, and friction. Nearly half of `fields:update` (**1.13%**) is spent in `_extract_compound_sensor_primitives`, called **19,010×** (`3.00` calls/tick).
+* **Root cause:** Walkable elevation substrates (Bridges, Stairs, non-obstacle Struts) are re-extracted into primitive lists three times per tick despite being static geometry.
+* **Fix direction:** Cache substrate sensor primitives by `(layer, elevation)` in `Board._cache`.
 
+#### 4. UI Overlay Assembly Out-Costing World Rendering
 
-# $O(N)$ Linear Scans for Unique Entity Lookups and Layer Dimensions in `Board`
+* **Evidence:** `Screen.interface` (**3.90%**) costs more than rendering the entire game world (`Screen.draw` at **3.77%**). Within `interface`, `widgets:keys` is invoked **72,830×** (`12.02` calls/frame), consuming **2.12%** of wall time (54.4% of UI time).
+* **Root cause:** Persistent HUD overlays (meters, panes, borders, labels) recompute frame keys via `SEPARATOR.join` and rebuild widget render lists every frame even when their underlying bound state (`health`, `magic`, `focus`) has not mutated.
+* **Fix direction:** Cache resolved widget frame keys on widget state and invalidate only when `Binder` or `MenuMechanics` mutates widget state.
 
-* **`Board.asset(name, layer)` (`src/app/game/board/core.py`, lines 222–224)**:
-```python
-def asset(self, name: str, layer: Optional[str] = None) -> Optional[Asset]:
-    search_list = self.renderables(layer) if layer else self._assets
-    return next((a for a in search_list if a.name == name), None)
-```
+#### 5. Python-Side World Render Assembly
 
-Although `asset.name` is globally unique across a deployed `Board` (`docs/01-assets.md`, *Hierarchy: Taxonomy*), `board.asset(name)` performs an $O(N)$ linear scan. Worse, when `layer` is specified, it searches `self.renderables(layer)`, which excludes `AssetCategories.TILES`—meaning `board.asset(tile_name, layer="main")` always returns `None`. Indexing `assets_by_name: Dict[str, Asset]` inside `Cache` reduces `board.asset(name)` to $O(1)$.
-
-* **`Board.size(layer)` (`src/app/game/board/core.py`, lines 296–323)**:
-Iterates over every asset on the layer in $O(N)$ on each invocation to compute `max_w` and `max_l`, rather than caching layer dimensions in `Cache` during `index_batch` / `evict_batch`.
-
-
----
-
-
-# Unclamped Fixed-Timestep Accumulator ("Spiral of Death") in `Engine.start`
-
-In `src/app/game/engine.py` (lines 173–182):
-
-```python
-current_time = self.time()
-frame_time = current_time - last_time
-last_time = current_time
-accumulator += frame_time
-
-while accumulator >= delta:
-    self._play(delta)
-    self._drain()
-    accumulator -= delta
-
-```
-
-`frame_time` has no upper bound. If the OS window manager blocks the process (e.g., dragging the window title bar, workspace switching, or a breakpoint) for $5\text{ seconds}$, `accumulator` spikes to $5.0\text{ s}$ and executes $300$ consecutive `_play(delta)` ticks without rendering or sleeping. Clamping `frame_time = min(current_time - last_time, settings.MAX_FRAME_TIME)` (typically $0.25\text{ s}$) prevents accumulator runaway.
-
-
-----
-
-
-# Swallowed OS Window Events & Sub-Tick Polling in `libs.core.input` and `Device`
-
-1. **Ignored `SDL_QUIT` Events**: In `src/libs/core/input.pyx` (lines 20–26), `pump()` drains the SDL event queue with an empty body:
-
-```cython
-while SDL_PollEvent(&event):
-    pass
-```
-
-Because `SDL_PollEvent` removes all OS window events from SDL's internal queue and discards them, `SDL_QUIT` (window close button, `Alt+F4`, or SIGINT window termination) is permanently discarded.
-
-2. **Polling Inside the Sub-Step Accumulator Loop**: `Engine._play` (`src/app/game/engine.py`, line 109) calls `self.board.device.poll()` inside `while accumulator >= delta:`. In `Keyboard.poll` (`src/app/game/devices.py`, lines 64–106), edge-triggered intentions and menu triggers are resolved by comparing `current_dict.get(v) and not self._last_state.get(v)` and immediately overwriting `self._last_state = current_dict`. If `accumulator` executes two sub-steps in a single render frame, the edge transition is consumed on sub-step 1 and erased on sub-step 2; conversely, if a fast frame renders with `accumulator` less than `delta`, `sdl.pump()` is not called on that frame at all.
-
+* **Evidence:** `Screen._assemble` consumes **3.55%** (**3.27% self**), representing **94.2%** of `Screen.draw`. The Cython/SDL draw submission itself is under 0.25%.
+* **Root cause:** Per-frame Python iteration over `board.renderables(layer)` to cull onscreen assets, compute `(elevation, substrate, ground, priority)` sort keys, and pack tuples across the Cython boundary.
+* **Fix direction:** Spatial-grid culling before sorting (so off-screen entities never enter Python's `sort` or key extraction) and caching static ground baselines for immobile assets.
 
 ---
 
+## 2. Phase 06.06 Impact Analysis: Removing Transition Short-Circuiting
 
-# `dataclasses.asdict` Serialization on Cython Extension Types in `Board.serialize`
+### Current Cost Baseline in `pstats`
 
-In `src/app/game/board/core.py` (line 408), `Board.serialize` converts runtime states to dictionaries via `asdict(asset.state)`. However, `SheetState`, `ObjectState`, `CraftState`, etc., store Cython `cdef class` extension types (`libs.core.models.Position`, `Velocity`, `Dimensions`, `Multiple`) in their fields (`src/app/models/state/assets/sheets.py`, lines 130–131). Python's `dataclasses.asdict()` only unpacks standard Python `@dataclass` objects, lists, tuples, and dicts; for Cython `cdef class` instances, `asdict()` falls back to `copy.deepcopy(obj)`, leaving raw Cython extension instances in the output dict (or raising `TypeError` if `__reduce__`/`__deepcopy__` is not implemented on every `cdef class` in `libs.core.models`).
+Neither `TransitionMechanics.update`, `CognitionMechanics.update`, `TransitionExecutor.evaluate`, nor `Backend.evaluate` crosses the `--node-thres=1.0` or `--edge-thres=0.5` thresholds in the profile. The **entirety** of `TransitionMechanics.update` (transition evaluation, `board.states()` lookup, `AnimationMap.action`, `AnimationMap.direction`, and trigger updates) costs strictly **less than 0.5% of total wall time** (and less than 2.0% of active CPU) for $N = 1$ Sprite.
 
----
+### Distinguishing Inner vs. Outer Short-Circuiting
 
+There are two distinct loops in transition evaluation, and they have very different consequences:
 
-* **Per-Call List and Tuple Allocations in `predicates.in_pool` and `predicates.in_stream`**:
-    * `in_pool()` allocates a single-element list `[(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]` on every call just to invoke `geometry.inside()` for a 4-integer comparison.
-    * `in_stream()` rebuilds `aabbs: List[Tuple[int, int, int, int]]` from `fluid.state.source` and `fluid.state.branches` on every `Board.fluid()` lookup (`60 Hz` per moving entity), even though `Actuator.propagate()` already compiles the active stream and pool geometry onto `fluid.state.hitboxes`.
+1. **Inner conjunction short-circuiting (`Backend.evaluate` over a single transition's `conditions` list):**
+* **Must be preserved.** Removing it breaks ISL null-safety (e.g., evaluating `sprite.goal.category == ...` when `sprite.goal is None` raises `AttributeError`) and forces unnecessary evaluation of `is_near()` / dictionary lookups on disqualified transitions.
 
 
-#### 3. Documentation Updates
+2. **Outer transition short-circuiting (`TransitionExecutor` stopping at the first matching `Transition` in `transitions[current_state]`):**
+* Removing outer short-circuiting to collect the full candidate set (`candidates()`) has a **much smaller runtime impact than intuition suggests**, for two reasons:
+* **Steady-state ticks already do exhaustive evaluation:** During active navigation (`wander`, `find`, `hunt`, `follow`), no outgoing transition matches until arrival, interruption, or loss. `TransitionExecutor.evaluate` *already* evaluates every outgoing rule to `False` on almost every tick.
+* **Low fan-out per state:** In `automata/intentions/main.yaml`, non-`idle` states carry only 1–4 outgoing transitions. Even if Phase 06.06 expands `idle` from 4 to ~9 outgoing transitions (adding `mine`, `build`, `barter`, `mock`, `threaten`), inner short-circuiting rejects mismatched categories on conjunct #2 (`sprite.goal.category == ...`) in nanoseconds.
 
-##### Draft: MaterialIndex Substrate Lookup & Pack Menu Context
 
-* **Page**: `docs/03-compositions.md` & `docs/06-widgets.md`
-* **Heading**: `Service: Materializer` / `Menu: Data`
 
-###### Drift
 
-1. In `docs/03-compositions.md`, `Decomposer` hydration documents late-binding for `bind(root.*)` and `bind(parent.*)` attributes (`layer`, `owner`), but omits `material` injection required by parameterized Armature compositions (`bind(root.material)`).
-2. In `docs/06-widgets.md`, `Menu: Data` item 3 (`Equipment, Pouch & Pack`) describes `pack` as displaying two 2x4 grid Gizmos alongside the Craft Formulae pane using `InventoryContext`, without specifying the filter strip or ledger context fields required for crafting.
 
-###### Update
+### Quantitative Effect on Engine Performance
 
-```markdown
-- **Compositions (`docs/03-compositions.md` — `Decomposer: Hydration`)**:
-  * **Root Context Attributes**: At deployment, `root_context` exposes `id`, `name`, `layer`, `owner`, `position`, `elevation`, `material`, and `blueprint` from the deployed `PropertyState`, allowing parameterized Armatures to resolve `bind(root.material)` across root and branch Struts.
+| Scenario | Estimated `TransitionMechanics` Wall Time | Effect on 60 FPS Budget |
+| --- | --- | --- |
+| **Current UAT ($N = 1$, short-circuited)** | $\lt 0.5\%$ (est. $\sim 0.1\text{--}0.2\%$) | Negligible |
+| **Phase 06.06 ($N = 1$, exhaustive outer `candidates()`)** | $\sim 0.2\text{--}0.5\%$ ($\approx 1.2\times\text{--}2.5\times$ on transition/self-loop ticks; $\approx 1.0\times$ on steady navigation ticks) | Imperceptible; dwarfed by `collision` (6.05%), `_widgets` (3.89%), `_assemble` (3.55%), `fields` (2.40%), `navigation:obstacles` (1.94%) |
+| **Scaled World ($N = 50$ Sprites, exhaustive outer, unoptimized)** | $\sim 10\text{--}20\%$ (linear in $N \times k_q$, amplified by `eval()` / `**locals` kwargs unpacking and per-tick `locals` dict allocation) | Noticeable once `navigation:obstacles` and `collision` are fixed; easily mitigated by indexing/gating |
 
-- **Widgets (`docs/06-widgets.md` — `Menu: Data`)**:
-  * **`pack`**: Displays two 2x4 grid Gizmos for `inventory.pack` (`materials`) and `inventory.sack` (`crops`) alongside the Craft Formulae column, which comprises a `crafts` filter strip Gizmo, a filtered formula grid Gizmo, and a recipe cost readout bound to `PackContext`.
+### Two Non-Obvious Risks Exposed by Combining `pstats` With Phase 06.06
 
-```
+1. **Semantic hazard on existing self-loops (`attack -> attack`, `escape -> escape`, `mine -> mine`):**
+* In `automata/intentions/main.yaml`, self-loops currently rely on outer short-circuiting to mask lower-priority rules. Under exhaustive `candidates()`, if a state contains both a self-loop (`next == current_state`) and a non-disjoint exit or branch rule, both will enter the candidate set simultaneously. `TacticalSelector` must explicitly define whether `current_state` participates as a "stay" candidate or whether self-loops are removed in favor of strictly disjoint exit conditions.
 
----
 
-#### 4. Bug Reports
-
-##### Bug 07-06-A: `Decomposer.unpack` Omits `material` and `blueprint` from `root_context`
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-In `src/app/services/generators/game/decomposer.py`, `Decomposer.unpack(deployed_state: PropertyState)` constructs `root_context` with only `id`, `name`, `layer`, `owner`, `position`, and `elevation`. When an Armature composition omits `material` on `root.strut` and declares `material: bind(root.material)` on component or branch struts, `CompositionCompiler` defers the macro string to deployment time, where `Decomposer._resolve_bind` fails to resolve `bind(root.material)` because `material` is absent from `root_context`.
-
-**Steps to Replicate**
-
-1. Define an Armature composition with `root.strut` omitting `material` and a component strut declaring `material: bind(root.material)`.
-2. Call `decomposer.unpack(PropertyState(id="armature/house/home", material="granite", ...))`.
-3. Inspect the hydrated child strut's `state.material`; it remains the literal string `"bind(root.material)"` instead of `"granite"`.
-
-**Proposed Remediation**
-
-Include `"material": deployed_state.material` and `"blueprint": deployed_state.blueprint` in `root_context` inside `Decomposer.unpack()`, and ensure `root.strut` inherits `deployed_state.material` when its own `material` field is `None`.
-
----
-
-##### Bug 07-06-B: `MenuMechanics` Prevents Focusing `DISABLED` Slots in Craft Formulae
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `src/app/game/logic/mechanics/core/menu.py`, `MenuMechanics._resolve_neighbor` enforces `neighbor.state.status != Statuses.DISABLED.value` before moving `menu.focus`. While appropriate for vacant inventory slots in `equipment` and `pouch`, applying `Statuses.DISABLED` to unaffordable recipes in the Craft Formulae grid prevents the player from traversing onto those slots to inspect their required material costs.
-
-**Proposed Remediation**
-
-Either introduce a dedicated `Statuses` / visual state distinction for unaffordable-but-inspectable recipes, or allow `MenuMechanics` / `CraftController` to traverse onto occupied Craft Formulae slots regardless of affordability while gating execution inside `CraftController.select()`.
-
-
-
-
-##### Review: Ontology Engine & Runtime Profile Analysis
-
-###### Overview
-
-An analysis of the runtime execution profile (`latest.pstats`, captured across **6,019 rendered frames** and **6,092 logic updates** / **5,447 active world ticks**, or ~100.3 seconds at 60 FPS) alongside the core codebase reveals that the Engine easily maintains its 60 FPS frame budget (**72.78%** of wall-clock time is spent in frame-pacing/idle), but exhibits several structural hotspots in the **25.85%** of wall-clock time dedicated to active execution:
-
-| Subsystem | Wall-Clock % | Self % | Active Work Share (%) | Calls | Calls / Frame |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`Engine.start` Pacing (`sleep` + `time` + spin)** | **72.78%** | **72.07%** | *N/A (Idle/Spin)* | 15,979,892 | ~2,655 |
-| **`Engine._render` (Total Rendering)** | **13.28%** | 0.03% | **51.37%** | 6,019 | 1.0 |
-| ├─ `Screen._assemble` (World Culling & Sort) | 7.29% | **5.18%** | **28.20%** | 6,013 | 1.0 |
-| │  └─ `Screen._in_viewport` | 1.02% | 0.58% | 3.95% | 617,989 | ~102.8 |
-| └─ `Screen._widgets` (HUD / Menu Overlays) | 4.90% | 1.04% | **18.96%** | 6,636 | 1.1 |
-|    └─ `WidgetFrame.keys` (`widgets:67:keys`) | 3.34% | 1.73% | 12.92% | 83,118 | ~13.8 |
-| **`Engine._play` (Total Mechanics)** | **12.57%** | 0.06% | **48.63%** | 6,092 | 1.01 |
-| ├─ `CollisionMechanics.update` | 5.91% | 1.25% | **22.86%** | 5,447 | 0.91 |
-| │  ├─ `MaterialHitbox.elevations` (`crafts:64`) | 1.91% *(2.37% tot)* | 1.34% | 7.39% *(9.17% tot)* | 1,737,593 *(2.27M)* | ~319.0 |
-| │  ├─ `SpatialMechanic.collisions` (`base:60`) | 1.85% | 0.48% | 7.16% | 81,896 | ~15.0 |
-| │  └─ `MaterialHitbox.get` (`crafts:73`) | 0.92% *(1.28% tot)* | 0.81% | 3.56% *(4.95% tot)* | 501,124 *(698k)* | ~92.0 |
-| └─ `MotionMechanics.update` (`fields.update`) | 1.92% | 0.81% | **7.43%** | 5,447 | 0.91 |
-| **`enum.__get__` (Global Descriptor Overhead)** | **1.73%** | **1.25%** | **6.69%** | **7,685,348** | **~1,276.8** |
-
-At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs more CPU time than the entire game simulation (`_play` at 12.57%)**, and **static-environment queries inside `CollisionMechanics` (5.91%) and `Screen._widgets` (4.90%)** dominate the active frame budget despite Cython acceleration at the leaf nodes.
-
----
-
-###### Review: Logic
-
-1. **All-Layer Physics Execution vs. Single-Layer Rendering**:
-   * In `CollisionMechanics.update`, the outer loop iterates over `for layer in board.layers():`, running stair traversal, elevation partitioning, perimeter constraints, and broad/narrow-phase collision resolution across **every layer in the Board** on every tick.
-   * Because `81,896` calls to `SpatialMechanic.collisions` occur across `5,447` world ticks, `CollisionMechanics` is executing an average of **15.04 elevation-tier collision passes per tick** across all layers.
-
-2. **Static-vs-Static Broad/Narrow-Phase Evaluation in `CollisionMechanics`**:
-   * `board.weights(layer)` returns all assets with $m \ge 0$, which includes both dynamic bodies ($m > 0$) and all static bodies ($m = 0$: walls, buildings, obstacle struts, resources, chests, etc.).
-   * In Phase 2 of `CollisionMechanics.update`, all `tier_weights` (dominated by static $m = 0$ assets) are passed to `self.collisions(tier_weights, elevation=elevation)`.
-   * `physics.collisions` inserts all static and dynamic hitboxes into `Space`, queries all overlapping cell pairs (including **static-vs-static** pairs), and runs `geometry.intersects` on them.
-   * For every intersecting pair, `_resolve` re-fetches hitboxes and calls `geometry.intersects` a **second time**, only for `physics.collide` to compute `inv_m1 = 0.0`, `inv_m2 = 0.0`, `inv_total = 0.0` and no-op on static-vs-static pairs.
-   * Additionally, `geometry.intersects` returns only the **first** intersecting `(hb1, hb2)` tuple (`return (hb1, hb2)`). If a dynamic entity simultaneously overlaps two hitboxes of a compound asset (e.g., an L-shaped enclosure or multi-hitbox fluid/shoreline), only the first hitbox is resolved per tick.
-
-3. **Perimeter Union Collapse in `Perimeter.extract` (`src/app/services/generators/game/perimeter.py`)**:
-   * `Perimeter.extract` collects rectangles for Tier 0 `ENVIRON` and `CANOPY` tiles (Step 1) and then appends static `OBJECTS` and `CRAFTS` rectangles (Step 3) into the same `rects` list passed to `geometry.contours(rects)`.
-   * Because `geometry.contours` computes the outer boundary of the **union** $\bigcup_i R_i$ via interval merging (`merge()`), any static object or craft situated *inside* the bounding footprint of the background `ENVIRON` tiles is completely absorbed into the tile interval and produces zero contour edges. Conversely, including `CANOPY` tiles in Step 1 expands the walkable Tier 0 perimeter out to overhead tree/roof canopies.
-   * Furthermore, `Perimeter.generate` computes `perimeters_by_tier` for all elevations $E > 0$ (including Step 2 for elevated stairs), but `CollisionMechanics.update` restricts Phase 1 to `if elevation == 0:`, leaving elevated perimeters unused by collision constraints.
-
----
-
-###### Review: Architecture
-
-1. **Passable Craft Inclusion in `Board._cached_weights`**:
-   * `CraftProperties` defaults to `mass: int = 0`. Consequently, decorative or passable surface crafts (e.g., `floors`, `flats`, `paths`, `corridors`) satisfy $m \ge 0$ (`predicates.is_weight`) and are indexed into `board.weights(layer)`.
-   * Every tick, `CollisionMechanics.update` (and `fields.update`) iterates through all of these passable crafts and calls `w.hitbox.elevations(w.properties, w.state)` (**2.27 million calls**, **2.37%** of total runtime) just for `MaterialHitbox.elevations` to check `MaterialIndex().is_obstacle(state.blueprint)` and return `[]`.
-   * Filtering passable `MaterialHitbox` crafts out of `_cached_weights` at board indexing time (or caching `elevations` on the asset/cache) would eliminate over **2 million Python calls** per 100 seconds.
-
-2. **Uncached Per-Frame HUD / Overlay Resolution (`Screen._widgets`)**:
-   * `Screen.interface` -> `Screen._widgets` consumes **4.90%** of total wall-clock time (**18.96% of active CPU time**)—nearly as much as `CollisionMechanics` (**5.91%**).
-   * Unlike `PaneState` widgets which bake to a texture via `Screen.stamp`, non-pane overlay widgets (e.g., HUD meters, slots, buttons) execute `widget.frame.keys(widget.id, widget.state)` (**83,118 calls**, **3.34%**) and `registry.image(key)` on every single frame, even when the underlying widget state has not mutated.
-
-3. **Serialization Contamination in `Board.serialize` (`src/app/game/board/core.py`)**:
-   * `Board.serialize` filters out `WIDGETS`, non-persistent `TEMPORARY` effects, and `Equipment` sheets, but does not filter out procedurally synthesized `GEOGRAPHY` (`SHORELINES`) or hydrated reciprocal `Door` shadow projections (`DoorState.projection == LayerProjections.OUT.value`). Saving and reloading a board state will persist procedural/projected entities as static state entries.
-
----
-
-###### Review: Optimization
-
-1. **Move `Screen._assemble` Culling, Sorting, and Tuple Packing to Cython (`5.18%` self-time -> `<0.5%`)**:
-   * `Screen._assemble` is the single largest Python self-time hotspot in the entire application (**5.18%** wall-clock, or **20.04% of active CPU time**).
-   * Currently, `_assemble` iterates over every asset on the layer in Python, calls `_in_viewport` (617,989 times), sorts `visible` using a Python `@staticmethod` key (`Screen._sort`), calls `frame.keys` and `frame.channels`, queries `registry.image`, and allocates new 13-element tuples every frame.
-   * **Remediation**:
-     1. Maintain a dirty-flagged `_frame_keys` / `_sort_key` cache on `Asset` (invalidated only when `position.y`, `elevation`, `animation.frame`, or `mutators` change).
-     2. Move the viewport AABB cull and render-list assembly into `libs.graphics.render` (Cython), operating directly on C-level attributes.
-
-2. **Separate Static ($m = 0$) and Dynamic ($m > 0$) Bodies in `CollisionMechanics` & `Space`**:
-   * In `CollisionMechanics.update`, static weights ($m = 0$) never collide with one another.
-   * **Remediation**:
-     1. Exclude passable crafts (`not MaterialIndex().is_obstacle(blueprint)`) from `Board._cached_weights` during `Cache.index_batch`.
-     2. Use the existing asymmetric query pattern (similar to `physics.boundaries` / `physics.environment`) where only dynamic bodies ($m > 0$) initiate queries against static bodies ($m = 0$), and return the intersecting `(hb_a, hb_b)` directly from `physics.collisions` so `_resolve` does not re-execute `geometry.intersects`.
-
-3. **Dirty-Flag HUD Overlays & Eliminate `Enum.value` in `WidgetFrame.keys` (`4.90%` -> `<0.3%`)**:
-   * Cache the compiled `primitives` list for `board.overlays` on `Screen` (or cache `widget.frame.keys` per widget) and rebuild only when an `UpdateEvent` or state mutation occurs.
-   * Replace repeated `Enum.value` lookups inside `src/app/assets/frames/widgets.py` with pre-bound string constants or `StrEnum`.
-
-4. **Replace `time.sleep(0)` Spin Loop in `Engine.start`**:
-   * Replace the `while (self.time() - current_time) < delta: time.sleep(0)` loop (or reduce `settings.SPIN_RATE` and use a pure `pass` spin over a sub-millisecond window `< 0.2ms` with a local `perf_counter = time.perf_counter` binding) to eliminate ~8 million `time.sleep(0)` and `self.time()` calls per 100 seconds.
-
----
-
-##### Bug B001: Index Desynchronization & Out-of-Bounds Access in `SpatialMechanic.proximities`
-
-**STATUS**: OPEN
-**SEVERITY**: High
-
-**Description**
-
-In `src/app/game/logic/mechanics/spatial/base.py`, `SpatialMechanic.proximities` constructs `asset_map = dict(enumerate(assets))` using the enumeration index `i` ($0 \le i < N$), and passes `i` as the first element (`entity_id`) of `asset.primitive(i, hitboxes=[pad_hb])` appended to `primitive_data`. However, if any asset in `assets` fails the guard condition (`if not asset.state.mutators or not asset.state.mutators.parameters: continue`), that iteration is skipped, making `len(primitive_data) < len(assets)` while `data[0]` still holds the original index `i`.
-
-When `physics.collisions(primitive_data, self.grid)` executes in `src/libs/core/math/physics.pyx`, it inserts `data[0]` (`i`) into `self.grid`, and then indexes `primitive_data[id_a]` and `primitive_data[id_b]` using those `entity_id` values:
-1. Any `entity_id >= len(primitive_data)` raises an `IndexError: list index out of range`.
-2. Any `entity_id < len(primitive_data)` occurring after a skipped element accesses the wrong asset's tuple in `primitive_data`, evaluating narrow-phase intersections with mismatched coordinates before mapping the result back to `asset_map[id_a]`.
-3. Additionally, if `asset.state.mutators.parameters.action` is `None`, accessing `.radius` raises an `AttributeError`.
-
-**Steps to Replicate** 
-
-1. Instantiate a list of 3 `Asset` instances `[asset_0, asset_1, asset_2]` where `asset_0` has `asset_0.state.mutators = None`, and `asset_1`, `asset_2` have valid `mutators.parameters.action.radius` and overlapping positions.
-2. Call `SpatialMechanic().proximities([asset_0, asset_1, asset_2])`.
-3. `primitive_data` has length 2, containing `entity_id` values `1` and `2`.
-4. `physics.collisions` queries the grid, receives candidate pair `(1, 2)`, and attempts to access `primitive_data[2]`, raising `IndexError: list index out of range`.
-
-**Proposed Remeditation**
-
-Maintain a contiguous local index `idx = len(primitive_data)` for `primitive_data` and `asset_map` (and guard `asset.state.mutators.parameters.action`), ensuring a 1-to-1 correspondence between `entity_id` and `primitive_data` indices:
-* Assign `idx = len(primitive_data)`, map `asset_map[idx] = asset`, and append `asset.primitive(idx, hitboxes=[pad_hb])`.
-
----
-
-##### Bug B002: Negative Crop Height & Corrupt Slicing on Submerged Composite Assets in `Screen._assemble`
-
-**STATUS**: OPEN
-**SEVERITY**: High
-
-**Description**
-
-In `src/app/game/screen.py` (`Screen._assemble`, lines 218–246), when an asset has `state.mutators.triggers.submerged == True`, `Frame.channels` emits a `ChannelTypes.SUBMERGE` directive with `split_y = properties.dimensions.l // 2` (e.g., `32` for a 64x64 `Sprite`). `Screen._assemble` then applies this `split_y` to **every** `(frame_key, ox, oy)` returned by `asset.frame.keys(asset.id, asset.state)`:
-```python
-rem_l = sl - split_y
-active_assets.append((
-    tex, sx, sy + split_y, sw, rem_l,
-    dx, dy + split_y, dw, rem_l,
-    r, g, b, a,
-))
-```
-When a submerged `Sprite` has an active `Expression` cursor (which is superimposed via `SpriteFrame.keys` with a non-zero offset `(ox, oy)` and smaller dimensions, e.g., `16x16` where `sl < split_y`), `split_y` is neither offset by `oy` nor clamped to `[0, sl]`. Consequently, the upper slice crops out-of-bounds texture memory (`split_y > sl`) and stretches the expression icon to `split_y` pixels, while the lower slice computes a **negative** height (`rem_l = sl - split_y < 0`) passed to `SDL_RenderCopy`.
-
-**Steps to Replicate** 
-
-1. Place a `Sprite` (dimensions `64x64`, `split_y = 32`) in a `Fluid` stream so `state.mutators.triggers.submerged == True`.
-2. Trigger an `Expression` bubble on the `Sprite` (e.g., `surprise` or `loquacity` with dimensions `16x16` or `32x32` at an overhead offset `oy < 0`).
-3. Execute `Screen._assemble`: the expression frame is sliced using the Sprite's `split_y = 32`, producing corrupted rendering and `rem_l <= 0`.
-
-**Proposed Remeditation**
-
-Compute the local split offset relative to each frame's vertical offset `oy` (`local_split = split_y - oy`):
-* If `local_split >= sl`: render the frame normally (entirely above the waterline).
-* If `local_split <= 0`: render the entire frame with submerged RGBA modulation (entirely below the waterline).
-* Otherwise (`0 < local_split < sl`): split into upper (`local_split`) and lower (`sl - local_split`) slices.
-
----
-
-##### Bug B003: Texture Blend Mode Corruption in `render.construct` & Un-cleared `bg_canvas` in `Screen.reconstruct`
-
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-1. In `src/libs/graphics/render.pyx` (`construct`, line 325), every tile/primitive iteration executes:
-   ```cython
-   SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
-   ```
-   `construct` is used not only for `bg_canvas` (`ENVIRON` tiles), but also for `fg_canvas` (`CANOPY` tiles) and UI `Pane` 9-slice canvases in `Screen.stamp(widget)`. Setting `SDL_BLENDMODE_NONE` disables alpha blending when stamping canopy tiles or 9-slice borders onto transparent target canvases (causing overlapping canopy tiles to overwrite adjacent foliage with transparent black `(0, 0, 0, 0)`), and permanently leaves the shared `TexturePtr` in `Registry._textures` with `SDL_BLENDMODE_NONE`.
-2. In `src/app/game/screen.py` (`Screen.reconstruct`, lines 473–482), `render.clear(self.fg_canvas)` is called prior to `render.construct`, but `render.clear(self.bg_canvas)` is omitted, leaving stale pixels on `bg_canvas` if any area is not fully overwritten.
-
-**Steps to Replicate** 
-
-1. Deploy two overlapping `CANOPY` tiles on a layer, or render a texture in `construct` that is subsequently drawn with alpha modulation in `render.render`.
-2. During `Screen.__init__` or `Screen.reconstruct`, `render.construct(self.fg_canvas, fore_tiles)` sets `SDL_BLENDMODE_NONE` on the canopy texture, causing the second canopy tile's transparent bounding box to erase the overlapping portion of the first canopy tile on `fg_canvas`.
-
-**Proposed Remeditation**
-
-1. In `Screen.reconstruct`, call `render.clear(self.bg_canvas)` alongside `render.clear(self.fg_canvas)` (and in `Screen.stamp`, call `render.clear(tex)` before `render.construct`).
-2. In `render.construct`, preserve `SDL_BLENDMODE_BLEND` for foreground/UI composition (or restore `SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_BLEND)` after copying).
-
----
-
-##### Bug B004: Outlined Text Glyph Misalignment & Missing Vertical Offset in `render.write`
-
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-In `src/libs/graphics/render.pyx` (`write`, lines 354–439):
-1. When rendering outlined text (`font.outline_ptr != NULL and font.outline_width > 0`), `TTF_RenderUTF8_Blended_Wrapped` is called on the entire string `b_content` using `font.outline_ptr` (which has `TTF_SetFontOutline` applied), and the resulting surface is stamped once at `outline_rect.x = dst_rect.x - font.outline_width`. In `SDL2_ttf`, `TTF_SetFontOutline` increases the width and horizontal advance of **each individual glyph** by `2 * outline_width`. For a line of $N$ characters, the outlined surface is wider by $2 \cdot N \cdot \text{outline\_width}$ pixels, causing every character after the first to drift progressively further right relative to `text_surface` and causing multi-line text to wrap at different word boundaries.
-2. `dst_rect.y = margin_px_h` omits the target crop offset `sy` (unlike `dst_rect.x`, which adds `sx`).
-
-**Steps to Replicate** 
-
-1. Configure a `Font` in `/src/assets/fonts/**/*.yaml` with `outline.width: 2` and render a multi-character string onto a `Pane` via `Screen.stamp`.
-2. Observe that the outline aligns with the first character on the left, but shifts progressively to the right by `2 * outline_width` pixels per character across the string.
-
-**Proposed Remeditation**
-
-To outline wrapped text accurately in `SDL2_ttf`, either:
-* Stamp `text_tex` (or `text_surface` rendered in `outline_color` using the base `font.ptr`) at 8-directional offsets $(\pm w, \pm w)$ behind the foreground `text_tex`, which guarantees identical glyph advances and word-wrapping bounds; or
-* Render glyph-by-glyph using `TTF_GlyphMetrics` advances from the base font.
-Additionally, set `dst_rect.y = sy + margin_px_h`.
-
----
-
-##### Bug B005: Unclamped Camera Coordinates in `geometry.onscreen`
-
-**STATUS**: OPEN
-**SEVERITY**: Low
-
-**Description**
-
-In `src/libs/core/math/geometry.pyx` (`onscreen`, lines 60–71), camera coordinates are computed as:
-```cython
-cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
-cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
-```
-Unlike `Screen.camera` in `src/app/game/screen.py` (lines 318–341), which clamps `cam_x` to `[0, boardsize.w - screensize.w]` and `cam_y` to `[0, boardsize.l - screensize.l]` (or centers layers smaller than the viewport), `geometry.onscreen` does not clamp to board boundaries. When the player (`p_pos`) is near any edge of the board (e.g., `p_pos.x = 0`), `Screen.camera` clamps `cam_x = 0` so the viewport displays `[0, screen.w]`, whereas `geometry.onscreen` evaluates `[ -screen.w // 2, screen.w // 2 ]`, falsely reporting visible entities in `[screen.w // 2, screen.w]` as offscreen.
-
-**Steps to Replicate** 
-
-1. Position the Player at `(0, 0)` on a board of size `1920x1080` with a `1280x720` screen viewport.
-2. Place an Asset at `(800, 200)` (which is visible on screen since `Screen.camera` clamps `cam_x = 0`).
-3. Call `geometry.onscreen(asset.pos, asset.dim, player.pos, player.dim, screen_dim)` — it returns `False` because `cam_x + screen.w` is computed as `-640 + 1280 = 640 < 800`.
-
-**Proposed Remeditation**
-
-Pass `board: Dimensions` (or the already-clamped camera `pov: Position` from `Screen.camera`) into `geometry.onscreen` so its viewport rectangle matches `Screen.camera`.
-
----
-
-##### Bug B006: Procedural Shorelines & Projected Door Shadows Persisted in `Board.serialize`
-
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-In `src/app/game/board/core.py` (`Board.serialize`, lines 397–436), the serializer iterates over `self._assets` and excludes `WIDGETS`, non-persistent `TEMPORARY` effects, and `Equipment` sheets, but does not exclude:
-1. Procedurally generated `GEOGRAPHY` assets (`AssetInstances.SHORELINES`), which are synthesized dynamically by `Cartographer` / `FluidMechanics`.
-2. Reciprocal shadow footprints projected by `Doors` (`DoorState.projection == LayerProjections.OUT.value`), which are generated automatically during hydration.
-
-Serializing a running board writes these runtime-synthesized entities into the state dump file, causing duplicate door projections and stale shoreline state entries upon reloading the saved slot.
-
-**Steps to Replicate** 
-
-1. Hydrate a board containing a `Door` (which projects a reciprocal `OUT` door onto `outlayer`) and `Fluids` (which synthesize `Shorelines`).
-2. Call `board.serialize(world, slot)`.
-3. Inspect the saved state YAML: both `geography.shorelines` and the reciprocal `OUT` door state are written to disk.
-
-**Proposed Remeditation**
-
-In `Board.serialize`, skip assets where `asset.category == AssetCategories.GEOGRAPHY.value` or where `asset.instance == AssetInstances.DOORS.value and getattr(asset.state, "projection", None) == LayerProjections.OUT.value`.
-
-
-
-
-
-
-
-
-##### Draft: Cursor Properties, Projectile Frame, and Rotated Hitbox Specification
-
-- **Page**: `docs/01-assets.md`
-- **Heading**: `###### Cursor: Projectiles`
-
-###### Drift
-
-`docs/01-assets.md` currently specifies `SingleFrame` and no `Hitbox` for `Projectiles`, omits `rotation` on `CursorProperties`, and omits `position`, `angle`, `speed`, and `owner` on `MotorState`.
-
-###### Update
-
-```markdown
-###### Cursor: Projectiles
-
-Projectiles are spawned on the `release` frame of ranged [Equipment](./02-sprites.md#equipment) with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range.
-
-**Properties: CursorProperties(AssetProperties)**
-
-* `frames: List[str]`
-* `rotation: int = 90`: Angular step $\Delta\theta \in (0, 360]$ partitioning the $360^\circ$ rotation space into $N = 360 // \text{rotation}$ discrete frames.
-* `hitboxes: List[Hitbox]`
-
-**Animation: None**
-
-N/A
-
-**Frame: ProjectileFrame**
-
-* `keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]`
-* `index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }`
-
-**Hitbox: RotatedHitbox**
-
-Projects each static base Hitbox $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` around the frame center $(c_x, c_y) = (W / 2, L / 2)$ by $\Delta\theta = \text{state.angle}$:
-
-$$
-h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
-$$
-
-$$
-\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}
-$$
-
-$$
-w'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
-$$
-
-$$
-x'(\Delta\theta) = \operatorname{round}\left(c_x + h'_{cx} - \frac{w'(\Delta\theta)}{2}\right), \qquad y'(\Delta\theta) = \operatorname{round}\left(c_y + h'_{cy} - \frac{l'(\Delta\theta)}{2}\right)
-$$
-
-**State: MotorState(AssetState)**
-
-* `position: Position`
-* `initial: Position`
-* `velocity: Velocity`
-* `angle: int = 0`
-* `speed: int = 200`
-* `owner: Optional[str] = None`
-```
-
-##### Draft: Mutator Charge Parameter
-
-- **Page**: `docs/02-sprites.md`
-- **Heading**: `###### Model: Mutators`
-
-###### Drift
-
-`docs/02-sprites.md` does not document the `parameters.charge` accumulator used to parameterize `attack` hold duration for projectile launch speed.
-
-###### Update
-
-```markdown
-* `parameters.charge`: Tick accumulator tracking how long the `attack` Intention has been held prior to projectile release.
-```
-
-##### Draft: CombatMap Melee and Projectile Resolution
-
-- **Page**: `docs/05-mechanics.md`
-- **Heading**: `###### Map: Combat`
-
-###### Drift
-
-`###### Map: Combat` in `docs/05-mechanics.md` is currently an unpopulated `TODO` stub and does not specify either melee attackbox resolution or equipment release-frame projectile resolution.
-
-###### Update
-
-```markdown
-###### Map: Combat
-
-CombatMap bridges an attacking entity's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
-
-**Interface: Attack Hitbox Mapping**
-
-* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
-
-**Interface: Projectile Release Mapping**
-
-* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
-
-$$
-\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
-$$
-```
-
+2. **`GoalResolver` `PREREQUISITE` amplification risk (the real Phase 06.06 perf hazard):**
+* `TransitionExecutor` is cheap because its conditions are pure memory/attribute checks. By contrast, `PrerequisiteOutcome` invokes `Locator` spatial scans (`board.categories`, `board.characters`, distance loops). If `PREREQUISITE` runs before cheap guards or re-runs failed locators every tick, it will replicate the exact per-tick call-amplification pattern already visible in `navigation:obstacles` and `crafts:get`.
 
 
 
 ---
 
-# Documentation Updates
+## 3. Updated Phase 06.06 Backlog
 
-##### Draft: Cursor Projectiles Specification
+The backlog below updates **Specification**, adds **Architectural Analysis II** (incorporating the `pstats` findings), and refines **Goals** and **Tasks** to enforce inner short-circuiting, self-loop hygiene, selective candidate evaluation, and zero-scan steady-state `PREREQUISITE` guards.
 
-- **Page**: `docs/01-assets.md`
-- **Heading**: `Cursor: Projectiles`
+#### Phase 06.06: Online Hierarchical Goal Decomposition & Multi-Transition Selection
 
-###### Drift
+**Overview**
 
-`docs/01-assets.md` still specifies Projectiles as using `SingleFrame` and a minimal `MotorState` containing only `initial` and `velocity`. Under Phase 03.04, Projectiles partition a single canonical $\theta = 0^\circ$ asset into discrete rotational frames spaced by an angular increment $\Delta\theta$, transform their bounding hitboxes by their active heading $\theta$, and carry relational foreign keys binding them to the Weapons that emit them.
+Elevate Ontology's Sprite AI from a single-method reactive policy into a stratified two-layer deliberative architecture grounded in HTN task decomposition and Utility-scored finite-state selection—while strictly preserving epistemic boundedness, Separation of Duties, and low per-tick Python call overhead.
 
-###### Update
+At the **Goal layer** (`CognitionMechanics` / `GoalResolver`), generalize `memory.stack` subsumption beyond spatial `LAYERED` door traversal into a declarative, multi-method online decomposition framework (`PREREQUISITE` outcomes, pluggable `Locator` operators, Motivation-weighted method selection, and failed-method rollback exclusion). At the **Intention layer** (`TransitionMechanics` / `TransitionExecutor`), replace outer first-match short-circuiting with admissible candidate-set evaluation and Motivation-driven tactical selection across competing loops that satisfy the *same* active `Goal`, while removing cross-Goal category transitions (`mine` to `build`, `barter` to `threaten`) and redundant short-circuit self-loops.
 
-```markdown
-###### Cursor: Projectiles
+##### Specification
 
-Projectiles are autonomous Cursor Assets spawned on the release frame of ranged combat Actions. A Projectile Asset file contains a single canonical frame oriented at $\theta = 0^\circ$ ($+x$, `right`) and is partitioned into discrete angular frames spaced by its rotational increment $\Delta\theta$ (where $360 \bmod \Delta\theta = 0$):
+**1. Architectural Separation of Planning Concerns**
 
-$$
-\Theta = \{ k \cdot \Delta\theta \mid 0 \le k < 360 / \Delta\theta \}
-$$
+| Planning Construct | Ontology Layer | Mechanism |
+| --- | --- | --- |
+| Compound Task | `CognitionMechanics` | Active `sprite.state.goal` with unmet preconditions |
+| Decomposition Methods ($M$) | `GoalResolver` + `automata/goals/main.yaml` | Ordered/scored `MethodConfiguration` entries under `Outcomes.PREREQUISITE` (and `Outcomes.LAYERED`) |
+| Task Stack (`TasksToProcess`) | `SpriteState.memory.stack` | LIFO `PUSH` on decomposition, `Recall.remember()` pop on `COMPLETE`, `UNWIND` on `LOST` |
+| Online Backtracking | `Perception` + `ResolutionContext` | Per-parent excluded method/asset sets populated when a pushed subgoal resolves `LOST` |
+| Leaf Primitive Execution | `TransitionMechanics` + `automata/intentions/main.yaml` | Single-goal reactive Intention loop rooted at `idle` |
+| Tactical Style Selection | `TransitionExecutor` + `TacticalSelector` | Exhaustive outer candidate evaluation over competing same-Goal loops weighted by `Psyche.motivation` |
 
-Because Projectiles depend on the Weapons that emit them, each Projectile declares the set of Weapons bound to it in its Properties. During initialization, these bindings are inverted into a relational index mapping each ranged Weapon to its emitted Projectile.
+**2. Outcome Precedence & Generalized Decomposition**
 
-**Properties: CursorProperties(AssetProperties)**
+Extend `OUTCOME_PRECEDENCE` in `app.services.automaton.executors.resolutions`:
 
-* `rotation: int`: Discrete angular increment $\Delta\theta$ in degrees ($360 \bmod \Delta\theta = 0$).
-* `weapons: List[WeaponPalette]`: Weapon keys bound to this Projectile.
-* `hitboxes: Optional[List[Hitbox]]`: Canonical AABB footprint at $\theta = 0^\circ$.
+$$\text{COMPLETE} \succ \text{LAYERED} \succ \text{PREREQUISITE} \succ \text{LOST}$$
 
-**Animation: None**
+* `COMPLETE`: Objective satisfied; evicts active Goal (`TerminalOutcome`) so `Recall.remember` pops any suspended parent from `memory.stack`.
+* `LAYERED`: Cross-layer mismatch; retains specialized `DoorLocator` BFS routing over `memory.doors`.
+* `PREREQUISITE`: Same-layer compound Goal missing material, inventory, or relational preconditions (e.g., `Goals.PROPERTY` lacking build materials in `inventory.pack`). Its top-level ISL guard must be an $O(1)$ state check (no Board scans) so satisfied Goals incur zero `Locator` overhead. When triggered, `PrerequisiteOutcome` evaluates candidate `MethodRule` entries, filters out excluded/unlocatable/inadmissible methods, selects the highest-utility method via `Psyche.motivation`, pushes the parent onto `memory.stack`, and installs the located child `Goal`.
+* `LOST`: Unreachable or stalled Goal; executes `UNWIND` and records the failed method/asset against the unwound parent so subsequent ticks select an alternate method instead of oscillating.
 
-N/A
+**3. Multi-Candidate Transition Evaluation & Performance Guardrails**
 
-**Frame: ProjectileFrame**
-
-Partitions the horizontal strip across $\Theta$ and projects `state.angle` directly onto its corresponding rotated frame.
-
-**Hitbox: RotatedHitbox**
-
-Rotates each canonical hitbox $(x_0, y_0, w_0, l_0)$ clockwise by $\theta = \text{state.angle}$ around the frame center $(W/2, L/2)$, yielding the enclosing axis-aligned bounding box $(x'(\theta), y'(\theta), w'(\theta), l'(\theta))$ at the Projectile's elevation.
-
-**State: MotorState(AssetState)**
-
-* `position: Position`: Active world coordinate.
-* `initial: Position`: Spawn origin coordinate used for range expiration.
-* `velocity: Velocity`: Constant linear trajectory vector.
-* `angle: int`: Quantized heading $\theta \in \Theta$.
-* `speed: int`: Scalar launch speed encoding attacker strength and draw duration.
-* `owner: Optional[str]`: Deploying entity `name`, excluded from impact resolution.
-```
-
-##### Draft: AnimationMap Admissibility & CombatMap Separation
-
-- **Page**: `docs/05-mechanics.md`
-- **Heading**: `Modules: Maps` and `Dependency: Relations`
-
-###### Drift
-
-`docs/05-mechanics.md` currently leaves `Map: Combat` as `TODO`, lacks the `projectiles` entry under `Dependency: Relations`, and does not formalize the disjoint boundary between `AnimationMap` (Intentional-Spatial Space $\to$ Animation Space, including Equipment admissibility) and `CombatMap` (Active Combat State $\to$ Combat Resolution Geometry and Launch Parameters).
-
-###### Update
-
-```markdown
-###### Dependency: Relations
-
-Relations are static secondary indices compiled at initialization and injected into requesting Mechanics.
-
-* `shorelines`: Compound index mapping `(Tile, Fluid, [Season])` keys to Shoreline Geography Asset IDs, compiled from Geography Properties.
-* `materials`: Index mapping Blueprints and Asset Instances to obstacle classifications and rendering substrates, compiled from Materials Configuration.
-* `projectiles`: Index mapping ranged Weapon keys to Projectile Cursor Asset IDs, compiled from Cursor Properties.
-
-##### Modules
-
-###### Modules: Maps
-
-Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
-
-###### Map: Animation
-
-AnimationMap is the projection from Intentional and Spatial State into Animation Space:
-
-$$
-(\text{Intention} \times \text{Slots} \times \text{Equipment}) \longrightarrow \text{Action} \cup \{\bot\}
-$$
-
-$$
-(\text{Position} \times \text{Target}) \longrightarrow \text{Direction}
-$$
-
-AnimationMap enforces Equipment admissibility prior to state commitment in Intentional Mechanics. Equipment-gated Intentions (`attack`, `mine`, `build`) project to the action declared by the corresponding slotted Weapon, Tool, or Utility, and evaluate to $\bot$ when the required Equipment slot is empty. Inadmissible transitions are rejected before Animation or Combat Mechanics execute.
-
-###### Map: Combat
-
-CombatMap projects an active, already-validated combat state into spatial and ballistic resolution primitives consumed by CombatMechanics:
-
-* **Projectile Binding**: $(\text{Weapon} \times \text{ProjectileIndex}) \longrightarrow \text{Projectile} \cup \{\bot\}$. Partitions combat dispatch into ranged and melee modes independently of animation row layout.
-* **Attackboxes**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow \mathcal{P}(\text{Hitbox})$. Resolves active melee strike geometry.
-* **Release**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow (\text{Position} \times \text{Direction}) \cup \{\bot\}$. Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
-* **Speed**: $(\text{Strength} \times \text{Charge} \times \text{ReleaseFrame} \times \text{Delay}) \longrightarrow \mathbb{Z}_{>0}$. Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$:
-
-$$
-N_{\max} = \max(1,\; F_{\text{release}} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
-$$
-```
-
----
-
-## 4. Bug Reports
-
-##### Bug B-P0304-01: Dead Attackers Can Still Spawn Projectiles and Deal Melee Damage in `CombatMechanics`
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `src/app/game/logic/mechanics/spatial/combat.py`, `CombatMechanics.update()` collects attacking entities solely by checking `asset.state.intention == Intentions.ATTACK`, without checking `asset.state.mutators.triggers.dead`:
-
-```python
-attackers = [
-    asset
-    for asset in (
-        board.instances(AssetInstances.PLAYERS, layer) +
-        board.instances(AssetInstances.SPRITES, layer)
-    )
-    if asset.state.intention == Intentions.ATTACK
-]
-```
-
-Similarly, `CombatMechanics._melee()` checks `target.state.mutators.triggers.dead` before applying damage, but never checks `attacker.state.mutators.triggers.dead`. As a result, a dead entity whose `intention` remains `Intentions.ATTACK` (either prior to `TransitionMechanics` / `RemoveMechanics` cleanup or when killed by another attacker earlier in the same batched melee pass) will still emit projectiles via `_project()` and inflict melee damage via `_melee()`.
-
-**Steps to Replicate**
-
-1. Set a Sprite or Player on layer `"0"` to `state.intention = Intentions.ATTACK`, `state.mutators.triggers.dead = True`, equipped with `"longbow"` at `frame = 9, tick = 0` (or `"sword"` at `frame = 3` overlapping a live target).
-2. Execute `CombatMechanics().update(board, 0.016, bus, payload)`.
-3. Observe that the dead entity still spawns an `"arrow"` onto the Board (or decrements the live target's health).
-
-**Proposed Remediation**
-
-Filter out dead attackers in `CombatMechanics.update()` (`if asset.state.intention == Intentions.ATTACK and not asset.state.mutators.triggers.dead`) and guard against mid-batch attacker death in `CombatMechanics._melee()` (`or attacker.state.mutators.triggers.dead`).
-
----
-
-##### Bug B-P0304-02: `CursorProperties.weapon` Schema Mismatch Allows Unvalidated Weapon Bindings and Prevents Many-to-One Sharing
-
-**STATUS**: OPEN
-**SEVERITY**: LOW
-
-**Description**
-
-Per Phase 03.04 Specification §1, `CursorProperties` (`src/app/models/properties/assets.py`) should declare `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` and `rotation: int = 90` so that:
-1. All weapon foreign keys are validated against `WeaponPalette` at boot via Pydantic `TypeAdapter`.
-2. Multiple weapons (e.g., `shortbow` and `longbow`) can share a single projectile asset (`arrow`), while unbound projectiles (e.g., `cannonball`) default to `[]`.
-
-Currently, `CursorProperties` defines `weapon: Optional[str] = None` and `rotation: Optional[int] = None`, `ProjectileIndex.from_properties()` reads singular `props.weapon`, and `src/assets/cursors/main.yaml` declares `cannonball.weapon: cannon`, which is a dangling weapon key absent from `src/assets/sheets/equipment/weapons/main.yaml`. Because `weapon` is an unvalidated `Optional[str]`, invalid or misspelled weapon references silently pass boot validation.
-
-**Steps to Replicate**
-
-1. Inspect `src/app/models/properties/assets.py` (`CursorProperties.weapon: Optional[str] = None`) and `src/assets/cursors/main.yaml` (`cannonball.weapon: cannon`).
-2. Load properties via `Loader.load_properties()` and compile `ProjectileIndex.from_properties(properties.cursors.projectiles)`.
-3. Observe that `ProjectileIndex.resolve("cannon")` returns `"cannonball"` even though `"cannon"` is neither in `WeaponPalette` nor defined in `src/assets/sheets/equipment/weapons/main.yaml`, and no mechanism exists to bind a second weapon to `"arrow"`.
-
-**Proposed Remediation**
-
-Update `CursorProperties` to `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`, align `src/assets/cursors/main.yaml` (`arrow.weapons: [longbow]`, `bolt.weapons: [crossbow]`, `cannonball.weapons: []`), and iterate `for weapon_id in props.weapons:` inside `ProjectileIndex.from_properties()`. (If kept as-is until `cannon` is added as a weapon, update `test_projectiles.py` accordingly when migrating to `weapons`.)
+* **Preserve inner short-circuiting:** `Backend.evaluate(conditions, locals)` continues to short-circuit on the first falsy conjunct (mandatory for ISL null-safety and fast category rejection).
+* **Exhaustive outer collection (`candidates`) scoped to `TransitionMechanics`:**
+* `TransitionExecutor.evaluate(...)` remains short-circuited for single-path automata (`PlotMechanics`, `SeasonMechanics`).
+* `TransitionExecutor.candidates(current_state, locals) -> List[Transition]` evaluates all outgoing transitions from `current_state` and returns every satisfied `Transition`.
+* In `TransitionMechanics.update`:
+1. **Idle-no-goal fast path:** If `current_state == Intentions.IDLE and sprite.state.goal is None`, skip `candidates()` entirely (zero `eval()`/lambda calls for idle unengaged sprites).
+2. **Reuse `locals` dict per tick:** Mutate `'sprite'` and `'assets'` keys in a single pre-allocated dict across the sprite loop instead of constructing a fresh dict per sprite per tick, and cache `board.states(layer)` per layer per tick.
+3. **Zero-allocation fast path on singleton matches:** Filter candidates via `AnimationMap.action(..., intention=t.next)`; bypass `TacticalSelector` whenever `len(admissible) <= 1`.
+4. **Explicit self-loop contract:** Audit and remove short-circuit-only self-loops (`attack -> attack`, `escape -> escape`, `mine -> mine`) where exit rules are already disjoint, ensuring `candidates()` only returns genuine state-change alternatives.
 
 
+
+
+
+**4. Epistemic Constraint (No Offline Lookahead)**
+
+Decomposition remains strictly **online and epistemically bounded**: method preconditions and `Locator` queries read solely from `sprite.state` (`inventory`, `memory`, `slots`) and same-layer `vision.radius` perceptions.
+
+##### Architectural Analysis I
+
+Comparing Ontology's current cognitive stack against Classical Planning (STRIPS), GOAP, and HTN reveals three structural findings:
+
+1. **Ontology Is Currently a Teleo-Reactive Policy Over a 1-Method Stack Decomposer:** `TransitionMechanics` senses live `Board` state each tick and selects the first matching edge without lookahead. Implicit traversal through `automata/intentions/main.yaml` cannot perform multi-step Goal decomposition because `TransitionMechanics` is prohibited from mutating `sprite.state.goal`.
+2. **Cross-Goal Leakage Exists in `automata/intentions/main.yaml`:** `mine -> build` (`RESOURCE` to `PROPERTY`) and `barter -> threaten` (`RESOURCE` to `TARGET`) immediately abort to `idle` because switching targets changes the Goal category. These belong to `GoalResolver` method decomposition rather than `TransitionMechanics`.
+3. **Splitting Upgrades Across Both Layers Preserves Separation of Duties:** Generalizing `memory.stack` subsumption in `GoalResolver` handles multi-step decomposition, while multi-candidate scoring in `TransitionMechanics` handles same-Goal tactical style branching.
+
+##### Architectural Analysis II
+
+Empirical profiling via `cProfile` / `gprof2dot` (`world-01` UAT, 6,337 ticks, 6,059 frames, $N = 1$ Sprite) establishes the performance context for Phase 06.06:
+
+1. **Exhaustive Outer Transition Evaluation Is Safe Within the Current Budget:** `TransitionMechanics.update` falls below the 1.0% node / 0.5% edge reporting threshold (under 0.5% total wall time). Because steady-state navigation ticks already evaluate all outgoing transitions to `False`, switching to `candidates()` adds marginal cost only on transition ticks (roughly $1.2\times\text{--}2.5\times$ on a sub-0.5% baseline).
+2. **Scale-Sensitivity Requires Lightweight Guardrails:** Because `world-01` profiles $N = 1$ Sprite, linear $O(N)$ costs in `TransitionMechanics` and `CognitionMechanics` must be kept lean ahead of multi-agent worlds ($N \ge 20$). Preserving inner short-circuiting, skipping `candidates()` on goal-less `IDLE` ticks, reusing the `locals` dictionary, and enforcing $O(1)$ top-level `PREREQUISITE` guards ensure Phase 06.06 does not introduce a new bottleneck alongside `navigation:obstacles` (1.94% at $N = 1$) or `crafts` hitbox queries (3.43%).
+3. **Engine Hotspots Outside Phase 06.06 Scope:** The dominant active CPU costs (`CollisionMechanics` 6.05%, `Screen.interface` 3.90%, `Screen._assemble` 3.55%, `fields.update` 2.40%, `navigation:obstacles` 1.94%) are independent caching/batching issues that should be tracked in a dedicated optimization pass rather than conflated with Phase 06.06.
+
+##### Goals
+
+###### Goal: Generalized Multi-Method Prerequisite Decomposition (`GoalResolver`)
+
+Extend the declarative Goal schema (`app.models.configurations.automata.goals`) and `GoalEvaluator` so a Goal category can declare multiple named decomposition methods under `Outcomes.PREREQUISITE`, each binding a `Locator`, child `Goals` category, ISL preconditions, and `Motivations` affinity weights. Top-level `PREREQUISITE` conditions must remain $O(1)$ state checks so `Locator` scans execute strictly on unsatisfied compound Goals.
+
+###### Goal: Online Rollback & Failed-Method Exclusion (`Perception` + `UnwindResponse`)
+
+Generalize `Perception._stalled_doors` into parent-scoped method/asset failure tracking (`_failed_methods`, `_active_method`) so `LOST` child Goals unwind cleanly, exclude the failed method, and fall back to the next highest-ranked method before demoting the parent to `dormant = True`.
+
+###### Goal: Multi-Candidate Transition Selection (`TransitionExecutor` + `TransitionMechanics`)
+
+Add `TransitionExecutor.candidates(current_state, locals) -> List[Transition]` while keeping `evaluate()` intact for single-path automata (`plot`, `season`) and preserving inner conjunction short-circuiting in `Backend.evaluate`. Filter candidates through `AnimationMap.action` and dispatch multi-candidate sets through `TacticalSelector` using `Psyche.motivation` weights with declaration-order tie-breaking, short-circuiting `TacticalSelector` whenever at most one admissible transition exists.
+
+###### Goal: Clean Single-Goal Intention Topology & Self-Loop Audit (`automata/intentions/main.yaml`)
+
+Normalize `src/data/configurations/automata/intentions/main.yaml` so every Intention loop strictly preserves its Goal category invariant, removes cross-category bridges (`mine` to `build`, `barter` to `threaten`), eliminates short-circuit-dependent self-loops (`attack -> attack`, `escape -> escape`, `mine -> mine`) in favor of disjoint exit guards, and exposes Motivation-weighted competing loops where applicable (e.g., `idle` to `{hunt, threaten, mock}` for `Goals.TARGET`).
+
+##### Tasks
+
+**1. Task: Extend Automata Configuration & Executor Models**
+
+*Objective*: Add typed `MethodConfiguration` / `MethodRule` support for `Outcomes.PREREQUISITE` and Motivation `weights` on `IntentionConfiguration` / `Transition`.
+
+* [ ] Subtask: Add `Outcomes.PREREQUISITE` and new `Locators` keys (`RESOURCE`, `MERCHANT`, `RIVAL`) to `app.static.semantics`.
+* [ ] Subtask: Define frozen `dataclass(slots=True)` `MethodConfiguration` (`key`, `locator`, `category`, `weights`, `conditions`) and add `methods: List[MethodConfiguration]` to `GoalConfiguration` in `src/app/models/configurations/automata/goals.py`.
+* [ ] Subtask: Add `weights: Dict[Enumerated[Motivations], float]` to `IntentionConfiguration` in `src/app/models/configurations/automata/transitions.py`.
+* [ ] Subtask: Update `OUTCOME_PRECEDENCE`, `GoalRule`, and `GoalTranslator.compile` in `src/app/services/automaton/executors/resolutions.py` to compile `MethodRule` tuples via the active `Backend` (`Compiler` / `Lambda`) with fail-fast validation.
+* [ ] Subtask: Add `TransitionExecutor.candidates(current_state, locals) -> List[Transition]` alongside short-circuiting `evaluate()` in `src/app/services/automaton/executors/transitions.py`, preserving inner conjunction short-circuiting and AST/Lambda backend parity.
+
+**2. Task: Implement Generalized Stack Subsumption & Locators**
+
+*Objective*: Enable `GoalResolver` to decompose compound Goals into prerequisite subgoals via pluggable `Locator` strategies and Motivation-weighted method ranking without per-tick scan overhead.
+
+* [ ] Subtask: Implement `ResourceLocator` (nearest visible/remembered matching `AssetCategories.RESOURCES` on the current layer) and register it in `LocatorOperator.defaults()` in `src/app/game/logic/modules/cognition/goals/locators.py`.
+* [ ] Subtask: Implement `MethodSelector` in `src/app/game/logic/modules/cognition/goals/` to score viable `(MethodRule, Asset)` candidates using `Psyche.motivation` weights, `AnimationMap` equipment admissibility, and distance tie-breaking.
+* [ ] Subtask: Implement `PrerequisiteOutcome` in `src/app/game/logic/modules/cognition/goals/outcomes.py` and register it under `Outcomes.PREREQUISITE` in `OutcomeOperator.defaults()`, pushing the parent onto `memory.stack` on success and demoting via `Responses.STORE` when all methods fail.
+* [ ] Subtask: Extend `ResolutionContext` in `src/app/game/logic/modules/cognition/goals/base.py` with `excluded_methods: FrozenSet[str]` and record selected method provenance for rollback tracking.
+
+**3. Task: Implement Online Rollback & Method-Failure Tracking**
+
+*Objective*: Prevent infinite decomposition loops by recording failed methods on `LOST` child Goals and allowing `CognitionMechanics` to fall back to alternate methods before marking a parent Goal dormant.
+
+* [ ] Subtask: Add parent-scoped failed-method tracking (`mark_failed_method`, `failed_methods`, `clear_failed_methods`) and active subgoal provenance to `Perception` in `src/app/game/logic/modules/cognition/perception.py`.
+* [ ] Subtask: Update `CognitionMechanics._resolve` and `_sync` in `src/app/game/logic/mechanics/intentional/cognition.py` to pass `excluded_methods` into `GoalResolver.resolve` and record method failures when a pushed child resolves `Outcomes.LOST`.
+* [ ] Subtask: Update `UnwindResponse` (or add a retry-aware unwind policy) so unwound parent Goals remain eligible for immediate `Recall` if untried methods exist, and become `dormant = True` once all methods are exhausted.
+* [ ] Subtask: Expose $O(1)$ domain predicates (e.g., `has_materials`) in `app.services.automaton.environ.Environ.functions` so `PREREQUISITE` conditions evaluate in ISL without Board scans.
+
+**4. Task: Upgrade `TransitionMechanics` for Multi-Candidate Tactical Selection**
+
+*Objective*: Evaluate all satisfied transitions, filter by equipment admissibility, and select among competing same-Goal loops using `Psyche.motivation` with minimal per-tick allocation overhead.
+
+* [ ] Subtask: Implement `TacticalSelector` to select the highest-scoring admissible `Transition` using `sprite.state.psyche.motivation` with declaration-order tie-breaking.
+* [ ] Subtask: Refactor `TransitionMechanics.update` in `src/app/game/logic/mechanics/intentional/transition.py` to query `self.executor.candidates(...)`, filter candidates through `AnimationMap.action(..., intention=t.next)`, skip `candidates()` on goal-less `IDLE` ticks, reuse the `locals` dict and per-layer `board.states(layer)` reference across the loop, and bypass `TacticalSelector` when at most one admissible transition exists.
+* [ ] Subtask: Ensure rejecting an inadmissible high-priority transition falls through to remaining admissible candidates instead of stalling the Sprite in its current Intention.
+
+**5. Task: Refactor Declarative Automata Configurations (`goals/main.yaml` & `intentions/main.yaml`)**
+
+*Objective*: Align YAML matrices with strict single-Goal intention loops, exhaustive-evaluation safety, and multi-method prerequisite decomposition.
+
+* [ ] Subtask: Remove cross-Goal category transitions (`mine` to `build`, `barter` to `threaten`) from `src/data/configurations/automata/intentions/main.yaml`.
+* [ ] Subtask: Audit and remove short-circuit-dependent self-loops (`attack -> attack`, `escape -> escape`, `mine -> mine`) in `src/data/configurations/automata/intentions/main.yaml`, verifying every `-> idle` exit condition is strictly disjoint from active loop continuation.
+* [ ] Subtask: Add `idle` entrypoints for `mine` (`Goals.RESOURCE`) and `build` (`Goals.PROPERTY`), and add Motivation-weighted competing loops for `Goals.TARGET` (`idle` to `{hunt, threaten, mock}`).
+* [ ] Subtask: Add `prerequisite` multi-method decomposition blocks (starting with `property` $\to$ `resource` / `subject`) to `src/data/configurations/automata/goals/main.yaml`.
+
+**6. Task: End-to-End Verification, Profiling Regression Check & Documentation**
+
+*Objective*: Validate multi-method decomposition, online backtracking, Motivation-weighted transition selection, and multi-sprite CPU impact using real dependency-tree `pytest` fixtures and `cProfile`.
+
+* [ ] Subtask: Add unit and integration tests using shared `conftest.py` Board/Orchestrator fixtures covering: (a) `PROPERTY` pushing `RESOURCE` onto `memory.stack`, mining to `COMPLETE`, popping `PROPERTY`, and entering `build`; (b) stalling on method 1, unwinding, excluding method 1, and succeeding via method 2; (c) exhausting all methods and demoting the parent cleanly without oscillation.
+* [ ] Subtask: Add tests verifying that two identical Sprites with different `Psyche.motivation` values (`CONQUEST` vs. `REBELLION`) select distinct admissible Intention loops from `idle` for the same `Goals.TARGET`, that missing weapon admissibility falls through to non-weapon candidates, and that removing self-loops produces no spurious `-> idle` exits.
+* [ ] Subtask: Re-run `cProfile` / `gprof2dot` on `world-01` (and a multi-sprite stress fixture with $N \ge 10$ Sprites) to verify `TransitionMechanics.update` and `CognitionMechanics.update` remain well below frame-budget thresholds under exhaustive outer candidate evaluation.
+* [ ] Subtask: Update `docs/04-intentions.md` and `docs/05-mechanics.md` to document `Outcomes.PREREQUISITE`, multi-method decomposition, failed-method rollback, and Motivation-weighted multi-transition selection.

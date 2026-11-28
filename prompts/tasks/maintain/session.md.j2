@@ -1,15 +1,36 @@
-# Task: Ontology - Session
+{# this has become a duplicate of iterate/cover.md.j2, essentially #}
+# Task: Ontology - Debug Session
 
-{% if task.parameters.description is defined %}
-{{ task.parameters.description }}
-{% endif %}
+**Priorities**
 
-**Priority**
+* **DEBUGGING**: 
+    * If applicable, debug the current run of the [Test Pipeline](#view-test-pipeline) section.
+    * If applicable, debug the current run of the [Test Sessions](#view-test-session) section.
+    * If changes to the Codebase are required for debugging, implement the solution.
+* **SIMULATION** Run through mental simulations of the Codebase to find [Bugs](#template-bug). Report the results.
+* **COVERAGE** Add any unit tests for any areas of the code not already covered.
+    * Ignore `app.core` tag coverage unless introducing changes to those specific areas, i.e. the Board, Engine and Screen are already sufficiently covered. 
+* **BUGHUNTING** If new, unrelated bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
 
-Assist in debugging the issue. Further information related to the execution can be found in the [Test Session](#view-test-session) console.
 
-{% include 'blocks/controls/guideline-debugging.md' %}
+### Context: Constraints 
+
+{% include 'blocks/controls/constraint-coverage.md' %}
+
+{% include 'blocks/controls/constraint-quality.md' %}
 
 {% include 'blocks/controls/constraint-changes.md' %}
 
-{% include 'blocks/controls/constraint-quality.md' %}
+### Context: Guidelines
+
+{% include 'blocks/controls/guideline-debugging.md' %}
+
+{% include 'blocks/controls/guideline-bugs.md' %}
+
+{% include 'blocks/controls/guideline-models.md' %}
+
+{% include 'blocks/controls/guideline-fixtures.md' %}
+
+{% include 'blocks/controls/guideline-coverage.md' %}
+
+{% include 'blocks/controls/guideline-testbed.md' %}

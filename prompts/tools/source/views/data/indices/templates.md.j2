@@ -1,12 +1,12 @@
 
 {# ------------------------------------------------------------- #}
 {% for temp in tools.parameters.source.data.templates %}
-{% set name = "." ~ temp ~ ".md.jd" %}
+{% set name = "." ~ temp ~ ".md.j2" %}
 #### Template: {{ temp | capitalize }}
 
-* Location: `src/data/template/{{ name }}`
+* Location: `src/out/template/{{ name }}`
 
-{% for tmp in yamls('src/data/templates/' ~ name, recursive=True) | sort %}
+{% for tmp in yamls('src/out/templates/' ~ name, recursive=True) | sort %}
 **{{ tmp }}**
 
 ```yaml

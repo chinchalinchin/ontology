@@ -1,6 +1,7 @@
 """
 @domain.logic
 @app.module
+@app.relation
 @category.geography
 @workflows.generation
 @workflow.fluids

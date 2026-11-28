@@ -2,9 +2,6 @@
 @domain.concrete
 @domain.logic
 @app.mechanic
-@category.crafts
-@category.objects
-@category.sheets
 @physics.space
 @workflow.collisions
 
@@ -15,7 +12,11 @@ CollisionMechanics implementation.
 from __future__ import annotations
 
 # Standard Libraries
-from typing import TYPE_CHECKING
+# Standard Libraries
+from typing import (
+    List,
+    TYPE_CHECKING
+)
 import collections
 import logging
 
@@ -29,13 +30,20 @@ from app.static.semantics import (
     Directions
 )
 from app.game.logic.mechanics.spatial import SpatialMechanic
-from app.models.state import DevicePayload
+from app.models.state import (
+    DevicePayload,
+    MotiveState,
+    SheetState
+)
 
 # Cython Libraries
 import libs.core.math.physics as physics
 import libs.core.math.geometry as geometry
-from libs.core.models import Boundary
-
+from libs.core.models import (
+    Boundary,
+    Hitbox,
+    Position
+)
 # -----------------------------------------------
 
 logger = logging.getLogger(__name__)
@@ -48,8 +56,24 @@ class CollisionMechanics(SpatialMechanic):
 
     Mechanic responsible for resolving Asset collisions natively.
     """
+    @staticmethod
+    def _stair_hitboxes(stairs: Asset) -> List[Hitbox]:
+        """
+        Resolves active blueprint hitboxes for a stair asset, falling back to full
+        frame dimensions only when its HitboxSchema returns an empty list.
+        """
+        hitboxes = stairs.hitboxes
+        if hitboxes:
+            return hitboxes
+        if stairs.dimensions:
+            return [Hitbox(Position(0, 0), stairs.dimensions)]
+        return []
+
+    
     def __init__(self, cell_size : int = 64, max_entities : int = 200):
         super().__init__(cell_size=cell_size, max_entities=max_entities)
+
+
 
     def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
         """
@@ -66,9 +90,13 @@ class CollisionMechanics(SpatialMechanic):
         if curr_e != e_base and curr_e != e_top:
             return
 
-        direction = stairs.state.direction
+        direction = stairs.state.blueprint
 
-        vel = getattr(sprite.state, "velocity", None)
+        vel = (
+            sprite.state.velocity
+            if isinstance(sprite.state, (SheetState, MotiveState))
+            else None
+        )
         vx = vel.vx if vel is not None else 0.0
         vy = vel.vy if vel is not None else 0.0
 
@@ -79,16 +107,33 @@ class CollisionMechanics(SpatialMechanic):
         foot_x = sprite.state.position.x + (dim_w // 2)
         foot_y = sprite.state.position.y + dim_l
 
+        # Resolve active stair tread bounds from blueprint hitboxes (fallback to dimensions)
+        stair_hbs = self._stair_hitboxes(stairs)
+        if not stair_hbs:
+            return
+
+        min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+        min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+        max_x = max(
+            stairs.state.position.x + hb.position.x + hb.dimensions.w
+            for hb in stair_hbs
+        )
+        max_y = max(
+            stairs.state.position.y + hb.position.y + hb.dimensions.l
+            for hb in stair_hbs
+        )
+        stair_w = max_x - min_x
+        stair_l = max_y - min_y
+
         # -----------------------------------------------------------------
         # VERTICAL STAIRS (UP)
         # -----------------------------------------------------------------
         # NOTE: DOWN is impossible due to LPC perspective specification.
         if direction == Directions.UP:
-            stair_l = stairs.dimensions.l
             if stair_l == 0:
                 return
 
-            tread_progress = (foot_y - stairs.state.position.y) / stair_l
+            tread_progress = (foot_y - min_y) / stair_l
 
             # Ascent moves North (vy < 0); Descent moves South (vy > 0)
             if tread_progress <= 0.85 and vy < 0:
@@ -103,11 +148,10 @@ class CollisionMechanics(SpatialMechanic):
             Directions.LEFT, 
             Directions.RIGHT
         ):
-            stair_w = stairs.dimensions.w
             if stair_w == 0:
                 return
 
-            tread_progress = (foot_x - stairs.state.position.x) / stair_w
+            tread_progress = (foot_x - min_x) / stair_w
 
             if direction == Directions.RIGHT:
                 # Ascent moves East (vx > 0); Descent moves West (vx < 0)
@@ -244,20 +288,22 @@ class CollisionMechanics(SpatialMechanic):
             if stairs:
                 movers = [
                     w for w in board.weights(layer)
-                    if getattr(w.properties, 'mass', 0) > 0
+                    if w.properties.mass > 0
                     and not w.state.mutators.triggers.falling
                 ]
                 for stair in stairs:
+                    stair_hbs = self._stair_hitboxes(stair)
+                    if not stair_hbs:
+                        continue
                     for mover in movers:
-                        if geometry.bounded(
-                            int(mover.state.position.x),
-                            int(mover.state.position.y),
+                        if geometry.intersects(
+                            mover.state.position,
+                            mover.dimensions,
                             mover.hitboxes,
-                            stair.state.position.x,
-                            stair.state.position.y,
-                            stair.dimensions.w,
-                            stair.dimensions.l,
-                        ): 
+                            stair.state.position,
+                            stair.dimensions,
+                            stair_hbs,
+                        ):
                             self._traverse_stairs(mover, stair)
 
             # -------------------------------------------------------------

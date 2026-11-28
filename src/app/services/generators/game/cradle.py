@@ -45,7 +45,7 @@ from app.static.semantics import (
 )
 from app.game.logic.relations import MaterialIndex
 from app.services.factories.assets import AssetFactory
-from app.models.config import RecipeConfiguration
+from app.models.configurations import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
     AnimationState,

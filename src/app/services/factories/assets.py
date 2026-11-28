@@ -21,6 +21,7 @@ from app.assets.base import (
     HitboxSchema
 )
 from app.assets.animations import (
+    CharacterAnimation,
     FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
@@ -29,6 +30,7 @@ from app.assets.animations import (
 from app.assets.frames import (
     BinaryFrame,
     CardinalFrame,
+    CharacterFrame,
     FluidFrame,
     IconFrame,
     IterableFrame,
@@ -59,7 +61,7 @@ from app.assets.hitboxes import (
 )
 from app.game.menus.bindings import Binding
 from app.game.menus.core import Widget
-from app.models.config import (
+from app.models.configurations import (
     Recipe,
     MenuNode
 )
@@ -88,6 +90,7 @@ class AssetFactory:
     _FRAMES = {
         FrameRecipe.BINARY: BinaryFrame(),
         FrameRecipe.CARDINAL: CardinalFrame(),
+        FrameRecipe.CHARACTER: CharacterFrame(),
         FrameRecipe.FLUID: FluidFrame(),
         FrameRecipe.ICON: IconFrame(),
         FrameRecipe.ITERABLE: IterableFrame(),
@@ -108,6 +111,7 @@ class AssetFactory:
     _ANIMATIONS = {
         AnimationRecipe.FREQUENCY: FrequencyAnimation(),
         AnimationRecipe.NONE: NoAnimation(),
+        AnimationRecipe.CHARACTER: CharacterAnimation(),
         AnimationRecipe.SPRITE: SpriteAnimation(),
         AnimationRecipe.STATE: StateAnimation(),
     }

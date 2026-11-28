@@ -15,7 +15,7 @@ from typing import List
 import app.static.settings as settings
 from app.static.semantics import Orientations
 from app.assets.base import Asset
-from app.models.config import Recipe
+from app.models.configurations import Recipe
 from app.models.state import CraftState
 from app.models.properties import CraftProperties
 from app.game.logic.modules.multipliers import Multiplier

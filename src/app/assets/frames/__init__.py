@@ -26,7 +26,8 @@ from app.assets.frames.resources import (
 )
 from app.assets.frames.sheets import (
     StateFrame,
-    SpriteFrame
+    SpriteFrame,
+    CharacterFrame
 )
 from app.assets.frames.tiles import (
     SeasonalFrame
@@ -56,5 +57,6 @@ __all__ = [
     'StageFrame',
     'SeasonalFrame',
     'MaterialFrame',
-    'ProjectileFrame'
+    'ProjectileFrame',
+    'CharacterFrame'
 ]

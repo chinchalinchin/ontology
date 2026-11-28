@@ -2,7 +2,7 @@
 
 A Composition is collection of multiple Assets organized into a formula to allow their "*virtualization*" and reuse. A Composition Configuration defines a Composition `id` that can be referenced like any other Asset in the [State file](./00-overview.md#state). 
 
-Composition Configuration can be found in `/src/data/config/compositions/**/*.yml`, otherwise known as the *Composition directories*.
+Composition Configuration can be found in `/src/data/configurations/assets/compositions/**/*.yml`, otherwise known as the *Composition directories*.
 
 ## Category: Crafts
 
@@ -60,13 +60,13 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#component-board) hydration. Multiplication is executed by a dedicated Multiplier implementation dispatched by the [Decomposer](#service-decomposer).
 
 * `simple` (SimpleMultiplier): 2D grid tiling across $(x_0 + i_x \cdot w, y_0 + i_y \cdot l)$ for $i_x \in [0, n_x),\; i_y \in [0, n_y)$[cite: 1].
-- `oriented` (`OrientedMultiplier`): 1D axis-locked tiling across $(x_0 + i_x \cdot w, y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0, y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
+- `oriented` (OrientedMultiplier): 1D axis-locked tiling across $(x_0 + i_x \cdot w, y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0, y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
 * `expansion` (ExpansionMultiplier): Vertical column interpolation placing `crowns` at $(x_0 + i_x \cdot w, y_0)$, $n_y$ contiguous `shafts` at $(x_0 + i_x \cdot w, y_0 + (k + 1) \cdot l)$, and `bases` at $(x_0 + i_x \cdot w, y_0 + (n_y + 1) \cdot l)$, locking each segment's perspective `anchor` to the column's `base` ground line ($\text{base.y} + l$)[cite: 1].
 * `perimeter` (PerimeterMultiplier): Hollow 2D boundary of $2(n_x + n_y + 4)$ segments spanning $(n_x + 2)w \times (n_y + 2)l$ with superimposed `L`-corners, an open interior, and `north` baseline `anchor` adjustment[cite: 1].
 
 ### Craft: Struts 
 
-*Struts* are structural Assets that encapsulate architecture. Struts may be placed on the Board through the State files manually, but they are generally instantiated during the [Engine Loop](./00-overview.md#component-engine) through the `build` [Intention](./04-intentions.md).
+*Struts* are structural [Assets](./01-assets.md) that encapsulate architecture. Struts may be placed on the Board through the [State Files](./00-overview.md#core-state) manually, but they are generally instantiated during the [Engine Loop](./00-overview.md#component-engine) through [Intentions](./04-intentions.md).
 
 **Behavior: Composability**
 
@@ -76,11 +76,11 @@ Struts are the "*bedrock*" upon which Compositions of Assets can be built. A Str
 
 ### Definition: Composition
 
-From the perspective of the [State files](./00-overview.md#core-state), Compositions are another type of Asset that can be deployed onto the [Board](./00-overview.md#component-board). However, they are a "*virtual*" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. 
+From the perspective of the [State Files](./00-overview.md#core-state), Compositions are another type of Asset that can be deployed onto the [Board](./00-overview.md#component-board). However, they are a "*virtual*" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. 
 
-Compositions are collections of multiple Assets. When a Composition is deployed onto the [Board](./00-overview.md#component-board), its individual Assets are added to the appropriate `(Category, Instance)`-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy) by the [Decomposer Service](#service-decomposer).
+Compositions are collections of multiple Assets. When a Composition is deployed onto the [Board](./00-overview.md#component-board), its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy) by the [Decomposer Service](#service-decomposer).
 
-A Composition is a way to reuse common Asset configurations in the State without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the [Board](./00-overview.md#component-board)'s perspective. They only serve to simplify the amount of State file boilerplate that is required to fully declare a complex, high-level entity on the [Board](./00-overview.md#component-board).
+A Composition is a way to reuse common Asset Configurations in the State without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the [Board](./00-overview.md#component-board)'s perspective. They only serve to simplify the amount of State File boilerplate that is required to fully declare a complex, high-level entity on the [Board](./00-overview.md#component-board).
 
 Compositions are organized around [Struts](#craft-struts). They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the *realization* of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets in a Composition.
 
@@ -111,22 +111,21 @@ The State files specify Compositions to deploy. The [Application](./00-overview.
 
 ### Definition: Macros
 
-Compositions abstract the static and contextual relationships of Assets into formulaic Macros. A Macro binds an Asset's attributes to its own properties (`self`), its enclosing Struts (`parent`, `root`), or any named Asset `<name>` within the Composition, and supports algebraic arithmetic (`+`, `-`, `*`, `/`, `//`, `%`, parentheses). Using this procedure, a Composition can be authored as a purely formal container of relational formulas without hardcoded coordinates.
+Compositions abstract the static and contextual relationships of Assets into formulaic Macros. A Macro binds a Component Asset's attributes to its own properties (`self`), its enclosing Struts (`parent`, `root`), or any named Asset `<name>` within the Composition, and supports algebraic arithmetic (`+`, `-`, `*`, `/`, `//`, `%`, parentheses). Using this procedure, a Composition can be authored as a purely formal container of relational formulas without hardcoded coordinates.
 
 **Concept: Macro Scopes**
 
-* `self`: The current Component or Strut being evaluated.
-* `parent`: The immediate enclosing Strut (`root.strut` for Root Components and Branch Struts; `branch.strut` for Branch Components)[cite: 4].
-* `root`: The Composition's Root Strut (`root.strut`)[cite: 4].
-* `<name>`: Any Strut or Component in the Composition (across `root` or `branches`) that declares `name: <name>`[cite: 4].
+* `self`: The current Component Asset being evaluated.
+* `parent`: The immediate enclosing Strut (e.g., the Root Strut or Branch Struts).
+* `root`: The Composition's Root Strut.
+* `<name>`: Any named Strut or Component Asset in the Composition.
 
 Each Scope exposes its PseudoState attributes (`position.x`, `position.y`, `material`, `blueprint`, `layer`, `owner`), its static Properties (`dimensions.w`, `dimensions.l`, `mass`, `priority`), and its multiplied `span` (`span.w`, `span.l`).
 
 **Interface: Composition Macros**
 
-* `anchor(<target>)`: Calculates and returns the integer `anchor` offset required to align `self`'s rendering baseline (`ground_y`) with `<target>`'s rendering baseline[cite: 4]:
-  $$\text{anchor}(\text{self}, A) = \big(A.\text{position}.y + A.\text{span}.l\big) - \big(\text{self}.\text{position}.y + \text{self}.\text{span}.l\big)$$
-* `bind(<target>.<field>)`: Resolves `<field>` (e.g., `dimensions.l`, `span.l`, `position.y`, `material`, `layer`) on `<target>`. Multiple `bind(...)` and `anchor(...)` calls may be combined in algebraic expressions.
+* `anchor(<target>)`: Calculates and returns the integer offset required to align the Asset's rendering baseline with `<target>`'s rendering baseline: $\text{anchor}(\text{self}, A) = \big(A.\text{position}.y + A.\text{span}.l\big) - \big(\text{self}.\text{position}.y + \text{self}.\text{span}.l\big)$
+* `bind(<target>.<field>)`: Resolves `<field>` on `<target>`. Multiple `bind(...)` and `anchor(...)` calls may be combined in algebraic expressions.
 
 The following snippet illustrates how Macros may be utilized in a Composition to dynamically resolve State,
 
@@ -203,10 +202,10 @@ compositions:
     See [Rendering](./12-architecture.md#rendering-sort) for more information on rendering order.
     
 !!! note "Door Projection"
-    [Doors](./01-assets.md#object-doors) automatically project a reciprocal shadow footprint onto their `outlayer` at `out` (`Substrates.OVERLAYS = -1`, `ChannelTypes.TINT`). When `door` (`panel`) is deployed on the Root Layer, the [Decomposer](#service-decomposer) automatically instantiates its reciprocal return shadow Door on `house-layer` without requiring a second Door declaration in `branches`.
+    [Doors](./01-assets.md#object-doors) automatically project a reciprocal shadow footprint onto their `outlayer` at `out`. When `panel` is deployed on the Root Layer in the above example, the [Decomposer](#service-decomposer) automatically instantiates its reciprocal return shadow Door on `house-layer` without requiring a second Door declaration in `branches`.
 
 
-This is a formula for a `brick-house` spanning two [Layers](./00-overview.md#concept-layers) (`root.layer` and `house-layer`), linked bidirectionally by `door` and its projected shadow footprint ($\text{house-layer} \leftrightarrow \text{root.layer}$). In this way, the interior of Compositions can be traversed across independent Layers.
+This is a formula for a `brick-house` spanning two [Layers](./00-overview.md#concept-layers) (`root.layer` and `house-layer`), linked bidirectionally by the `panel` Door and its projected shadow footprint ($\text{house-layer} \leftrightarrow \text{root.layer}$). In this way, the interior of Compositions can be traversed across independent Layers.
 
 
 !!! note "Pseudo State Overrides"
@@ -233,7 +232,7 @@ When deployed at `(100, 100)` on layer `'0'`:
 * Because `interior` transitions to a different layer (`house-layer-1` $\neq$ `'0'`), its coordinate origin resets to `(0, 0)`, placing `interior` at `(10, 10)` on `house-layer-1`.
 * `floor` shares `house-layer-1` with its parent `interior`, so its Position is translated relative to `interior` (`(10, 10) + (0, 96) = (10, 106)`).
 
-Other than Position, any state attribute (`layer`, `owner`, `elevation`) *not* specified in a Component Asset's Pseudo State automatically inherits from its parent Strut's hydrated state.
+Other than Position, any state attribute (`layer`, `owner`, `elevation`) *not* specified in a Component Asset's Pseudo State automatically inherits from its Parent Strut's hydrated State.
 
 ## Process: Decomposition 
 
@@ -268,9 +267,9 @@ The Decomposer translates validated Composition models into flat lists of concre
 
 #### Decomposer: Hydration
 
-1. **Root Context Initialization & Link Pre-Indexing**
-    * **Action**: Increment the monotonic deployment counter (`_increment`), initialize `root_context` from the deployed `PropertyState` (`id`, `name`, `layer`, `owner`, `position`, `elevation`), and pre-index all named components into `_link_map`.
-    * **Role**: Ensures all [SwitchState](./01-assets.md#category-objects) references (e.g., between `plates` and `gates`) and internal layer names (`<layer>-<increment>`) are consistently namespaced across the entire Composition deployment.
+1. **Root Context Initialization & Pre-Indexing**
+    **Root Context Attributes**: Root Strut exposes `id`, `name`, `layer`, `owner`, `position`, `elevation`, `material`, and `blueprint` from the deployed PropertyState to its Components.
+    * **Namespace Hydration** Ensures all [SwitchState](./01-assets.md#category-objects) references (e.g., between `plates` and `gates`) and internal layer names (`<layer>-<increment>`) are consistently namespaced across the entire Composition deployment. Pre-index all named components.
 2. **State Superposition**
     * **Layer Namespacing & Parity Check**: Internal layers distinct from `root_context['layer']` are namespaced to `<layer>-<increment>`. Compare the child's resolved `layer` against `parent_context['layer']`.
     * **Coordinate Translation**:
@@ -324,5 +323,5 @@ The crafting cost $C$ depends on Material valuation weights ($\mu_{\text{mat}}$)
 **Formula: Cost**
 
 $$
---8<-- "static/tex/cost.tex"
+--8<-- "static/tex/formulae/formula-000-composition-cost.tex"
 $$

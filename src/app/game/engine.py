@@ -178,7 +178,8 @@ class Engine:
     def start(self, 
         delta: float = 1.0 / settings.TARGET_FPS,
         spin: float = settings.SPIN_RATE
-    ) -> None:        
+    ) -> None:
+        """Runs the fixed-timestep simulation loop and frame pacing until stopped."""
         logger.info("Entering Game Loop...")
 
         accumulator = 0.0
@@ -191,9 +192,16 @@ class Engine:
         self.running = True
         while self.running:
             current_time = time.perf_counter()
-            frame_time = frame_time = min(current_time - last_time, settings.MAX_FRAME_TIME)
+            frame_time = min(current_time - last_time, settings.MAX_FRAME_TIME)
             last_time = current_time
             accumulator += frame_time
+
+            # Pump OS event queue once per render frame so SDL_QUIT is handled
+            # immediately and window events stay drained even on 0-substep frames.
+            if self.board.device is not None and self.board.device.pump():
+                logger.info("Quit signal received from input device.")
+                self.running = False
+                break
             
             # Fixed-timestep Logic Updates
             while accumulator >= delta:
@@ -207,7 +215,7 @@ class Engine:
             telemetry_frames += 1
 
             #  Hybrid Pacing (Sleep + Spin)
-            work_time = time.perf_counter()- current_time
+            work_time = time.perf_counter() - current_time
             sleep_time = delta - work_time
             
             if sleep_time > 0:
@@ -226,7 +234,7 @@ class Engine:
                 telemetry_updates = 0
                 telemetry_start_time = time.perf_counter()
 
-
+                
     def stop(self) -> None:
         """
         Stops the game loop, drains active screens, destroys screen canvas textures,

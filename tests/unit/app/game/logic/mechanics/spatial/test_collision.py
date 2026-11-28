@@ -16,6 +16,7 @@ import pytest
 from app.static.semantics import (
     AssetInstances,
     Mechanics,
+    Directions
 )
 
 # Cython Libraries
@@ -336,7 +337,7 @@ def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
 
     stairs.elevation = 0
     stairs.state.delta = 1
-    stairs.state.direction = "up"
+    stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
     # Ascent: place foot inside upper 85% of stair tread with northward velocity (vy < 0)
@@ -360,7 +361,6 @@ def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == 0
 
-
 def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
     mock_mechanic,
     mock_board,
@@ -377,43 +377,83 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
 
     stairs.elevation = 0
     stairs.state.delta = 1
-    stairs.state.direction = "right"
+    stairs.state.blueprint = Directions.RIGHT.value
     stairs.state.position = Position(500, 500)
+
+    player_hb = player.hitboxes[0]
+    right_hbs = stairs.hitboxes
+    right_min_x = min(stairs.state.position.x + hb.position.x for hb in right_hbs)
+    right_max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in right_hbs
+    )
+    right_min_y = min(stairs.state.position.y + hb.position.y for hb in right_hbs)
+    right_max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in right_hbs
+    )
+    right_w = right_max_x - right_min_x
+    right_l = right_max_y - right_min_y
+    right_y = (
+        right_min_y
+        + (right_l // 2)
+        - player_hb.position.y
+        - (player_hb.dimensions.l // 2)
+    )
 
     # RIGHT Ascent (vx > 0, tread_progress >= 0.15)
     player.elevation = 0
     player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
-        stairs.state.position.y,
+        right_min_x - (player.dimensions.w // 2) + int(right_w * 0.5),
+        right_y,
     )
     player.state.velocity = Velocity(20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
+    assert player.elevation == stairs.elevation + stairs.state.delta
 
     # RIGHT Descent (vx < 0, tread_progress <= 0.15)
     player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.1),
-        stairs.state.position.y,
+        right_min_x - (player.dimensions.w // 2) + int(right_w * 0.1),
+        right_y,
     )
     player.state.velocity = Velocity(-20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
+    assert player.elevation == stairs.elevation
 
     # LEFT Ascent (vx < 0, tread_progress <= 0.85)
-    stairs.state.direction = "left"
+    stairs.state.blueprint = Directions.LEFT.value
+    left_hbs = stairs.hitboxes
+    left_min_x = min(stairs.state.position.x + hb.position.x for hb in left_hbs)
+    left_max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in left_hbs
+    )
+    left_min_y = min(stairs.state.position.y + hb.position.y for hb in left_hbs)
+    left_max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in left_hbs
+    )
+    left_w = left_max_x - left_min_x
+    left_l = left_max_y - left_min_y
+    left_y = (
+        left_min_y
+        + (left_l // 2)
+        - player_hb.position.y
+        - (player_hb.dimensions.l // 2)
+    )
     player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
-        stairs.state.position.y,
+        left_min_x - (player.dimensions.w // 2) + int(left_w * 0.5),
+        left_y,
     )
     player.state.velocity = Velocity(-20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
+    assert player.elevation == stairs.elevation + stairs.state.delta
 
     # LEFT Descent (vx > 0, tread_progress >= 0.85)
     player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.9),
-        stairs.state.position.y,
+        left_min_x - (player.dimensions.w // 2) + int(left_w * 0.9),
+        left_y,
     )
     player.state.velocity = Velocity(20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
+    assert player.elevation == stairs.elevation

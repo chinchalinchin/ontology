@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-context: false
+context: true
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
@@ -7,52 +7,12 @@ context: false
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
-  # --------------------------------------------
-  # --------------------- TEMPLATES: MAINTENANCE
-  # --------------------------------------------
-  # template: analyze/automaton.md.j2
-  # template: analyze/pstats.md.j2
-  # --------------------------------------------
-  # --------------------- TEMPLATES: MAINTENANCE
-  # --------------------------------------------
-  # template: maintain/codebase.md.j2
-  # template: maintain/patch.md.j2
-  # template: maintain/session.md.j2
-  # --------------------------------------------
-  # --------------------------- TEMPLATES: DUMPS 
-  # --------------------------------------------
-  # template: report/menus.md.j2
-  # template: report/state.md.j2
-  # --------------------------------------------
-  # ----------------------- TEMPLATES: ITERATION
-  # --------------------------------------------
-  # template: iterate/document.md.j2
-  # template: iterate/groom.md.j2
-  # template: iterate/implement.md.j2
-  # template: iterate/cover.md.j2
-  # template: iterate/merge.md.j2
-  # template: iterate/review.md.j2
-  # --------------------------------------------
-  # -------------------------- TEMPLATES: DESIGN
-  # --------------------------------------------
-  # template: design/structure/menu.md.j2
-  # template: design/structure/composition.md.j2
-  # template: design/structure/score.md.j2
-  # template: design/diagram/hierarchy.md.j2
-  # template: design/diagram/automata.md.j2
-  # template: design/diagram/stages.md.j2
-  # template: design/style/mermaid.md.j2
+  template: maintain/patch.md.j2
 # ----------------------------------------------------
   parameters:
     description: |
-      All proposed changes implemented. User acceptance passing. Unit tests passing.
-
-      **Priorities**
-
-      * **ANALYSIS** Reanalyze the latest .pstats dump after the changes. 
-      * **MERGE REQUEST** Use the [Merge Request Template](#template-merge) to summarize the changes introduced as a result of this session.
-    title: Ontology - Re-Analyze & Merge
+      todo
+    title: todo
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -66,13 +26,14 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: false
+      bugs: true
+      docs: true
       templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
     metrics:
-      pstats: true
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -84,12 +45,12 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -101,33 +62,34 @@ tools:
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
-    # ------------------------ PARAMETERS: MANAGER
+    # ------------------- TOOL PARAMETERS: MANAGER
     # --------------------------------------------
     manager:
       board:
         phase: 01-02
         action: refactor
+      bugs: []
       docs:
         exclude:
           # - 00-overview
           # - 01-assets
-          - 02-sprites
+          # - 02-sprites
           - 03-compositions
-          - 04-intentions
-          - 05-mechanics
-          # - 06-widgets
+          # - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
           - 07-acoustics
           - 08-narratives
-          - 09-ecology
+          # - 09-ecology
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
       templates:
         # - template-docs
-        # - template-backlog
-        # - template-bug
+        - template-backlog
+        - template-bug
         # - template-design
-        - template-merge
+        # - template-merge
         # - template-review
         # - template-spec
     metrics:
@@ -137,75 +99,63 @@ tools:
         dot: |
           gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/docs/static/pstats/latest.pstats
     # --------------------------------------------
-    # ------------------------ PARAMETERS: SOURCE
+    # -------------------- TOOL PARAMETERS: SOURCE
     # --------------------------------------------
     source:
       filter:
         default: AND
         queries:
-          # - title: Test Fixtures
-          #   scan:
-          #     domain: [ test ]
-          #     test: [ fixtures ]
-          - title: Typography Tests
+          - title: 'Application - Core'
             scan:
-              domain: [ test ]
-              workflows: [ typography ]
-          # - title: 'Application - Core'
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ core, component ]
-          # - title: 'Asset - Abstract'
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ asset ]
-          # - title: 'Asset - Model: Widgets'
-          #   scan:
-          #     domain: [ model ]
-          #     category: [ widgets ]
-          # - title: 'Asset - Implementation: Widgets'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ widgets ]
-          #     asset: [ frame ]
-          # - title: 'Menu - Models: Core'
-          #   scan:
-          #     domain: [ model ]
-          #     app: [ menu ]
-          # - title: 'Menu - Binding: Text'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ binding ]
-          #     workflows: [ plot ]
-          # - title: 'Menu - Service: Provider'
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ service, menu, asset ]
-          #     category: [ widgets ]
-          # - title: 'Menu - Service: Binder'
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ service, menu ]
-          #     menu: [ binding ]
-          # - title: 'Menu - Handlers'
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ handler ]
-          # - title: 'Libraries - Core: Rendering'
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ library ]
-          #     workflows: [ rendering ]
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Application - Devices'
+            scan:
+              domain: [ user ]
+              app: [ device ]
+          - title: 'Asset - Abstract'
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: 'Mechanic - Abstract'
+            scan:
+              domain: [ abstract] 
+              app: [ mechanic ]
+          - title: 'Asset - Models'
+            scan:
+              domain: [ model ]
+              app: [ asset, core ]
+          - title: 'Asset - Models: Sheet'
+            scan:
+              domain: [ model ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: 'Asset - Implementations: Sheets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: 'Automata - Intentional Transitions'
+            scan: 
+              domain: [ automata ]
+              modality: [ intention ]
+          - title: 'Mechanics - Intentional'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              modality: [ intention ]
+          - title: 'Libraries - Navigation'
+            scan: 
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ navigation ]
       data:
         properties: [ ]
         state: [ ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------
-    # -------------------------- PARAMETERS: SHELL
+    # --------------------- TOOL PARAMETERS: SHELL
     # --------------------------------------------
     shell:
       directory: |
@@ -213,10 +163,10 @@ tools:
       commands: 
         - python /Users/gmoore/Home/projects/ontology/src/main.py start
     # --------------------------------------------
-    # -------------------------- PARAMETERS: TESTS
+    # --------------------- TOOL PARAMETERS: TESTS
     # --------------------------------------------
     tests:
       pipeline:
         command: pytest -m
-        marker: '"workflow_rendering or workflow_typography"'
+        marker: '"app_core or workflow_collisions"'
         # scope: '**/test_{actuator,cartographer}.py'

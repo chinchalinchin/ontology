@@ -19,7 +19,7 @@ from typing import (
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.models.config.menus import ApertureTarget
+from app.models.configurations.menus import ApertureTarget
 from app.models.menus.contexts import MenuContext
 from app.models.state.assets.widgets import CollectionState
 

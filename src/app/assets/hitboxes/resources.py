@@ -18,8 +18,10 @@ from app.models.properties import ResourceProperties
 from app.models.state import ResourceState
 
 # Cython Libraries
-from libs.core.models import Hitbox
-
+from libs.core.models import (
+    Hitbox,
+    Position
+)
 # ---------------------------------------------------------
 
 logger = logging.getLogger(__name__)
@@ -39,7 +41,15 @@ class StageHitbox(HitboxSchema):
         state: ResourceState,
         elevation: int
     ) -> List[Hitbox]:
+        """
+        Resolves active hitboxes matching state.stage at the requested elevation.
+        Falls back to full frame dimensions when properties.hitboxes is None.
+        """
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
+            return []
+        if properties.hitboxes is None:
+            if properties.dimensions:
+                return [Hitbox(Position(0, 0), properties.dimensions)]
             return []
         return properties.hitboxes.get(state.stage, []) or []
