@@ -24,6 +24,11 @@ from app.static.semantics import (
     PerennialStages,
     LayerProjections,
 )
+from app.assets.hitboxes.crafts import ElevatedHitbox
+from app.assets.hitboxes.objects import (
+    DEFAULT_IN_THRESHOLD_CLEARANCE,
+    DEFAULT_OUT_SENSOR_THICKNESS,
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -475,3 +480,230 @@ def test_layered_hitbox_in_and_out_projections(mock_board):
 
     door.state.elevation = -1
     assert door.hitbox.elevations(door.properties, door.state) == [0]
+
+@pytest.mark.category_objects
+def test_static_hitbox_dimension_fallback_reuses_cached_list(mock_asset):
+    """
+    Verifies HitboxSchema._dimension_fallback caches full-frame Hitbox lists
+    without mutating AssetProperties and returns [] when dimensions are None.
+    """
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    crate.properties.hitboxes = None
+
+    first = crate.hitboxes
+    second = crate.hitboxes
+
+    assert first is second
+    assert crate.properties.hitboxes is None
+
+    crate.properties.dimensions = None
+    assert crate.hitboxes == []
+
+
+@pytest.mark.category_effects
+def test_dynamic_hitbox_fallbacks_and_explicit_empty(mock_asset):
+    """
+    Verifies DynamicHitbox respects explicit empty [], falls back to properties.hitboxes,
+    and falls back to cached frame dimensions when both are None.
+    """
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
+    )
+    fluid.state.elevation = 0
+
+    fluid.state.hitboxes = []
+    assert fluid.hitboxes == []
+
+    prop_hb = [Hitbox(Position(2, 4), Dimensions(16, 16))]
+    fluid.state.hitboxes = None
+    fluid.properties.hitboxes = prop_hb
+    assert fluid.hitboxes == prop_hb
+
+    fluid.properties.hitboxes = None
+    fallback_first = fluid.hitboxes
+    fallback_second = fluid.hitboxes
+    assert fallback_first is fallback_second
+    assert fallback_first[0].dimensions.w == fluid.dimensions.w
+    assert fallback_first[0].dimensions.l == fluid.dimensions.l
+    assert fluid.hitbox.get(fluid.properties, fluid.state, elevation=1) == []
+
+
+@pytest.mark.category_crafts
+def test_elevated_hitbox_tiers_clamping_and_fallbacks(mock_asset):
+    """
+    Verifies ElevatedHitbox clamps base_e >= 0, offsets relative tier keys,
+    falls back to cached dimensions when properties.hitboxes is None, and
+    returns empty lists for {}.
+    """
+    strut = mock_asset(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
+    schema = ElevatedHitbox()
+    hb_base = Hitbox(Position(0, 0), Dimensions(32, 32))
+    hb_upper = Hitbox(Position(4, 4), Dimensions(24, 24))
+
+    strut.properties.hitboxes = {0: [hb_base], 1: [hb_upper]}
+
+    strut.state.elevation = 0
+    assert schema.elevations(strut.properties, strut.state) == [0, 1]
+    assert schema.get(strut.properties, strut.state, elevation=0) == [hb_base]
+    assert schema.get(strut.properties, strut.state, elevation=1) == [hb_upper]
+    assert schema.get(strut.properties, strut.state, elevation=2) == []
+
+    strut.state.elevation = 2
+    assert schema.elevations(strut.properties, strut.state) == [2, 3]
+    assert schema.get(strut.properties, strut.state, elevation=2) == [hb_base]
+    assert schema.get(strut.properties, strut.state, elevation=3) == [hb_upper]
+    assert schema.get(strut.properties, strut.state, elevation=0) == []
+
+    # Negative base elevation clamps to 0
+    strut.state.elevation = -3
+    assert schema.elevations(strut.properties, strut.state) == [0, 1]
+    assert schema.get(strut.properties, strut.state, elevation=0) == [hb_base]
+
+    # None hitboxes fall back to cached frame dimensions at base_e
+    strut.properties.hitboxes = None
+    strut.state.elevation = -1
+    assert schema.elevations(strut.properties, strut.state) == [0]
+    fallback = schema.get(strut.properties, strut.state, elevation=0)
+    assert fallback is schema.get(strut.properties, strut.state, elevation=0)
+    assert fallback[0].dimensions.w == strut.dimensions.w
+    assert fallback[0].dimensions.l == strut.dimensions.l
+    assert schema.get(strut.properties, strut.state, elevation=1) == []
+
+    # Explicit empty dict preserves passability
+    strut.properties.hitboxes = {}
+    assert schema.elevations(strut.properties, strut.state) == []
+    assert schema.get(strut.properties, strut.state, elevation=0) == []
+
+
+@pytest.mark.category_crafts
+@pytest.mark.modality_material
+def test_material_hitbox_injected_index_and_none_fallback(
+    mock_asset,
+    mock_material_index,
+):
+    """
+    Verifies MaterialHitbox uses the injected MaterialIndex via set_materials
+    and falls back to cached frame dimensions when properties.hitboxes is None.
+    """
+    stairs = mock_asset(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STAIRS.value,
+    )
+    stairs.hitbox.set_materials(mock_material_index)
+    stairs.state.elevation = 0
+    stairs.properties.hitboxes = None
+
+    assert stairs.hitbox.is_obstacle(stairs.state.blueprint) is True
+    first = stairs.hitboxes
+    second = stairs.hitboxes
+    assert first is second
+    assert len(first) == 1
+    assert first[0].dimensions.w == stairs.dimensions.w
+    assert first[0].dimensions.l == stairs.dimensions.l
+
+    # Passable blueprint suppresses fallback even when properties.hitboxes is None
+    assert stairs.hitbox.is_obstacle(Buildings.FLOORS.value) is False
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_rotated_hitbox_precompute_and_angle_caching(mock_asset):
+    """
+    Verifies RotatedHitbox.precompute populates the quantized angle table and
+    reuses cached hitbox lists across repeated get() lookups (including off-grid angles).
+    """
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    proj.state.elevation = 0
+
+    table = proj.hitbox.precompute(proj.properties)
+    step = proj.properties.rotation
+    if step and step > 0 and (360 % step) == 0:
+        assert set(table.keys()) == set(range(0, 360, step))
+
+    proj.state.angle = 0
+    first = proj.hitboxes
+    second = proj.hitboxes
+    assert first is second
+
+    # Non-divisor angle lazily computes once and caches for subsequent lookups
+    proj.state.angle = 13
+    off_first = proj.hitboxes
+    off_second = proj.hitboxes
+    assert len(off_first) == len(first)
+    assert off_first is off_second
+
+
+@pytest.mark.category_objects
+def test_layered_hitbox_projection_fallbacks_and_list_hitboxes(mock_board):
+    """
+    Verifies LayeredHitbox caches default IN/OUT projection fallbacks when
+    properties.hitboxes is None and handles list-typed hitboxes cleanly.
+    """
+    door = mock_board.instances(AssetInstances.DOORS.value)[0]
+    door.state.elevation = 0
+    door.properties.hitboxes = None
+
+    door.state.projection = LayerProjections.IN.value
+    in_first = door.hitboxes
+    in_second = door.hitboxes
+    assert in_first is in_second
+    assert in_first[0].dimensions.w == door.dimensions.w
+    assert in_first[0].dimensions.l == max(
+        1,
+        door.dimensions.l - DEFAULT_IN_THRESHOLD_CLEARANCE,
+    )
+
+    door.state.projection = LayerProjections.OUT.value
+    out_first = door.hitboxes
+    out_second = door.hitboxes
+    assert out_first is out_second
+    expected_sensor_l = min(door.dimensions.l, DEFAULT_OUT_SENSOR_THICKNESS)
+    assert out_first[0].position.y == door.dimensions.l - expected_sensor_l
+    assert out_first[0].dimensions.l == expected_sensor_l
+
+    # List-typed hitboxes apply to IN while OUT uses cached sensor fallback
+    custom_hb = [Hitbox(Position(2, 2), Dimensions(12, 12))]
+    door.properties.hitboxes = custom_hb
+    door.state.projection = LayerProjections.IN.value
+    assert door.hitboxes == custom_hb
+    door.state.projection = LayerProjections.OUT.value
+    assert door.hitboxes is out_first
+
+    # Missing dimensions returns []
+    door.properties.hitboxes = None
+    door.properties.dimensions = None
+    assert door.hitboxes == []
+
+
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
+def test_stage_hitbox_none_fallback_and_elevation_filter(mock_asset):
+    """
+    Verifies StageHitbox falls back to cached frame dimensions when properties.hitboxes
+    is None and returns [] on non-matching elevations.
+    """
+    crop = mock_asset(
+        AssetCategories.RESOURCES.value,
+        AssetInstances.CROPS.value,
+        id="maize",
+    )
+    crop.state.elevation = 0
+    crop.properties.hitboxes = None
+
+    first = crop.hitboxes
+    second = crop.hitboxes
+    assert first is second
+    assert len(first) == 1
+    assert first[0].dimensions.w == crop.dimensions.w
+    assert first[0].dimensions.l == crop.dimensions.l
+    assert crop.hitbox.get(crop.properties, crop.state, elevation=1) == []

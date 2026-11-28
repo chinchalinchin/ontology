@@ -331,3 +331,51 @@ def test_spatial_mechanic_intersections_skips_empty_hitbox_assets(mock_mechanic,
     strut.state.position = Position(50, 50)
 
     assert mechanics.intersections([sprite, strut]) == []
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_collisions
+def test_spatial_mechanic_bipartite_dynamic_vs_static(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.bipartite returns only dynamic-vs-static colliding
+    pairs without pairing dynamic-vs-dynamic or static-vs-static overlaps.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate_a = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    crate_b = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    chest_a = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CHESTS.value)
+    chest_b = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CHESTS.value)
+
+    crate_a.state.position = Position(5000, 5000)
+    crate_b.state.position = Position(5004, 5004)
+    chest_a.state.position = Position(5008, 5008)
+    chest_b.state.position = Position(5400, 5400)
+
+    pairs = mechanics.bipartite([crate_a, crate_b], [chest_a, chest_b])
+
+    assert len(pairs) == 2
+    assert (crate_a, chest_a) in pairs
+    assert (crate_b, chest_a) in pairs
+    assert mechanics.bipartite([], [chest_a]) == []
+    assert mechanics.bipartite([crate_a], []) == []
+
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_collisions
+def test_spatial_mechanic_bipartite_elevation_filtering(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.bipartite isolates dynamic and static assets across elevations.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    chest = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CHESTS.value)
+
+    crate.elevation = 0
+    crate.state.position = Position(5000, 5000)
+    chest.elevation = 1
+    chest.state.position = Position(5000, 5000)
+
+    assert mechanics.bipartite([crate], [chest], elevation=0) == []
+    assert mechanics.bipartite([crate], [chest], elevation=1) == []
+
+    chest.elevation = 0
+    assert mechanics.bipartite([crate], [chest], elevation=0) == [(crate, chest)]

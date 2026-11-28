@@ -1,4 +1,4 @@
-#### Refactor: Phase 03.06 : Perimeter Containment
+#### Refactor: Phase 03.06 - Perimeter Containment
 
 **Overview** 
 
