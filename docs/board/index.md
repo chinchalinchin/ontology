@@ -55,7 +55,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 03.04: Projectiles](./phases/refactor/refactor-03-04.md)
       * [ ]: [Phase 03.05: Ammunition](./phases/refactor/refactor-03-05.md)
       * [ ]: [Phase 03.06: Perimeter Containment](./phases/refactor/refactor-03-06.md)
-      * [~]: [Phase 03.07: Collision Optimization](./phase/refactor/refactor-03-07.md)
+      * [x]: [Phase 03.07: Collision Optimization](./phase/refactor/refactor-03-07.md)
     * *Phase 04:*
       * [x]: [Phase 04.01: Typography](./phases/refactor/refactor-04-01.md)
       * [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)

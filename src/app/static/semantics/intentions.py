@@ -117,6 +117,8 @@ class Responses(StrEnum):
 
 class Reflexes(StrEnum):
     CONFUSION       = "confusion"
+    ANGER           = "anger"
+    SURPRISE        = "surprise"
 
 class Locators(StrEnum):
     DOOR            = "door"

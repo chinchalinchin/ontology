@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: maintain/session.md.j2
+  template: iterate/cover.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -12,7 +12,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: true
+      templates: false
     # --------------------------------------------
     source:
       data: true
@@ -32,7 +32,7 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '06-02'
+        phase: '03-07'
         action: refactor
       docs:
         exclude:
@@ -134,8 +134,8 @@ tools:
               app: [ module ]
               physics: [ motion ]
       data:
-        properties: [ sheets/sprites, crafts/stairs ]
-        state: [ world-testbed/stairs, world-testbed/players ]
+        properties: [  ]
+        state: [ ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------

@@ -3,35 +3,47 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/cover.md.j2
+  template: index.md.j2
+  parameters:
+    title: Ontology - Automaton Analysis
+    description:
+      I suppose it is $P_t$ that is of interest. Seems like it has a boundary condition $E(P_t) = w_{t+1}$. 
+
+      So, with Phase 06.05, the Sprite will have an internal model of the world, Belief. It then needs a way of "formalizing a Task" as a series of Goals. Then, it needs a "Task Space" of all possible tasks that it "conditionalizes" as it iterates over them and determines if a particular Task is a successful strategy.
+
+      Would this be the correct application of the theory to the Engine?
+
+      **PRIORITIES**
+
+      * Synthesize the preceding discussion into updates on the [Task Board](#view-task-board) for Phase 06.05. Use the [Backlog Template](template-backlog) as a guide.
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
+      board: true
+      docs: true
       bugs: false
-      templates: false
+      templates: true
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: true
+      pipeline: false
       session: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
     manager:
       board:
-        phase: 06-02
+        phase: 06-05
         action: refactor
       bugs: []
       docs:
@@ -50,12 +62,12 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-docs
-        # - template-backlog
-        - template-bug
+        # - template-docs
+        - template-backlog
+        # - template-bug
         # - template-design
         # - template-merge
-        - template-review
+        # - template-review
         # - template-spec
     # --------------------------------------------
     source:
@@ -83,11 +95,11 @@ tools:
               domain: [ model ]
               app: [ asset ]
               category: [ sheets ]
-          - title: 'Asset - Implementations: Sheets'
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
+          # - title: 'Asset - Implementations: Sheets'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
           - title: 'Automata - Models'
             scan: 
               domain: [ model, automata ]
@@ -104,33 +116,33 @@ tools:
               domain: [ concrete ]
               app: [ mechanic ]
               modality: [ intention ]
-          - title: 'Libraries - Navigation'
-            scan: 
-              domain: [ system ]
-              app: [ library ]
-              workflows: [ navigation ]
-          - title: 'Tests - Fixtures'
-            scan:
-              domain: [ test ]
-              test: [ fixtures ]
-          - title: 'Tests - Intentional Mechanics'
-            scan:
-              domain: [ test ]
-              app: [ mechanic ]
-              modality: [ intention ]
-          - title: 'Tests - Automata'
-            scan:
-              domain: [ test ]
-              app: [ service ]
-              workflows: [ transitions ]
-          - title: 'Tests - Navigation'
-            scan: 
-              domain: [ test ]
-              workflows: [ navigation ]
+          # - title: 'Libraries - Navigation'
+          #   scan: 
+          #     domain: [ system ]
+          #     app: [ library ]
+          #     workflows: [ navigation ]
+          # - title: 'Tests - Fixtures'
+          #   scan:
+          #     domain: [ test ]
+          #     test: [ fixtures ]
+          # - title: 'Tests - Intentional Mechanics'
+          #   scan:
+          #     domain: [ test ]
+          #     app: [ mechanic ]
+          #     modality: [ intention ]
+          # - title: 'Tests - Automata'
+          #   scan:
+          #     domain: [ test ]
+          #     app: [ service ]
+          #     workflows: [ transitions ]
+          # - title: 'Tests - Navigation'
+          #   scan: 
+          #     domain: [ test ]
+          #     workflows: [ navigation ]
       data:
         properties: [ sheets/sprites ]
-        state: [ world-testbed ]
-        configurations: [ automata/intentions, automata/goals ]
+        state: [ ]
+        configurations: [ assets/actions, automata/intentions, automata/goals ]
         templates: [ ]
     # --------------------------------------------
     shell:

@@ -85,40 +85,40 @@ Cache un-inflated static obstacle + bridge-carved hazard fluid AABBs per `(layer
 
 *Objective*: Remove the `3.33M` per-run `MaterialIndex()` calls (`13.3%` active CPU) and inner-loop hitbox allocations.
 
-* [] Subtask: Inject the compiled `MaterialIndex` instance from `Builder.build_relations` into `MaterialHitbox` via `AssetFactory` so `elevations()` and `get()` reference `self._materials` directly.
-* [] Subtask: Pre-normalize missing `properties.hitboxes` dimension fallbacks during `Loader`/hydration (or cache once per asset ID) across `StaticHitbox`, `DynamicHitbox`, `MaterialHitbox`, `StageHitbox`, and `LayeredHitbox`, and precompute quantized angle tables in `RotatedHitbox`.
-* [] Subtask: Clamp `base_e = max(0, ...)` and align empty-hitbox fallback behavior in `ElevatedHitbox`.
-* [] Subtask: Update `AssetFactory.hitbox` and `MechanicFactory.mechanics` to raise `KeyError` on unknown keys rather than silently falling back to `StaticHitbox`/`AnimationMechanics`.
+* [x] Subtask: Inject the compiled `MaterialIndex` instance from `Builder.build_relations` into `MaterialHitbox` via `AssetFactory` so `elevations()` and `get()` reference `self._materials` directly.
+* [x] Subtask: Pre-normalize missing `properties.hitboxes` dimension fallbacks during `Loader`/hydration (or cache once per asset ID) across `StaticHitbox`, `DynamicHitbox`, `MaterialHitbox`, `StageHitbox`, and `LayeredHitbox`, and precompute quantized angle tables in `RotatedHitbox`.
+* [x] Subtask: Clamp `base_e = max(0, ...)` and align empty-hitbox fallback behavior in `ElevatedHitbox`.
+* [x] Subtask: Update `AssetFactory.hitbox` and `MechanicFactory.mechanics` to raise `KeyError` on unknown keys rather than silently falling back to `StaticHitbox`/`AnimationMechanics`.
 
 **2. Task: Split Static and Dynamic Weights in `Board._cache`**
 
 *Objective*: Pre-partition static colliders by `(layer, elevation)` with dirty-version invalidation.
 
-* [] Subtask: Extend `app.game.board.modules.cache.Cache` to maintain `dynamics[layer]` ($m > 0$), `statics[layer][elevation]` ($m = 0$), and a per-layer `static_version` counter incremented on `index_batch`, `evict_batch`, `relayer`, and explicit invalidation calls.
-* [] Subtask: Expose `board.dynamics(layer)`, `board.statics(layer, elevation)`, `board.invalidate_statics(layer)`, and normalize `board.obstacles(layer=None)` to aggregate across all layers.
-* [!: Dependent On Other Task Completion] Subtask: Hook `SwitchMechanics` (Gate toggles), `SeasonMechanics` (Resource stage transitions), and `FluidMechanics` (fluid/shoreline rebuilds) to call `board.invalidate_statics(layer)`.
+* [x] Subtask: Extend `app.game.board.modules.cache.Cache` to maintain `dynamics[layer]` ($m > 0$), `statics[layer][elevation]` ($m = 0$), and a per-layer `static_version` counter incremented on `index_batch`, `evict_batch`, `relayer`, and explicit invalidation calls.
+* [x] Subtask: Expose `board.dynamics(layer)`, `board.statics(layer, elevation)`, `board.invalidate_statics(layer)`, and normalize `board.obstacles(layer=None)` to aggregate across all layers.
+* [x] Subtask: Hook `SwitchMechanics` (Gate toggles), `SeasonMechanics` (Resource stage transitions), and `FluidMechanics` (fluid/shoreline rebuilds) to call `board.invalidate_statics(layer)`.
 
 **3. Task: Upgrade `Space`, `physics.pyx`, and `SpatialMechanic` to Zero-Allocation Bipartite Queries**
 
 *Objective*: Eliminate static-vs-static hashing, `70M+` empty-bucket scans, `dict(enumerate)` churn, and duplicate narrow-phase allocations.
 
-* [] Subtask: Add `active_buckets` tracking to `src/libs/core/math/space.pxd` and `space.pyx` for $O(K)$ `clear()` and `query()`, replacing Python `set()` pair deduplication with a C-level pair buffer.
-* [] Subtask: Add a zero-allocation `cdef inline bint c_intersects(int x1, int y1, list hbs1, int x2, int y2, list hbs2)` in `geometry.pxd`/`geometry.pyx` and consume it inside `physics.collisions` (eliminating per-call `Position` and tuple allocations).
-* [] Subtask: Unify `physics.boundaries` and `physics.environment` into a single bipartite negative-ID Cython query and add `physics.bipartite_collisions(dynamics, statics, grid)` for dynamic-vs-static resolution.
-* [] Subtask: Remove `dict(enumerate(...))` in `SpatialMechanic.{collisions, intersections, proximities, constrain}`, remove the duplicate `self.grid.clear()` in `intersections`, and use `<int>p.rx` in `physics.integrate`.
+* [x] Subtask: Add `active_buckets` tracking to `src/libs/core/math/space.pxd` and `space.pyx` for $O(K)$ `clear()` and `query()`, replacing Python `set()` pair deduplication with a C-level pair buffer.
+* [x] Subtask: Add a zero-allocation `cdef inline bint c_intersects(int x1, int y1, list hbs1, int x2, int y2, list hbs2)` in `geometry.pxd`/`geometry.pyx` and consume it inside `physics.collisions` (eliminating per-call `Position` and tuple allocations).
+* [x] Subtask: Unify `physics.boundaries` and `physics.environment` into a single bipartite negative-ID Cython query and add `physics.bipartite_collisions(dynamics, statics, grid)` for dynamic-vs-static resolution.
+* [x] Subtask: Remove `dict(enumerate(...))` in `SpatialMechanic.{collisions, intersections, proximities, constrain}`, remove the duplicate `self.grid.clear()` in `intersections`, and use `<int>p.rx` in `physics.integrate`.
 
 **4. Task: Refactor `CollisionMechanics` for Active-Tier Bipartite & Multi-Hitbox Resolution**
 
 *Objective*: Eliminate inactive-layer physics execution (B053.1) and resolve multi-hitbox compound intersections (B053.2).
 
-* [] Subtask: Update `CollisionMechanics.update` to skip layers and elevation tiers with zero active non-falling `dynamics`, run dynamic-vs-dynamic and dynamic-vs-static queries separately, and cache static `Space`/primitives per `(layer, elevation, static_version)`.
-* [] Subtask: Update `CollisionMechanics._resolve` (and add a multi-hit helper in `geometry.pyx` if needed) to iterate and resolve *all* intersecting hitbox pairs for compound multi-hitbox obstacles instead of returning after the first hit.
-* [] Subtask: Re-profile `world-01` via `cProfile` + `gprof2dot` to verify `CollisionMechanics` drops from `6.27%` to `< 1.5%` wall-clock.
+* [x] Subtask: Update `CollisionMechanics.update` to skip layers and elevation tiers with zero active non-falling `dynamics`, run dynamic-vs-dynamic and dynamic-vs-static queries separately, and cache static `Space`/primitives per `(layer, elevation, static_version)`.
+* [x] Subtask: Update `CollisionMechanics._resolve` (and add a multi-hit helper in `geometry.pyx` if needed) to iterate and resolve *all* intersecting hitbox pairs for compound multi-hitbox obstacles instead of returning after the first hit.
+* [x] Subtask: Re-profile `world-01` via `cProfile` + `gprof2dot` to verify `CollisionMechanics` drops from `6.27%` to `< 1.5%` wall-clock.
 
 **5. Task: Cache Static Obstacles for `NavigationMechanics` and Static Sensors for `MotionMechanics.fields`**
 
 *Objective*: Prevent $O(N_{\text{sprites}} \times M_{\text{weights}})$ scaling collapse in `NavigationMechanics.obstacles` and eliminate per-tick sensor extraction in `fields.update`.
 
-* [] Subtask: Cache static obstacle + bridge-carved hazard fluid AABBs per `(layer, elevation, static_version)` (and inflated copies keyed by `(pad_x, pad_y)`) in `NavigationMechanics`, appending only live `board.dynamics(layer)` hitboxes per call.
-* [] Subtask: Cache static compound sensor primitives (bridges, stairs, walkable struts, shorelines, fluids) keyed by `static_version` in `app.game.logic.modules.motion.fields`.
-* [] Subtask: Add multi-NPC stress benchmark (`15–30` autonomous sprites on `world-01`) to validate linear frame-time stability under `pstats`.
+* [x] Subtask: Cache static obstacle + bridge-carved hazard fluid AABBs per `(layer, elevation, static_version)` (and inflated copies keyed by `(pad_x, pad_y)`) in `NavigationMechanics`, appending only live `board.dynamics(layer)` hitboxes per call.
+* [x] Subtask: Cache static compound sensor primitives (bridges, stairs, walkable struts, shorelines, fluids) keyed by `static_version` in `app.game.logic.modules.motion.fields`.
+* [x] Subtask: Add multi-NPC stress benchmark (`15–30` autonomous sprites on `world-01`) to validate linear frame-time stability under `pstats`.

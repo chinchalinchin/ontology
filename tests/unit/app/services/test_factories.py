@@ -172,9 +172,10 @@ def test_factory_hitbox():
     for recipe_key, cls in mapping.items():
         assert isinstance(AssetFactory.hitbox(recipe_key), cls)
 
-    assert isinstance(AssetFactory.hitbox("unknown_hitbox"), StaticHitbox)
-    assert isinstance(AssetFactory.hitbox(None), StaticHitbox)
-
+    with pytest.raises(KeyError) as exc_info:
+        AssetFactory.hitbox("unknown_hitbox")
+    assert isinstance(exc_info.value, KeyError)
+    assert "Unknown hitbox recipe" in str(exc_info.value)
 
 @pytest.mark.app_component
 def test_factory_device(mock_configurations_schema: ConfigurationSchema):
@@ -227,14 +228,15 @@ def test_factory_mechanics():
         )
         assert isinstance(MechanicFactory.mechanics(instance), cls)
 
-    unmapped_instance = MechanicsInstance(
-        key="unmapped_mechanics",
-        executors=[],
-    )
-    assert isinstance(
-        MechanicFactory.mechanics(unmapped_instance),
-        AnimationMechanics,
-    )
+    with pytest.raises(KeyError) as exc_info:
+        instance = MechanicsInstance(
+            key="unmapped_mechanics",
+            executors=[],
+        )
+        MechanicFactory.mechanics(instance)
+
+    assert isinstance(exc_info.value, KeyError)
+    assert "Unknown mechanic key" in str(exc_info.value)
 
 
 @pytest.mark.menu_controller
