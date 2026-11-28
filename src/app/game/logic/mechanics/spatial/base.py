@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------------------
 
+
 class SpatialMechanic(Mechanic):
     """
     ## SpatialMechanic
@@ -73,20 +74,16 @@ class SpatialMechanic(Mechanic):
         super().__init__()
         self.grid = Space(cell_size=cell_size, max_entities=max_entities)
 
-
     def center(self, position: Position, dimensions: Dimensions):
         return (position.x + dimensions.w / 2, position.y + dimensions.l / 2)
 
-    
-    def collisions(self, assets: List[Asset], elevation: Optional[int] = None) -> List[Tuple]:
+    def collisions(self, assets: List[Asset], elevation: Optional[int] = None) -> List[Tuple[Asset, Asset]]:
         """
         Extracts primitives using standard physics hitboxes, queries the C-grid, 
         and returns colliding Asset pairs.
         """
-        self.grid.clear()
-        if not assets:
+        if len(assets) < 2:
             return []
-        asset_map = dict(enumerate(assets))
         primitive_data = [
             asset.primitive(
                 i,
@@ -97,9 +94,45 @@ class SpatialMechanic(Mechanic):
             for i, asset in enumerate(assets)
         ]
         colliding_indices = physics.collisions(primitive_data, self.grid)
-        return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
+        return [(assets[id_a], assets[id_b]) for id_a, id_b in colliding_indices]
 
-        
+    def bipartite(
+        self,
+        dynamics: List[Asset],
+        statics: List[Asset],
+        elevation: Optional[int] = None
+    ) -> List[Tuple[Asset, Asset]]:
+        """
+        Evaluates dynamic-vs-static candidate collisions without hashing or
+        evaluating static-vs-static or dynamic-vs-dynamic pairs.
+        """
+        if not dynamics or not statics:
+            return []
+        dynamic_primitives = [
+            asset.primitive(
+                i,
+                asset.hitbox.get(asset.properties, asset.state, elevation)
+            )
+            if elevation is not None else
+            asset.primitive(i)
+            for i, asset in enumerate(dynamics)
+        ]
+        static_primitives = [
+            asset.primitive(
+                i,
+                asset.hitbox.get(asset.properties, asset.state, elevation)
+            )
+            if elevation is not None else
+            asset.primitive(i)
+            for i, asset in enumerate(statics)
+        ]
+        colliding_indices = physics.bipartite_collisions(
+            dynamic_primitives,
+            static_primitives,
+            self.grid
+        )
+        return [(dynamics[id_a], statics[id_b]) for id_a, id_b in colliding_indices]
+
     def intersections(self, assets: List[Asset]) -> List[Tuple[Asset, Asset]]:
         """
         Evaluates spatial intersections across active asset hitboxes partitioned by
@@ -107,8 +140,7 @@ class SpatialMechanic(Mechanic):
         flush post-collision contact registers while preserving target HitboxSchema
         geometry (such as LayeredHitbox) and respecting intentionally empty hitboxes.
         """
-        self.grid.clear()
-        if not assets:
+        if len(assets) < 2:
             return []
 
         by_elevation: Dict[int, List[Asset]] = collections.defaultdict(list)
@@ -123,10 +155,7 @@ class SpatialMechanic(Mechanic):
             if len(tier_assets) < 2:
                 continue
 
-            self.grid.clear()
-            asset_map = dict(enumerate(tier_assets))
             primitive_data = []
-
             for i, asset in enumerate(tier_assets):
                 base_hbs = asset.hitbox.get(asset.properties, asset.state, tier)
 
@@ -147,8 +176,8 @@ class SpatialMechanic(Mechanic):
 
             colliding_indices = physics.collisions(primitive_data, self.grid)
             for id_a, id_b in colliding_indices:
-                asset_a = asset_map[id_a]
-                asset_b = asset_map[id_b]
+                asset_a = tier_assets[id_a]
+                asset_b = tier_assets[id_b]
                 pair_key = (min(id(asset_a), id(asset_b)), max(id(asset_a), id(asset_b)))
                 if pair_key not in seen:
                     seen.add(pair_key)
@@ -156,23 +185,19 @@ class SpatialMechanic(Mechanic):
 
         return results
 
-    
     def proximities(self, assets: List[Asset]) -> List[Tuple[Asset, Asset]]:
         """
         Bypasses physics hitboxes, constructing a virtual hitbox padded by 
         the entity's action radius. This determines interaction reach,
         filtered to candidate pairs sharing an elevation tier.
         """
-        self.grid.clear()
-        if not assets:
+        if len(assets) < 2:
             return []
 
-        asset_map = dict(enumerate(assets))
         primitive_data = []
-
         for i, asset in enumerate(assets):
             # Extract action radius safely, defaulting to 0 when parameters are absent
-            # so static targets remain indexed 1:1 with asset_map for physics.collisions
+            # so static targets remain indexed 1:1 with assets for physics.collisions
             params = asset.state.mutators.parameters
             radius = (
                 params.action.radius
@@ -193,8 +218,8 @@ class SpatialMechanic(Mechanic):
         colliding_indices = physics.collisions(primitive_data, self.grid)
         results: List[Tuple[Asset, Asset]] = []
         for id_a, id_b in colliding_indices:
-            asset_a = asset_map[id_a]
-            asset_b = asset_map[id_b]
+            asset_a = assets[id_a]
+            asset_b = assets[id_b]
             if (
                 self._elevations(asset_a, include_empty=True)
                 & self._elevations(asset_b, include_empty=True)
@@ -202,8 +227,6 @@ class SpatialMechanic(Mechanic):
                 results.append((asset_a, asset_b))
 
         return results
-
-    
 
     def constrain(
         self, 
@@ -215,11 +238,8 @@ class SpatialMechanic(Mechanic):
         Extracts primitives, queries the C-grid for Negative IDs (Boundaries), 
         and returns colliding constraint pairs.
         """
-        self.grid.clear()
         if not assets or not boundaries:
             return []
-        asset_map = dict(enumerate(assets))
-        bound_map = dict(enumerate(boundaries))
         primitive_assets = [
             asset.primitive(
                 i,
@@ -233,5 +253,5 @@ class SpatialMechanic(Mechanic):
             (i, b.position.x, b.position.y, b.dimensions.w, b.dimensions.l)
             for i, b in enumerate(boundaries)
         ]
-        colliding_indices = physics.boundaries(primitive_assets, primitive_bounds, self.grid)
-        return [(asset_map[id_a], bound_map[id_b]) for id_a, id_b in colliding_indices]
+        colliding_indices = physics.bipartite(primitive_assets, primitive_bounds, self.grid)
+        return [(assets[id_a], boundaries[id_b]) for id_a, id_b in colliding_indices]

@@ -73,6 +73,28 @@ class ConfusionReflex(ExpressionReflex):
         )
 
 
+class AngerReflex(ExpressionReflex):
+    """
+    
+    """
+
+    def __init__(self):
+        super().__init__(
+            palette=ExpressionsPalette.BUBBLES,
+            expression=Expressions.ANGER
+        )
+
+class SurpriseReflex(ExpressionReflex):
+    """
+    
+    """
+
+    def __init__(self):
+        super().__init__(
+            palette=ExpressionsPalette.BUBBLES,
+            expression=Expressions.SURPRISE
+        )
+
 # -----------------------------------------------------
 
 
@@ -86,6 +108,8 @@ class ReflexOperator(Operator[Reflexes, Reflex]):
     def defaults(cls) -> Dict[Reflexes, Reflex]:
         return {
             Reflexes.CONFUSION: ConfusionReflex(),
+            Reflexes.ANGER: AngerReflex(),
+            Reflexes.SURPRISE: SurpriseReflex()
         }
 
     def resolve(

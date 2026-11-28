@@ -43,7 +43,7 @@ def test_geometry_intersects():
     dim2 = Dimensions(32, 32)
     hb2 = [Hitbox(Position(0, 0), Dimensions(32, 32))]
 
-    result = geometry.intersects(pos1, dim1, hb1, pos2, dim2, hb2)
+    result = geometry.intersects(pos1, hb1, pos2, hb2)
     assert result is not None
     assert result == (hb1[0], hb2[0])
 
@@ -57,9 +57,9 @@ def test_geometry_intersects_disjoint_and_empty():
     dim2 = Dimensions(32, 32)
     hb2 = [Hitbox(Position(0, 0), Dimensions(16, 16))]
 
-    assert geometry.intersects(pos1, dim1, hb1, pos2, dim2, hb2) is None
-    assert geometry.intersects(pos1, dim1, [], pos2, dim2, hb2) is None
-    assert geometry.intersects(pos1, dim1, hb1, pos2, dim2, []) is None
+    assert geometry.intersects(pos1, hb1, pos2, hb2) is None
+    assert geometry.intersects(pos1, [], pos2, hb2) is None
+    assert geometry.intersects(pos1, hb1, pos2, []) is None
 
 
 def test_geometry_intersects_multi_hitbox_second_match():
@@ -72,7 +72,7 @@ def test_geometry_intersects_multi_hitbox_second_match():
     dim2 = Dimensions(32, 32)
     hb2 = [Hitbox(Position(0, 0), Dimensions(16, 16))]
 
-    result = geometry.intersects(pos1, dim1, [hb1_miss, hb1_hit], pos2, dim2, hb2)
+    result = geometry.intersects(pos1, [hb1_miss, hb1_hit], pos2, hb2)
     assert result == (hb1_hit, hb2[0])
 
 

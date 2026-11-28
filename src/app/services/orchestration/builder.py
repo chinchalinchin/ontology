@@ -182,18 +182,25 @@ class Builder:
 
 
     def build_relations(self) -> None:
+        """Compiles relational indices and configures flyweight AssetFactory hitbox schemas."""
         logger.info("Compiling relational indices...")
+        materials = MaterialIndex.from_configuration(
+            self.context.configurations.materials
+        )
+        projectiles = self.context.properties.cursors.projectiles
         self.relations = {
             Relations.SHORELINES: ShorelineIndex.from_properties(
                 self.context.properties.geography.shorelines
             ),
-            Relations.MATERIALS: MaterialIndex.from_configuration(
-                self.context.configurations.materials
-            ),
+            Relations.MATERIALS: materials,
             Relations.PROJECTILES: ProjectileIndex.from_properties(
-                self.context.properties.cursors.projectiles
+                projectiles
             )
         }
+        AssetFactory.configure(
+            materials=materials,
+            projectiles=projectiles
+        )
 
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:

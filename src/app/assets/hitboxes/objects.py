@@ -10,7 +10,11 @@
 Object HitboxSchema implementations.
 """
 # Standard Libraries
-from typing import List
+from typing import (
+    Dict,
+    List,
+    Tuple,
+)
 
 # Application Libraries
 from app.assets.base import HitboxSchema
@@ -68,6 +72,37 @@ class LayeredHitbox(HitboxSchema):
     Resolves categorical layer-relative hitboxes for Doors across their deployed
     layer ('in') and connected outlayer shadow footprint ('out').
     """
+    _fallback_cache: Dict[Tuple[str, int, int], List[Hitbox]]
+
+    def __init__(self) -> None:
+        """Initializes cached default projection hitboxes keyed by (projection, w, l)."""
+        if not hasattr(self, "_fallback_cache"):
+            self._fallback_cache = {}
+
+    def _projection_fallback(self, projection: str, w: int, l: int) -> List[Hitbox]:
+        """Returns a cached default IN/OUT hitbox list for Doors lacking explicit hitboxes."""
+        key = (projection, w, l)
+        cached = self._fallback_cache.get(key)
+        if cached is not None:
+            return cached
+
+        if projection == LayerProjections.OUT:
+            sensor_l = min(l, DEFAULT_OUT_SENSOR_THICKNESS)
+            cached = [
+                Hitbox(
+                    Position(0, l - sensor_l),
+                    Dimensions(w, sensor_l)
+                )
+            ]
+        else:
+            cached = [
+                Hitbox(
+                    Position(0, 0),
+                    Dimensions(w, max(1, l - DEFAULT_IN_THRESHOLD_CLEARANCE))
+                )
+            ]
+        self._fallback_cache[key] = cached
+        return cached
 
     def elevations(
         self,
@@ -97,21 +132,8 @@ class LayeredHitbox(HitboxSchema):
         if not properties.dimensions:
             return []
 
-        w = properties.dimensions.w
-        l = properties.dimensions.l
-
-        if projection == LayerProjections.OUT:
-            sensor_l = min(l, DEFAULT_OUT_SENSOR_THICKNESS)
-            return [
-                Hitbox(
-                    Position(0, l - sensor_l),
-                    Dimensions(w, sensor_l)
-                )
-            ]
-
-        return [
-            Hitbox(
-                Position(0, 0),
-                Dimensions(w, max(1, l - DEFAULT_IN_THRESHOLD_CLEARANCE))
-            )
-        ]
+        return self._projection_fallback(
+            projection,
+            properties.dimensions.w,
+            properties.dimensions.l
+        )

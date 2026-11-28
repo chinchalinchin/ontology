@@ -427,3 +427,155 @@ def test_physics_constrain_coincident_center_fallback():
 
     assert pos.x < 10
     assert vel.vx == -20.0
+
+# ----------------------------------------------------------------------------------------
+# PHASE 03.07: BIPARTITE, PERSISTENT STATIC GRIDS & COLLIDE GUARDS
+# ----------------------------------------------------------------------------------------
+
+
+def test_physics_bipartite_collisions_excludes_same_group_pairs(mock_space_grid):
+    """
+    Verifies bipartite_collisions evaluates only dynamic-vs-static pairs,
+    ignoring dynamic-vs-dynamic and static-vs-static overlaps.
+    """
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    dynamics = [
+        (0, 10, 10, 32, 32, [hb]),
+        (1, 15, 15, 32, 32, [hb]),
+        (2, 300, 300, 32, 32, [hb]),
+    ]
+    statics = [
+        (0, 20, 20, 32, 32, [hb]),
+        (1, 25, 25, 32, 32, [hb]),
+        (2, 500, 500, 32, 32, [hb]),
+    ]
+
+    pairs = set(physics.bipartite_collisions(dynamics, statics, mock_space_grid))
+    assert pairs == {(0, 0), (0, 1), (1, 0), (1, 1)}
+
+    assert physics.bipartite_collisions([], statics, mock_space_grid) == []
+    assert physics.bipartite_collisions(dynamics, [], mock_space_grid) == []
+
+
+def test_physics_bipartite_collisions_compound_hitboxes(mock_space_grid):
+    """
+    Verifies bipartite_collisions detects overlaps on secondary hitboxes of
+    compound dynamic and static primitives.
+    """
+    dyn = [(
+        0, 0, 0, 32, 32,
+        [
+            Hitbox(Position(0, 0), Dimensions(10, 10)),
+            Hitbox(Position(100, 0), Dimensions(20, 20)),
+        ],
+    )]
+    stat = [(
+        0, 0, 0, 32, 32,
+        [
+            Hitbox(Position(200, 0), Dimensions(10, 10)),
+            Hitbox(Position(110, 5), Dimensions(20, 20)),
+        ],
+    )]
+
+    assert physics.bipartite_collisions(dyn, stat, mock_space_grid) == [(0, 0)]
+
+
+def test_physics_populate_and_query_statics_persistent_grid(mock_space_grid):
+    """
+    Verifies populate_statics + query_statics probes a persistent static Space grid
+    repeatedly without mutating buckets and skips empty/degenerate dynamic hitboxes.
+    """
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    statics = [
+        (0, 100, 100, 32, 32, [hb]),
+        (1, 300, 300, 32, 32, [hb]),
+    ]
+    physics.populate_statics(statics, mock_space_grid)
+
+    # First probe hits static 0; empty and zero-width hitboxes are safely ignored
+    dyn_pass_1 = [
+        (0, 110, 110, 32, 32, [hb]),
+        (1, 110, 110, 32, 32, []),
+        (2, 110, 110, 32, 32, [Hitbox(Position(0, 0), Dimensions(0, 32))]),
+    ]
+    assert physics.query_statics(dyn_pass_1, statics, mock_space_grid) == [(0, 0)]
+
+    # Second probe reuses the same persistent grid without re-populating
+    dyn_pass_2 = [(0, 310, 310, 32, 32, [hb])]
+    assert physics.query_statics(dyn_pass_2, statics, mock_space_grid) == [(0, 1)]
+
+    # Empty dynamics and cleared static grid short-circuit cleanly
+    assert physics.query_statics([], statics, mock_space_grid) == []
+    physics.populate_statics([], mock_space_grid)
+    assert physics.query_statics(dyn_pass_2, statics, mock_space_grid) == []
+
+
+def test_physics_populate_and_query_bounds_persistent_grid(mock_space_grid):
+    """
+    Verifies populate_bounds + query_bounds probes persistent raw AABB targets
+    repeatedly without re-inserting targets.
+    """
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    bounds = [
+        (0, 0, 0, 16, 128),
+        (1, 200, 0, 16, 128),
+    ]
+    physics.populate_bounds(bounds, mock_space_grid)
+
+    assert physics.query_bounds([(0, 10, 20, 32, 32, [hb])], bounds, mock_space_grid) == [(0, 0)]
+    assert physics.query_bounds([(0, 190, 20, 32, 32, [hb])], bounds, mock_space_grid) == [(0, 1)]
+    assert physics.query_bounds([(0, 80, 20, 32, 32, [hb])], bounds, mock_space_grid) == []
+    assert physics.query_bounds([(0, 10, 20, 32, 32, [])], bounds, mock_space_grid) == []
+
+    physics.populate_bounds([], mock_space_grid)
+    assert physics.query_bounds([(0, 10, 20, 32, 32, [hb])], [], mock_space_grid) == []
+
+
+def test_physics_bipartite_unified_compound_and_empty_guards(mock_space_grid):
+    """
+    Verifies unified physics.bipartite handles compound asset hitboxes and empty inputs.
+    """
+    assets = [(
+        0, 0, 0, 32, 32,
+        [
+            Hitbox(Position(0, 0), Dimensions(10, 10)),
+            Hitbox(Position(100, 0), Dimensions(20, 20)),
+        ],
+    )]
+    targets = [
+        (0, 110, 5, 16, 16),
+        (1, 400, 400, 16, 16),
+    ]
+
+    assert physics.bipartite(assets, targets, mock_space_grid) == [(0, 0)]
+    assert physics.bipartite([], targets, mock_space_grid) == []
+    assert physics.bipartite(assets, [], mock_space_grid) == []
+
+
+def test_physics_collide_separating_velocities_and_subpixel_carry_reset():
+    """
+    Verifies physics.collide clears sub-pixel remainders along the resolved axis
+    and skips momentum transfer when overlapping bodies are already separating.
+    """
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    pos1 = Position(0, 0)
+    pos1.rx = 0.75
+    pos1.ry = 0.40
+    pos2 = Position(24, 0)
+    pos2.rx = -0.60
+    pos2.ry = 0.30
+
+    # Bodies overlap along X but are already moving apart (v_rel > 0)
+    vel1 = Velocity(-10.0, 0.0)
+    vel2 = Velocity(10.0, 0.0)
+
+    physics.collide(pos1, hb, vel1, 5.0, False, pos2, hb, vel2, 5.0, False)
+
+    assert pos1.x == -4
+    assert pos2.x == 28
+    assert pos1.rx == 0.0
+    assert pos2.rx == 0.0
+    assert pytest.approx(pos1.ry, rel=1e-5) == 0.40
+    assert pytest.approx(pos2.ry, rel=1e-5) == 0.30
+    assert vel1.vx == -10.0
+    assert vel2.vx == 10.0

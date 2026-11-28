@@ -14,33 +14,38 @@ from libc.math cimport sqrt, cos, sin, atan2
 
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 from libs.core.math.space cimport Space
-from libs.core.math.geometry cimport intersects, bounded
+from libs.core.math.geometry cimport c_intersects, c_bounded
 
 # -----------------------------------------------------------------------------
 # COLLISION & MOTION INTEGRATION
 # -----------------------------------------------------------------------------
 
-cdef inline void _insert_hitboxes(
-    Space grid,
-    int entity_id,
+cdef inline bint _hitboxes_aabb(
     int ax,
     int ay,
-    list hitboxes
+    list hitboxes,
+    int* out_x,
+    int* out_y,
+    int* out_w,
+    int* out_l
 ):
     """
-    Computes the world-space bounding box of active hitboxes and inserts the
-    resulting span into the broad-phase Space grid.
+    Computes the enclosing world-space AABB for a list of relative hitboxes.
+    Returns False if hitboxes is empty or degenerate.
     """
     cdef Hitbox hb
+    cdef object item
     cdef int hx1, hy1, hx2, hy2
     cdef int min_x = 0, min_y = 0, max_x = 0, max_y = 0
     cdef bint first = True
 
     if not hitboxes:
-        return
+        return False
 
     for item in hitboxes:
         hb = item
+        if hb.dimensions.w <= 0 or hb.dimensions.l <= 0:
+            continue
         hx1 = ax + hb.position.x
         hy1 = ay + hb.position.y
         hx2 = hx1 + hb.dimensions.w
@@ -62,52 +67,227 @@ cdef inline void _insert_hitboxes(
             if hy2 > max_y:
                 max_y = hy2
 
-    grid.insert(entity_id, min_x, min_y, max_x - min_x, max_y - min_y)
+    if first:
+        return False
+
+    out_x[0] = min_x
+    out_y[0] = min_y
+    out_w[0] = max_x - min_x
+    out_l[0] = max_y - min_y
+    return True
+
+
+cdef inline void _insert_hitboxes(
+    Space grid,
+    int entity_id,
+    int ax,
+    int ay,
+    list hitboxes
+):
+    """
+    Inserts each active hitbox of an entity into the broad-phase Space grid,
+    providing tight cell coverage for compound multi-hitbox assets.
+    """
+    cdef Hitbox hb
+    cdef object item
+    cdef int w, l
+
+    if not hitboxes:
+        return
+
+    for item in hitboxes:
+        hb = item
+        w = hb.dimensions.w
+        l = hb.dimensions.l
+        if w > 0 and l > 0:
+            grid.insert(
+                entity_id,
+                ax + hb.position.x,
+                ay + hb.position.y,
+                w,
+                l
+            )
 
 
 cpdef list collisions(list primitive_data, Space grid):
-    cdef tuple data
-    
-    for data in primitive_data:
-        _insert_hitboxes(grid, data[0], data[1], data[2], data[5])
-        
-    cdef list candidate_pairs = grid.query()
+    """
+    Evaluates all-pairs collisions using C-level Space pair buffers and
+    zero-allocation narrow-phase c_intersects checks.
+    """
     cdef list colliding_pairs = []
-    cdef int id_a, id_b
-    cdef tuple data_a, data_b
-    
-    cdef Position pos_a = Position(0, 0)
-    cdef Dimensions dim_a = Dimensions(0, 0)
-    cdef Position pos_b = Position(0, 0)
-    cdef Dimensions dim_b = Dimensions(0, 0)
-    cdef tuple pair
-    
-    for pair in candidate_pairs:
-        id_a = pair[0]
-        id_b = pair[1]
+    cdef int n_items = len(primitive_data)
+    cdef int i, k, n_pairs, id_a, id_b
+    cdef tuple data, data_a, data_b
+
+    grid.clear()
+    if n_items < 2:
+        return colliding_pairs
+
+    for i in range(n_items):
+        data = primitive_data[i]
+        _insert_hitboxes(grid, data[0], data[1], data[2], data[5])
+
+    n_pairs = grid.query_pairs()
+    for k in range(n_pairs):
+        id_a = grid.pair_a[k]
+        id_b = grid.pair_b[k]
         data_a = primitive_data[id_a]
         data_b = primitive_data[id_b]
-        
-        pos_a.x = data_a[1]
-        pos_a.y = data_a[2]
-        dim_a.w = data_a[3]
-        dim_a.l = data_a[4]
 
-        pos_b.x = data_b[1]
-        pos_b.y = data_b[2]
-        dim_b.w = data_b[3]
-        dim_b.l = data_b[4]
+        if c_intersects(
+            data_a[1], data_a[2], data_a[5],
+            data_b[1], data_b[2], data_b[5]
+        ):
+            colliding_pairs.append((id_a, id_b))
 
-        if intersects(pos_a, dim_a, data_a[5], pos_b, dim_b, data_b[5]) is not None:
-            colliding_pairs.append(pair)
-            
     return colliding_pairs
+
+
+cpdef list bipartite_collisions(list dynamics, list statics, Space grid):
+    """
+    Evaluates bipartite dynamic-vs-static collisions using negative IDs for
+    static bodies and non-negative IDs for dynamic bodies. Zero static-vs-static
+    or dynamic-vs-dynamic pairs are hashed or tested.
+    Returns list of (dynamic_index, static_index) tuples.
+    """
+    cdef list colliding = []
+    cdef int n_dyn = len(dynamics)
+    cdef int n_stat = len(statics)
+    cdef int i, k, n_pairs, dyn_idx, stat_idx
+    cdef tuple d_data, s_data
+
+    grid.clear()
+    if n_dyn == 0 or n_stat == 0:
+        return colliding
+
+    for i in range(n_stat):
+        s_data = statics[i]
+        _insert_hitboxes(grid, -i - 1, s_data[1], s_data[2], s_data[5])
+
+    for i in range(n_dyn):
+        d_data = dynamics[i]
+        _insert_hitboxes(grid, i, d_data[1], d_data[2], d_data[5])
+
+    n_pairs = grid.query_bipartite_pairs()
+    for k in range(n_pairs):
+        stat_idx = -grid.pair_a[k] - 1
+        dyn_idx = grid.pair_b[k]
+        d_data = dynamics[dyn_idx]
+        s_data = statics[stat_idx]
+
+        if c_intersects(
+            d_data[1], d_data[2], d_data[5],
+            s_data[1], s_data[2], s_data[5]
+        ):
+            colliding.append((dyn_idx, stat_idx))
+
+    return colliding
+
+
+cpdef void populate_statics(list statics, Space grid):
+    """
+    Populates a persistent static Space grid with static asset primitives
+    indexed by their list position 0..len(statics)-1.
+    """
+    cdef int i, n = len(statics)
+    cdef tuple s_data
+
+    grid.clear()
+    for i in range(n):
+        s_data = statics[i]
+        _insert_hitboxes(grid, i, s_data[1], s_data[2], s_data[5])
+
+
+cpdef list query_statics(list dynamics, list statics, Space static_grid):
+    """
+    Probes dynamic asset primitives against a pre-populated persistent static
+    Space grid without clearing or re-inserting static bodies.
+    Returns list of (dynamic_index, static_index) tuples.
+    """
+    cdef list colliding = []
+    cdef int n_dyn = len(dynamics)
+    cdef int i, k, n_hits, stat_idx
+    cdef int ax, ay, bx, by, bw, bl
+    cdef tuple d_data, s_data
+    cdef list d_hbs
+
+    if n_dyn == 0 or not statics or static_grid.active_count == 0:
+        return colliding
+
+    for i in range(n_dyn):
+        d_data = dynamics[i]
+        ax = d_data[1]
+        ay = d_data[2]
+        d_hbs = d_data[5]
+        if not _hitboxes_aabb(ax, ay, d_hbs, &bx, &by, &bw, &bl):
+            continue
+
+        n_hits = static_grid.probe_aabb(bx, by, bw, bl)
+        for k in range(n_hits):
+            stat_idx = static_grid.pair_b[k]
+            s_data = statics[stat_idx]
+            if c_intersects(ax, ay, d_hbs, s_data[1], s_data[2], s_data[5]):
+                colliding.append((i, stat_idx))
+
+    return colliding
+
+
+cpdef void populate_bounds(list targets, Space grid):
+    """
+    Populates a persistent Space grid with raw AABB target tuples
+    (index, x, y, w, l, ...) keyed by list position 0..len(targets)-1.
+    """
+    cdef int i, n = len(targets)
+    cdef tuple t_data
+
+    grid.clear()
+    for i in range(n):
+        t_data = targets[i]
+        grid.insert(i, t_data[1], t_data[2], t_data[3], t_data[4])
+
+
+cpdef list query_bounds(list assets, list targets, Space static_grid):
+    """
+    Probes dynamic asset primitives against a pre-populated persistent AABB
+    target Space grid without clearing or re-inserting static targets.
+    Returns list of (asset_index, target_index) tuples.
+    """
+    cdef list matches = []
+    cdef int n_assets = len(assets)
+    cdef int i, k, n_hits, target_idx
+    cdef int ax, ay, bx, by, bw, bl
+    cdef tuple a_data, t_data
+    cdef list a_hbs
+
+    if n_assets == 0 or not targets or static_grid.active_count == 0:
+        return matches
+
+    for i in range(n_assets):
+        a_data = assets[i]
+        ax = a_data[1]
+        ay = a_data[2]
+        a_hbs = a_data[5]
+        if not _hitboxes_aabb(ax, ay, a_hbs, &bx, &by, &bw, &bl):
+            continue
+
+        n_hits = static_grid.probe_aabb(bx, by, bw, bl)
+        for k in range(n_hits):
+            target_idx = static_grid.pair_b[k]
+            t_data = targets[target_idx]
+            if c_bounded(ax, ay, a_hbs, t_data[1], t_data[2], t_data[3], t_data[4]):
+                matches.append((i, target_idx))
+
+    return matches
 
 
 cpdef void collide(
     Position pos1, Hitbox hb1, Velocity vel1, float m1, bint is_kinematic1,
     Position pos2, Hitbox hb2, Velocity vel2, float m2, bint is_kinematic2
 ):
+    """
+    Resolves spatial overlap via inverse-mass separation and applies 1D elastic
+    momentum transfer along the collision normal only when bodies are approaching.
+    """
     cdef float cx_a = pos1.x + hb1.position.x + hb1.dimensions.w / 2.0
     cdef float cy_a = pos1.y + hb1.position.y + hb1.dimensions.l / 2.0
     cdef float cx_b = pos2.x + hb2.position.x + hb2.dimensions.w / 2.0
@@ -122,91 +302,115 @@ cpdef void collide(
     cdef float overlap_x = (hb1.dimensions.w / 2.0 + hb2.dimensions.w / 2.0) - abs(dx)
     cdef float overlap_y = (hb1.dimensions.l / 2.0 + hb2.dimensions.l / 2.0) - abs(dy)
 
-    cdef float inv_m1, inv_m2, inv_total, p1, p2
+    if overlap_x <= 0 or overlap_y <= 0:
+        return
+
+    cdef float inv_m1 = 1.0 / m1 if m1 > 0 else 0.0
+    cdef float inv_m2 = 1.0 / m2 if m2 > 0 else 0.0
+    cdef float inv_total = inv_m1 + inv_m2
+
+    if inv_total <= 0:
+        return
+
+    cdef float p1 = inv_m1 / inv_total
+    cdef float p2 = inv_m2 / inv_total
     cdef int total_shift, ishift_1, ishift_2
-    cdef float v1x, v1y, v2x, v2y, v1f_x, v1f_y, v2f_x, v2f_y
+    cdef float normal, v1, v2, v_rel, v1f, v2f
 
-    if overlap_x > 0 and overlap_y > 0:
-        inv_m1 = 1.0 / m1 if m1 > 0 else 0.0
-        inv_m2 = 1.0 / m2 if m2 > 0 else 0.0
-        inv_total = inv_m1 + inv_m2
+    if overlap_x < overlap_y:
+        total_shift = max(1, <int>overlap_x)
+        if p1 <= p2:
+            ishift_1 = <int>(total_shift * p1)
+            ishift_2 = total_shift - ishift_1
+        else:
+            ishift_2 = <int>(total_shift * p2)
+            ishift_1 = total_shift - ishift_2
 
-        if inv_total > 0:
-            p1 = inv_m1 / inv_total
-            p2 = inv_m2 / inv_total
+        if dx > 0:
+            normal = 1.0
+            pos1.x -= ishift_1
+            pos2.x += ishift_2
+        else:
+            normal = -1.0
+            pos1.x += ishift_1
+            pos2.x -= ishift_2
 
-            if overlap_x < overlap_y:
-                total_shift = max(1, <int>overlap_x)
-                if p1 <= p2:
-                    ishift_1 = <int>(total_shift * p1)
-                    ishift_2 = total_shift - ishift_1
-                else:
-                    ishift_2 = <int>(total_shift * p2)
-                    ishift_1 = total_shift - ishift_2
+        # Clear stale sub-pixel carry along the resolved collision axis
+        if ishift_1 > 0:
+            pos1.rx = 0.0
+        if ishift_2 > 0:
+            pos2.rx = 0.0
 
-                if dx > 0:
-                    pos1.x -= ishift_1
-                    pos2.x += ishift_2
-                else:
-                    pos1.x += ishift_1
-                    pos2.x -= ishift_2
+        # Guard momentum transfer: only resolve when bodies are approaching along normal
+        v1 = vel1.vx if (vel1 is not None and m1 > 0) else 0.0
+        v2 = vel2.vx if (vel2 is not None and m2 > 0) else 0.0
+        v_rel = (v2 - v1) * normal
+        if v_rel >= 0.0:
+            return
 
-                if m1 == 0 and m2 == 0:
-                    pass
-                elif m1 == 0:
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vx = -vel2.vx
-                elif m2 == 0:
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vx = -vel1.vx
-                else:
-                    v1x = vel1.vx if vel1 is not None else 0.0
-                    v2x = vel2.vx if vel2 is not None else 0.0
-                    v1f_x = (v1x * (m1 - m2) + 2 * m2 * v2x) / (m1 + m2)
-                    v2f_x = (v2x * (m2 - m1) + 2 * m1 * v1x) / (m1 + m2)
-                    
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vx = v1f_x
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vx = v2f_x
+        if m1 == 0:
+            if vel2 is not None and not is_kinematic2:
+                vel2.vx = -v2
+        elif m2 == 0:
+            if vel1 is not None and not is_kinematic1:
+                vel1.vx = -v1
+        else:
+            v1f = (v1 * (m1 - m2) + 2.0 * m2 * v2) / (m1 + m2)
+            v2f = (v2 * (m2 - m1) + 2.0 * m1 * v1) / (m1 + m2)
 
-            else:
-                total_shift = max(1, <int>overlap_y)
-                if p1 <= p2:
-                    ishift_1 = <int>(total_shift * p1)
-                    ishift_2 = total_shift - ishift_1
-                else:
-                    ishift_2 = <int>(total_shift * p2)
-                    ishift_1 = total_shift - ishift_2
+            if vel1 is not None and not is_kinematic1:
+                vel1.vx = v1f
+            if vel2 is not None and not is_kinematic2:
+                vel2.vx = v2f
+    else:
+        total_shift = max(1, <int>overlap_y)
+        if p1 <= p2:
+            ishift_1 = <int>(total_shift * p1)
+            ishift_2 = total_shift - ishift_1
+        else:
+            ishift_2 = <int>(total_shift * p2)
+            ishift_1 = total_shift - ishift_2
 
-                if dy > 0:
-                    pos1.y -= ishift_1
-                    pos2.y += ishift_2
-                else:
-                    pos1.y += ishift_1
-                    pos2.y -= ishift_2
+        if dy > 0:
+            normal = 1.0
+            pos1.y -= ishift_1
+            pos2.y += ishift_2
+        else:
+            normal = -1.0
+            pos1.y += ishift_1
+            pos2.y -= ishift_2
 
-                if m1 == 0 and m2 == 0:
-                    pass
-                elif m1 == 0:
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vy = -vel2.vy
-                elif m2 == 0:
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vy = -vel1.vy
-                else:
-                    v1y = vel1.vy if vel1 is not None else 0.0
-                    v2y = vel2.vy if vel2 is not None else 0.0
-                    v1f_y = (v1y * (m1 - m2) + 2 * m2 * v2y) / (m1 + m2)
-                    v2f_y = (v2y * (m2 - m1) + 2 * m1 * v1y) / (m1 + m2)
-                    
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vy = v1f_y
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vy = v2f_y
+        # Clear stale sub-pixel carry along the resolved collision axis
+        if ishift_1 > 0:
+            pos1.ry = 0.0
+        if ishift_2 > 0:
+            pos2.ry = 0.0
+
+        # Guard momentum transfer: only resolve when bodies are approaching along normal
+        v1 = vel1.vy if (vel1 is not None and m1 > 0) else 0.0
+        v2 = vel2.vy if (vel2 is not None and m2 > 0) else 0.0
+        v_rel = (v2 - v1) * normal
+        if v_rel >= 0.0:
+            return
+
+        if m1 == 0:
+            if vel2 is not None and not is_kinematic2:
+                vel2.vy = -v2
+        elif m2 == 0:
+            if vel1 is not None and not is_kinematic1:
+                vel1.vy = -v1
+        else:
+            v1f = (v1 * (m1 - m2) + 2.0 * m2 * v2) / (m1 + m2)
+            v2f = (v2 * (m2 - m1) + 2.0 * m1 * v1) / (m1 + m2)
+
+            if vel1 is not None and not is_kinematic1:
+                vel1.vy = v1f
+            if vel2 is not None and not is_kinematic2:
+                vel2.vy = v2f
 
 
 cpdef void integrate(list assets, float delta):
+    """Executes Symplectic Euler integration with native C sub-pixel truncation."""
     cdef int shift
     cdef Position p
     cdef Velocity v
@@ -219,12 +423,12 @@ cpdef void integrate(list assets, float delta):
             p.ry += v.vy * delta
 
             if p.rx >= 1.0 or p.rx <= -1.0:
-                shift = int(p.rx)
+                shift = <int>p.rx
                 p.x += shift
                 p.rx -= shift
 
             if p.ry >= 1.0 or p.ry <= -1.0:
-                shift = int(p.ry)
+                shift = <int>p.ry
                 p.y += shift
                 p.ry -= shift
 
@@ -305,43 +509,52 @@ cpdef void dynamics(
             vel.vy = (vel.vy / vmag) * speed
 
 
+cpdef list bipartite(list assets, list targets, Space grid):
+    """
+    Unified bipartite negative-ID query evaluating intersections between
+    dynamic asset primitives (non-negative IDs) and raw AABB targets (negative IDs).
+    Returns list of (asset_index, target_index) tuples.
+    """
+    cdef list matches = []
+    cdef int n_assets = len(assets)
+    cdef int n_targets = len(targets)
+    cdef int i, k, n_pairs, asset_idx, target_idx
+    cdef tuple a_data, t_data
+
+    grid.clear()
+    if n_assets == 0 or n_targets == 0:
+        return matches
+
+    for i in range(n_targets):
+        t_data = targets[i]
+        grid.insert(-i - 1, t_data[1], t_data[2], t_data[3], t_data[4])
+
+    for i in range(n_assets):
+        a_data = assets[i]
+        _insert_hitboxes(grid, i, a_data[1], a_data[2], a_data[5])
+
+    n_pairs = grid.query_bipartite_pairs()
+    for k in range(n_pairs):
+        target_idx = -grid.pair_a[k] - 1
+        asset_idx = grid.pair_b[k]
+        a_data = assets[asset_idx]
+        t_data = targets[target_idx]
+
+        if c_bounded(
+            a_data[1], a_data[2], a_data[5],
+            t_data[1], t_data[2], t_data[3], t_data[4]
+        ):
+            matches.append((asset_idx, target_idx))
+
+    return matches
+
+
 cpdef list boundaries(list asset_data, list boundary_data, Space grid):
     """
     Evaluates Candidate Pairs for Environmental Boundaries using negative IDs.
+    Delegates to the unified bipartite query.
     """
-    grid.clear()
-    cdef tuple b_data, a_data
-    cdef int i
-    
-    for i in range(len(boundary_data)):
-        b_data = boundary_data[i]
-        grid.insert(-i - 1, b_data[1], b_data[2], b_data[3], b_data[4])
-        
-    for a_data in asset_data:
-        _insert_hitboxes(grid, a_data[0], a_data[1], a_data[2], a_data[5])
-        
-    cdef list candidate_pairs = grid.query()
-    cdef list colliding = []
-    cdef int id_a, id_b, asset_id, bound_id
-    
-    for pair in candidate_pairs:
-        id_a = pair[0]
-        id_b = pair[1]
-        
-        if (id_a < 0 and id_b >= 0) or (id_a >= 0 and id_b < 0):
-            asset_id = id_b if id_a < 0 else id_a
-            bound_id = (-id_a - 1) if id_a < 0 else (-id_b - 1)
-            
-            a_data = asset_data[asset_id]
-            b_data = boundary_data[bound_id]
-            
-            if bounded(
-                a_data[1], a_data[2], a_data[5], 
-                b_data[1], b_data[2], b_data[3], b_data[4]
-            ) is not None:
-                colliding.append((asset_id, bound_id))
-                
-    return colliding
+    return bipartite(asset_data, boundary_data, grid)
 
 
 cpdef void constrain(
@@ -368,17 +581,17 @@ cpdef void constrain(
     if overlap_x > 0 and overlap_y > 0:
         if overlap_x < overlap_y:
             if dx > 0:
-                pos.x -= int(overlap_x)
+                pos.x -= <int>overlap_x
             else:
-                pos.x += int(overlap_x)
+                pos.x += <int>overlap_x
                 
             if vel is not None and not is_kinematic:
                 vel.vx = -vel.vx
         else:
             if dy > 0:
-                pos.y -= int(overlap_y)
+                pos.y -= <int>overlap_y
             else:
-                pos.y += int(overlap_y)
+                pos.y += <int>overlap_y
                 
             if vel is not None and not is_kinematic:
                 vel.vy = -vel.vy
@@ -388,36 +601,9 @@ cpdef list environment(list assets, list fields, Space grid):
     """
     Evaluates candidate intersections between dynamic entities (positive IDs)
     and environmental field sensors (negative IDs).
-    Returns list of (asset_index, field_index) tuples.
+    Delegates to the unified bipartite query.
     """
-    grid.clear()
-    cdef tuple f_data, a_data
-    cdef int i, id_a, id_b, asset_idx, field_idx
-    cdef list matches = []
-
-    for i in range(len(fields)):
-        f_data = fields[i]
-        grid.insert(-i - 1, f_data[1], f_data[2], f_data[3], f_data[4])
-
-    for i in range(len(assets)):
-        a_data = assets[i]
-        _insert_hitboxes(grid, i, a_data[1], a_data[2], a_data[5])
-
-    cdef list candidate_pairs = grid.query()
-    for pair in candidate_pairs:
-        id_a = pair[0]
-        id_b = pair[1]
-        if (id_a < 0 and id_b >= 0) or (id_a >= 0 and id_b < 0):
-            asset_idx = id_b if id_a < 0 else id_a
-            field_idx = (-id_a - 1) if id_a < 0 else (-id_b - 1)
-            
-            a_data = assets[asset_idx]
-            f_data = fields[field_idx]
-            
-            if bounded(a_data[1], a_data[2], a_data[5], f_data[1], f_data[2], f_data[3], f_data[4]) is not None:
-                matches.append((asset_idx, field_idx))
-
-    return matches
+    return bipartite(assets, fields, grid)
 
 
 # -----------------------------------------------------------------------------

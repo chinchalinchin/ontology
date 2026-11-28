@@ -122,10 +122,8 @@ cpdef bint onscreen(
 
 cpdef tuple intersects(
     Position pos1, 
-    Dimensions dim1, 
     list hitboxes1,
     Position pos2, 
-    Dimensions dim2, 
     list hitboxes2
 ):
     cdef int x1, y1, w1, h1
@@ -156,6 +154,45 @@ cpdef tuple intersects(
     return None
 
 
+cpdef list intersections(
+    Position pos1,
+    list hitboxes1,
+    Position pos2,
+    list hitboxes2
+):
+    """
+    Returns all intersecting (hb1, hb2) pairs across two hitbox collections
+    to support compound multi-hitbox collision resolution.
+    """
+    cdef int x1, y1, w1, h1
+    cdef int x2, y2, w2, h2
+    cdef Hitbox hb1, hb2
+    cdef list hits = []
+
+    if not hitboxes1 or not hitboxes2:
+        return hits
+
+    for item1 in hitboxes1:
+        hb1 = item1
+        x1 = pos1.x + hb1.position.x
+        y1 = pos1.y + hb1.position.y
+        w1 = hb1.dimensions.w
+        h1 = hb1.dimensions.l
+
+        for item2 in hitboxes2:
+            hb2 = item2
+            x2 = pos2.x + hb2.position.x
+            y2 = pos2.y + hb2.position.y
+            w2 = hb2.dimensions.w
+            h2 = hb2.dimensions.l
+
+            if (x1 < x2 + w2 and x1 + w1 > x2 and
+                y1 < y2 + h2 and y1 + h1 > y2):
+                hits.append((hb1, hb2))
+
+    return hits
+
+    
 cpdef bint cone(
     int sx, 
     int sy, 

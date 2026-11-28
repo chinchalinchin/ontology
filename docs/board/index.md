@@ -54,6 +54,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 03.03: Motion](./phases/refactor/refactor-03-03.md)
       * [x]: [Phase 03.04: Projectiles](./phases/refactor/refactor-03-04.md)
       * [ ]: [Phase 03.05: Ammunition](./phases/refactor/refactor-03-05.md)
+      * [ ]: [Phase 03.06: Perimeter Containment](./phases/refactor/refactor-03-06.md)
+      * [x]: [Phase 03.07: Collision Optimization](./phase/refactor/refactor-03-07.md)
     * *Phase 04:*
       * [x]: [Phase 04.01: Typography](./phases/refactor/refactor-04-01.md)
       * [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
@@ -63,7 +65,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 04.06: Pane Generation](./phases/refactor/refactor-04-06.md)
     * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
-      * [~]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
+      * [x]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
       * [x]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
       * [x]: [Phase 06.04: Inventory](./phases/refactor/refactor-06-04.md)
       * [ ]: [Phase 06.05: Beliefs](./phases/refactor/refactor-06-05.md)

@@ -21,6 +21,8 @@ from app.game.logic.modules.cognition.goals.outcomes import (
 from app.game.logic.modules.cognition.goals.reflexes import (
     ExpressionReflex,
     ConfusionReflex,
+    AngerReflex,
+    SurpriseReflex,
     ReflexOperator
 )
 
@@ -47,6 +49,8 @@ __all__ = [
     'OutcomeOperator',
     'ExpressionReflex',
     'ConfusionReflex',
+    'AngerReflex',
+    'SurpriseReflex',
     'ReflexOperator',
     'ForgetResponse',
     'StoreResponse',

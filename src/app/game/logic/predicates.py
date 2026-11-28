@@ -13,7 +13,6 @@ from app.assets.base import Asset
 from app.assets.hitboxes.core import NoHitbox
 from app.assets.hitboxes.crafts import MaterialHitbox
 from app.assets.hitboxes.objects import LayeredHitbox
-from app.game.logic.relations.materials import MaterialIndex
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
@@ -48,7 +47,7 @@ def is_weight(asset: Asset) -> bool:
 
     if (
         isinstance(asset.hitbox, MaterialHitbox)
-        and not MaterialIndex().is_obstacle(asset.state.blueprint)
+        and not asset.hitbox.is_obstacle(asset.state.blueprint)
     ):
         return False
 

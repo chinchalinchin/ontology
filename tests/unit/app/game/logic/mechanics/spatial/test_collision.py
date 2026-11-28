@@ -9,22 +9,36 @@
 
 Unit tests for CollisionMechanics.
 """
+# Standard Libraries
+import math
+
 # External Libraries
 import pytest
 
 # Application Libraries
+# Application Libraries
+from app.game.board import Board
+from app.game.logic.mechanics.spatial.collision import (
+    STAIR_ASCENT_HIGH,
+    STAIR_ASCENT_LOW,
+    STAIR_DESCENT_HIGH,
+    STAIR_DESCENT_LOW,
+)
 from app.static.semantics import (
+    AssetCategories,
     AssetInstances,
+    Directions,
     Mechanics,
-    Directions
 )
 
 # Cython Libraries
+import libs.core.math.geometry as geometry
 from libs.core.models import (
+    Dimensions,
+    Hitbox,
     Position,
     Velocity,
 )
-
 # ---------------------------------------------------------------------------
 
 pytestmark = [
@@ -320,7 +334,6 @@ def test_collision_mechanics_boundary_elevation_isolation(
     assert crate.state.position.x == 0
     assert crate.state.velocity.vx == -10.0
 
-
 def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
     mock_mechanic,
     mock_board,
@@ -340,26 +353,49 @@ def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
     stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
-    # Ascent: place foot inside upper 85% of stair tread with northward velocity (vy < 0)
-    player.elevation = 0
+    player_hbs = player.hitboxes
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+    hb_bottom_y = max(hb.position.y + hb.dimensions.l for hb in player_hbs)
+
+    stair_hbs = stairs.hitboxes
+    min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+    max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in stair_hbs
+    )
+    min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+    max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in stair_hbs
+    )
+    stair_w = max_x - min_x
+    stair_l = max_y - min_y
+    aligned_x = min_x + (stair_w // 2) - hb_center_x
+
+    # Ascent: place hitbox foot inside upper tread (<= STAIR_ASCENT_HIGH) with vy < 0
+    player.elevation = stairs.elevation
     player.state.position = Position(
-        stairs.state.position.x,
-        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.5),
+        aligned_x,
+        min_y - hb_bottom_y + int(stair_l * 0.5),
     )
     player.state.velocity = Velocity(0.0, -20.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
+    assert player.elevation == stairs.elevation + stairs.state.delta
 
-    # Descent: place foot in lower 15% (>= 0.85) of stair tread with southward velocity (vy > 0)
+    # Descent: place hitbox foot at/below STAIR_DESCENT_HIGH with vy > 0
     player.state.position = Position(
-        stairs.state.position.x,
-        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.9),
+        aligned_x,
+        min_y - hb_bottom_y + math.ceil(stair_l * STAIR_DESCENT_HIGH),
     )
     player.state.velocity = Velocity(0.0, 20.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
+    assert player.elevation == stairs.elevation
+
 
 def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
     mock_mechanic,
@@ -380,7 +416,13 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
     stairs.state.blueprint = Directions.RIGHT.value
     stairs.state.position = Position(500, 500)
 
-    player_hb = player.hitboxes[0]
+    player_hbs = player.hitboxes
+    player_hb = player_hbs[0]
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+
     right_hbs = stairs.hitboxes
     right_min_x = min(stairs.state.position.x + hb.position.x for hb in right_hbs)
     right_max_x = max(
@@ -401,26 +443,26 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
         - (player_hb.dimensions.l // 2)
     )
 
-    # RIGHT Ascent (vx > 0, tread_progress >= 0.15)
-    player.elevation = 0
+    # RIGHT Ascent (vx > 0, tread_progress >= STAIR_ASCENT_LOW)
+    player.elevation = stairs.elevation
     player.state.position = Position(
-        right_min_x - (player.dimensions.w // 2) + int(right_w * 0.5),
+        right_min_x - hb_center_x + int(right_w * 0.5),
         right_y,
     )
     player.state.velocity = Velocity(20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation + stairs.state.delta
 
-    # RIGHT Descent (vx < 0, tread_progress <= 0.15)
+    # RIGHT Descent (vx < 0, tread_progress <= STAIR_DESCENT_LOW)
     player.state.position = Position(
-        right_min_x - (player.dimensions.w // 2) + int(right_w * 0.1),
+        right_min_x - hb_center_x + int(right_w * STAIR_DESCENT_LOW),
         right_y,
     )
     player.state.velocity = Velocity(-20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
 
-    # LEFT Ascent (vx < 0, tread_progress <= 0.85)
+    # LEFT Ascent (vx < 0, tread_progress <= STAIR_ASCENT_HIGH)
     stairs.state.blueprint = Directions.LEFT.value
     left_hbs = stairs.hitboxes
     left_min_x = min(stairs.state.position.x + hb.position.x for hb in left_hbs)
@@ -442,21 +484,22 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
         - (player_hb.dimensions.l // 2)
     )
     player.state.position = Position(
-        left_min_x - (player.dimensions.w // 2) + int(left_w * 0.5),
+        left_min_x - hb_center_x + int(left_w * 0.5),
         left_y,
     )
     player.state.velocity = Velocity(-20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation + stairs.state.delta
 
-    # LEFT Descent (vx > 0, tread_progress >= 0.85)
+    # LEFT Descent (vx > 0, tread_progress >= STAIR_DESCENT_HIGH)
     player.state.position = Position(
-        left_min_x - (player.dimensions.w // 2) + int(left_w * 0.9),
+        left_min_x - hb_center_x + math.ceil(left_w * STAIR_DESCENT_HIGH),
         left_y,
     )
     player.state.velocity = Velocity(20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
+
 
 def test_collision_mechanics_traverse_stairs_elevation_mismatch_and_falling_ignored(
     mock_mechanic,
@@ -478,21 +521,26 @@ def test_collision_mechanics_traverse_stairs_elevation_mismatch_and_falling_igno
     stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
-    player_hb = player.hitboxes[0]
-    stair_hb = stairs.hitboxes[0]
-    aligned_x = (
-        stairs.state.position.x
-        + stair_hb.position.x
-        + (stair_hb.dimensions.w // 2)
-        - player_hb.position.x
-        - (player_hb.dimensions.w // 2)
+    player_hbs = player.hitboxes
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+    hb_bottom_y = max(hb.position.y + hb.dimensions.l for hb in player_hbs)
+
+    stair_hbs = stairs.hitboxes
+    min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+    max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in stair_hbs
     )
-    ascent_y = (
-        stairs.state.position.y
-        + stair_hb.position.y
-        - player.dimensions.l
-        + int(stair_hb.dimensions.l * 0.5)
+    min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+    max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in stair_hbs
     )
+    aligned_x = min_x + ((max_x - min_x) // 2) - hb_center_x
+    ascent_y = min_y - hb_bottom_y + int((max_y - min_y) * 0.5)
 
     # Elevation mismatch: entity at E = 2 on a 0 -> 1 stair remains at E = 2
     player.elevation = stairs.elevation + stairs.state.delta + 1
@@ -531,27 +579,28 @@ def test_collision_mechanics_traverse_stairs_directional_and_threshold_gating(
     stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
-    player_hb = player.hitboxes[0]
-    stair_hb = stairs.hitboxes[0]
-    aligned_x = (
-        stairs.state.position.x
-        + stair_hb.position.x
-        + (stair_hb.dimensions.w // 2)
-        - player_hb.position.x
-        - (player_hb.dimensions.w // 2)
+    player_hbs = player.hitboxes
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+    hb_bottom_y = max(hb.position.y + hb.dimensions.l for hb in player_hbs)
+
+    stair_hbs = stairs.hitboxes
+    min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+    max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in stair_hbs
     )
-    mid_y = (
-        stairs.state.position.y
-        + stair_hb.position.y
-        - player.dimensions.l
-        + int(stair_hb.dimensions.l * 0.5)
+    min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+    max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in stair_hbs
     )
-    bottom_y = (
-        stairs.state.position.y
-        + stair_hb.position.y
-        - player.dimensions.l
-        + int(stair_hb.dimensions.l * 0.9)
-    )
+    stair_l = max_y - min_y
+    aligned_x = min_x + ((max_x - min_x) // 2) - hb_center_x
+    mid_y = min_y - hb_bottom_y + int(stair_l * 0.5)
+    bottom_y = min_y - hb_bottom_y + math.ceil(stair_l * STAIR_DESCENT_HIGH)
 
     # Moving South at E = 0 mid-tread does not ascend
     player.elevation = stairs.elevation
@@ -560,13 +609,13 @@ def test_collision_mechanics_traverse_stairs_directional_and_threshold_gating(
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
 
-    # Moving North at E = 0 below the 0.85 threshold (tread_progress == 0.9) does not ascend yet
+    # Moving North at E = 0 below STAIR_ASCENT_HIGH (>= STAIR_DESCENT_HIGH) does not ascend yet
     player.state.position = Position(aligned_x, bottom_y)
     player.state.velocity = Velocity(0.0, -20.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
 
-    # Moving South at E = 1 above the 0.85 threshold (tread_progress == 0.5) does not descend yet
+    # Moving South at E = 1 above STAIR_DESCENT_HIGH (mid-tread) does not descend yet
     player.elevation = stairs.elevation + stairs.state.delta
     player.state.position = Position(aligned_x, mid_y)
     player.state.velocity = Velocity(0.0, 20.0)
@@ -593,20 +642,31 @@ def test_collision_mechanics_traverse_stairs_multi_delta(
     stairs.state.blueprint = Directions.UP.value
     stairs.state.position = Position(500, 500)
 
-    player_hb = player.hitboxes[0]
-    stair_hb = stairs.hitboxes[0]
-    aligned_x = (
-        stairs.state.position.x
-        + stair_hb.position.x
-        + (stair_hb.dimensions.w // 2)
-        - player_hb.position.x
-        - (player_hb.dimensions.w // 2)
+    player_hbs = player.hitboxes
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+    hb_bottom_y = max(hb.position.y + hb.dimensions.l for hb in player_hbs)
+
+    stair_hbs = stairs.hitboxes
+    min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+    max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in stair_hbs
     )
+    min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+    max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in stair_hbs
+    )
+    stair_l = max_y - min_y
+    aligned_x = min_x + ((max_x - min_x) // 2) - hb_center_x
 
     player.elevation = stairs.elevation
     player.state.position = Position(
         aligned_x,
-        stairs.state.position.y + stair_hb.position.y - player.dimensions.l + int(stair_hb.dimensions.l * 0.5),
+        min_y - hb_bottom_y + int(stair_l * 0.5),
     )
     player.state.velocity = Velocity(0.0, -20.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
@@ -614,8 +674,387 @@ def test_collision_mechanics_traverse_stairs_multi_delta(
 
     player.state.position = Position(
         aligned_x,
-        stairs.state.position.y + stair_hb.position.y - player.dimensions.l + int(stair_hb.dimensions.l * 0.9),
+        min_y - hb_bottom_y + math.ceil(stair_l * STAIR_DESCENT_HIGH),
     )
     player.state.velocity = Velocity(0.0, 20.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
+
+
+def test_collision_mechanics_stair_hysteresis_deadband(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies the (STAIR_ASCENT_HIGH, STAIR_DESCENT_HIGH) deadband prevents
+    oscillation when reversing direction near the base of an UP stair.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 1
+    stairs.state.blueprint = Directions.UP.value
+    stairs.state.position = Position(500, 500)
+
+    player_hbs = player.hitboxes
+    hb_center_x = (
+        min(hb.position.x for hb in player_hbs)
+        + max(hb.position.x + hb.dimensions.w for hb in player_hbs)
+    ) // 2
+    hb_bottom_y = max(hb.position.y + hb.dimensions.l for hb in player_hbs)
+
+    stair_hbs = stairs.hitboxes
+    min_x = min(stairs.state.position.x + hb.position.x for hb in stair_hbs)
+    max_x = max(
+        stairs.state.position.x + hb.position.x + hb.dimensions.w
+        for hb in stair_hbs
+    )
+    min_y = min(stairs.state.position.y + hb.position.y for hb in stair_hbs)
+    max_y = max(
+        stairs.state.position.y + hb.position.y + hb.dimensions.l
+        for hb in stair_hbs
+    )
+    stair_l = max_y - min_y
+    aligned_x = min_x + ((max_x - min_x) // 2) - hb_center_x
+    deadband_offset = round(stair_l * ((STAIR_ASCENT_HIGH + STAIR_DESCENT_HIGH) / 2.0))
+    deadband_y = min_y - hb_bottom_y + deadband_offset
+
+    # At E = 0 inside deadband moving North -> does not prematurely ascend
+    player.elevation = stairs.elevation
+    player.state.position = Position(aligned_x, deadband_y)
+    player.state.velocity = Velocity(0.0, -20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation
+
+    # At E = 1 inside deadband moving South -> does not prematurely descend
+    player.elevation = stairs.elevation + stairs.state.delta
+    player.state.position = Position(aligned_x, deadband_y)
+    player.state.velocity = Velocity(0.0, 20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation + stairs.state.delta
+
+
+# ---------------------------------------------------------------------------
+# PHASE 03.07: COMPOUND MULTI-HITBOX, STATIC CACHING & INACTIVE-TIER SKIPPING
+# ---------------------------------------------------------------------------
+
+
+def test_collision_mechanics_compound_multi_hitbox_l_corner_resolution(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+    mock_asset,
+):
+    """
+    Verifies Bug B053.2: a dynamic body simultaneously overlapping both orthogonal
+    arms of a compound multi-hitbox static obstacle resolves clear of both hitboxes
+    in a single tick.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    layer = crate.state.layer
+    c_hb = crate.hitboxes[0]
+
+    bar_t = max(20, c_hb.dimensions.w, c_hb.dimensions.l)
+    bar_span = bar_t * 4
+    pen = min(5, max(1, min(c_hb.dimensions.w, c_hb.dimensions.l) // 4))
+
+    wall = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CHESTS.value)
+    wall.taxonomy.name = "compound-l-wall"
+    wall.state.name = "compound-l-wall"
+    wall.state.layer = layer
+    wall.elevation = 0
+    wall.state.position = Position(5000, 5000)
+    wall.properties.mass = 0
+    wall.properties.hitboxes = [
+        Hitbox(Position(0, 0), Dimensions(bar_span, bar_t)),
+        Hitbox(Position(0, 0), Dimensions(bar_t, bar_span)),
+    ]
+    mock_board.add([wall])
+
+    crate.elevation = 0
+    crate.state.mutators.triggers.falling = False
+    crate.state.position = Position(
+        5000 + bar_t - pen - c_hb.position.x,
+        5000 + bar_t - pen - c_hb.position.y,
+    )
+    crate.state.velocity = Velocity(-10.0, -10.0)
+
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+
+    assert not geometry.intersects(
+        crate.state.position,
+        crate.hitboxes,
+        wall.state.position,
+        wall.hitboxes,
+    )
+    assert crate.state.position.x + c_hb.position.x == 5000 + bar_t
+    assert crate.state.position.y + c_hb.position.y == 5000 + bar_t
+    assert wall.state.position.x == 5000
+    assert wall.state.position.y == 5000
+
+
+def test_collision_mechanics_compound_multi_hitbox_seam_no_ghost_nudge(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+    mock_asset,
+):
+    """
+    Verifies deepest-overlap-first sorting resolves a dynamic body straddling the
+    shared seam of two adjacent collinear static hitboxes strictly along the surface
+    normal with zero lateral ghost displacement.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    layer = crate.state.layer
+    c_hb = crate.hitboxes[0]
+
+    seg_w = max(40, c_hb.dimensions.w * 2)
+    seg_l = max(20, c_hb.dimensions.l)
+    pen = max(4, min(6, c_hb.dimensions.w // 3))
+    minor_x = max(1, pen // 2)
+
+    wall = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CHESTS.value)
+    wall.taxonomy.name = "compound-seam-wall"
+    wall.state.name = "compound-seam-wall"
+    wall.state.layer = layer
+    wall.elevation = 0
+    wall.state.position = Position(5000, 5000)
+    wall.properties.mass = 0
+    # Place smaller-overlap segment FIRST to confirm area sorting takes precedence over list order
+    wall.properties.hitboxes = [
+        Hitbox(Position(seg_w, 0), Dimensions(seg_w, seg_l)),
+        Hitbox(Position(0, 0), Dimensions(seg_w, seg_l)),
+    ]
+    mock_board.add([wall])
+
+    initial_x = 5000 + seg_w - c_hb.dimensions.w + minor_x - c_hb.position.x
+    initial_y = 5000 + seg_l - pen - c_hb.position.y
+    crate.elevation = 0
+    crate.state.mutators.triggers.falling = False
+    crate.state.position = Position(initial_x, initial_y)
+    crate.state.velocity = Velocity(0.0, -20.0)
+
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+
+    assert crate.state.position.x == initial_x
+    assert crate.state.position.y == initial_y + pen
+    assert not geometry.intersects(
+        crate.state.position,
+        crate.hitboxes,
+        wall.state.position,
+        wall.hitboxes,
+    )
+
+
+def test_collision_mechanics_static_cache_invalidation_on_gate_toggle(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies persistent static Space caches rebuild cleanly after Gate toggle +
+    board.invalidate_statics(layer): closed blocks, open passes, re-closed blocks.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    layer = crate.state.layer
+
+    if gate.state.layer != layer:
+        mock_board.relayer(gate, layer)
+
+    gate.elevation = 0
+    gate.state.position = Position(5000, 5000)
+    gate.state.switch = False
+    mock_board.invalidate_statics(layer)
+
+    g_hb = gate.hitboxes[0]
+    c_hb = crate.hitboxes[0]
+    overlap_x = (
+        gate.state.position.x
+        + g_hb.position.x
+        + (g_hb.dimensions.w // 2)
+        - c_hb.position.x
+    )
+    overlap_y = (
+        gate.state.position.y
+        + g_hb.position.y
+        + (g_hb.dimensions.l // 2)
+        - c_hb.position.y
+    )
+
+    # 1. Closed gate blocks dynamic body
+    crate.elevation = 0
+    crate.state.mutators.triggers.falling = False
+    crate.state.position = Position(overlap_x, overlap_y)
+    crate.state.velocity = Velocity(0.0, 0.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert not geometry.intersects(
+        crate.state.position,
+        crate.hitboxes,
+        gate.state.position,
+        gate.hitboxes,
+    )
+
+    # 2. Opening gate + invalidating statics allows free passage
+    gate.state.switch = True
+    mock_board.invalidate_statics(layer)
+    crate.state.position = Position(overlap_x, overlap_y)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert crate.state.position.x == overlap_x
+    assert crate.state.position.y == overlap_y
+
+    # 3. Re-closing gate + invalidating statics restores solid blocking
+    gate.state.switch = False
+    mock_board.invalidate_statics(layer)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert crate.state.position.x != overlap_x or crate.state.position.y != overlap_y
+
+
+def test_collision_mechanics_skips_inactive_layer_and_static_vs_static(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+    mock_asset,
+):
+    """
+    Verifies Bug B053.1: layers with zero active non-falling dynamic bodies are
+    skipped and overlapping static-vs-static bodies never displace one another.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    isolated_layer = "inactive-collision-layer"
+
+    wall_a = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.GATES.value)
+    wall_b = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.GATES.value)
+    wall_a.taxonomy.name = "static-a"
+    wall_a.state.name = "static-a"
+    wall_a.state.layer = isolated_layer
+    wall_a.state.switch = False
+    wall_a.elevation = 0
+    wall_a.state.position = Position(5000, 5000)
+
+    wall_b.taxonomy.name = "static-b"
+    wall_b.state.name = "static-b"
+    wall_b.state.layer = isolated_layer
+    wall_b.state.switch = False
+    wall_b.elevation = 0
+    wall_b.state.position = Position(5004, 5004)
+    mock_board.add([wall_a, wall_b])
+
+    # Static-only layer: zero displacement
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert wall_a.state.position.x == 5000 and wall_a.state.position.y == 5000
+    assert wall_b.state.position.x == 5004 and wall_b.state.position.y == 5004
+
+    # Layer with only a falling dynamic body: still skipped
+    crate = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    crate.taxonomy.name = "falling-crate"
+    crate.state.name = "falling-crate"
+    crate.state.layer = isolated_layer
+    crate.elevation = 0
+    g_hb = wall_a.hitboxes[0]
+    c_hb = crate.hitboxes[0]
+    overlap_x = (
+        wall_a.state.position.x
+        + g_hb.position.x
+        + (g_hb.dimensions.w // 2)
+        - c_hb.position.x
+    )
+    overlap_y = (
+        wall_a.state.position.y
+        + g_hb.position.y
+        + (g_hb.dimensions.l // 2)
+        - c_hb.position.y
+    )
+    crate.state.position = Position(overlap_x, overlap_y)
+    crate.state.mutators.triggers.falling = True
+    mock_board.add([crate])
+
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert crate.state.position.x == overlap_x and crate.state.position.y == overlap_y
+
+    # Clearing falling flag activates tier: dynamic crate separates, statics stay fixed
+    crate.state.mutators.triggers.falling = False
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert crate.state.position.x != overlap_x or crate.state.position.y != overlap_y
+    assert wall_a.state.position.x == 5000 and wall_a.state.position.y == 5000
+    assert wall_b.state.position.x == 5004 and wall_b.state.position.y == 5004
+
+
+def test_collision_mechanics_board_switch_clears_static_cache(
+    mock_mechanic,
+    mock_board,
+    mock_configurations_schema,
+    mock_equipment,
+    mock_asset,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies switching Board instances invalidates CollisionMechanics static caches
+    so static obstacles from the first Board cannot collide on the second Board.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    layer = mock_board.player().state.layer
+
+    wall = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.GATES.value)
+    wall.taxonomy.name = "board-a-wall"
+    wall.state.name = "board-a-wall"
+    wall.state.layer = layer
+    wall.state.switch = False
+    wall.elevation = 0
+    wall.state.position = Position(5000, 5000)
+    mock_board.add([wall])
+
+    # Warm CollisionMechanics static cache on mock_board (contains wall at tier 0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+
+    # Create a second Board with NO obstacle at the exact hitbox-overlapping coordinate
+    crate_b = mock_asset(AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    crate_b.taxonomy.name = "board-b-crate"
+    crate_b.state.name = "board-b-crate"
+    crate_b.state.layer = layer
+    crate_b.elevation = 0
+    g_hb = wall.hitboxes[0]
+    c_hb = crate_b.hitboxes[0]
+    overlap_x = (
+        wall.state.position.x
+        + g_hb.position.x
+        + (g_hb.dimensions.w // 2)
+        - c_hb.position.x
+    )
+    overlap_y = (
+        wall.state.position.y
+        + g_hb.position.y
+        + (g_hb.dimensions.l // 2)
+        - c_hb.position.y
+    )
+    crate_b.state.position = Position(overlap_x, overlap_y)
+    crate_b.state.mutators.triggers.falling = False
+
+    board_b = Board(
+        assets=[crate_b],
+        configurations=mock_configurations_schema,
+        equipment=mock_equipment,
+    )
+
+    mechanics.update(board_b, 0.016, mock_bus, payload)
+
+    assert crate_b.state.position.x == overlap_x
+    assert crate_b.state.position.y == overlap_y

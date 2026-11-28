@@ -15,17 +15,24 @@ import pytest
 
 # Application Libraries
 import app.static.settings as settings
+from app.game.board import Board
+from app.game.logic.modules.motion import fields
 from app.static.semantics import (
+    AssetCategories,
     AssetInstances,
     Buildings,
+    Directions,
     Mechanics,
 )
 
 # Cython Libraries
 from libs.core.models import (
+    Dimensions,
+    Hitbox,
     Position,
     Velocity,
 )
+
 
 # ---------------------------------------------------------------------------
 
@@ -385,3 +392,174 @@ def test_gravity_ground_tier_clears_stale_falling_state(
     assert player.elevation == 0
     assert player.state.mutators.triggers.falling is False
     assert player.state.mutators.parameters.descension == 0.0
+
+@pytest.mark.physics_fields
+def test_fields_support_aabb_cache_invalidates_on_strut_add_and_remove(
+    mock_board,
+    mock_asset,
+):
+    """
+    Verifies Phase 03.07 cached elevated support AABBs in fields.py invalidate
+    when walkable floor Struts are added to or removed from the Board.
+    """
+    fields.clear_cache()
+    player = mock_board.player()
+    layer = player.state.layer
+    hb = player.hitboxes[0]
+
+    # 1. No elevated support at isolated (5000, 5000) -> enters freefall (warms cache)
+    player.elevation = 1
+    player.state.position = Position(5000, 5000)
+    player.state.velocity = Velocity(0.0, 0.0)
+    player.state.mutators.triggers.falling = False
+    player.state.mutators.parameters.descension = 0.0
+
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.falling is True
+
+    # 2. Add a walkable floor strut at E = 1 -> invalidates static_version & supports player
+    floor = mock_asset(AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    floor.taxonomy.name = "cached-floor-strut"
+    floor.state.name = "cached-floor-strut"
+    floor.state.layer = layer
+    floor.elevation = 1
+    floor.state.blueprint = Buildings.FLOORS.value
+    floor.state.position = Position(5000 + hb.position.x, 5000 + hb.position.y)
+    mock_board.add([floor])
+
+    player.elevation = 1
+    player.state.position = Position(5000, 5000)
+    player.state.velocity = Velocity(0.0, 0.0)
+    player.state.mutators.triggers.falling = False
+    player.state.mutators.parameters.descension = 0.0
+
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.falling is False
+
+    # 3. Remove floor strut -> cache rebuilds and player falls again
+    mock_board.remove([floor])
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.falling is True
+
+
+@pytest.mark.physics_fields
+@pytest.mark.workflow_fluids
+def test_fields_bridge_and_fluid_bundles_invalidate_on_static_changes(
+    mock_board,
+    mock_asset,
+):
+    """
+    Verifies Phase 03.07 cached Bridge and Fluid sensor bundles in fields.py
+    invalidate across add/remove mutations while splash spawning preserves version.
+    """
+    fields.clear_cache()
+    player = mock_board.player()
+    layer = player.state.layer
+    hb = player.hitboxes[0]
+
+    # Add isolated fluid at (5000, 5000)
+    fluid = mock_asset(AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
+    fluid.taxonomy.name = "cached-field-fluid"
+    fluid.state.name = "cached-field-fluid"
+    fluid.state.layer = layer
+    fluid.elevation = 0
+    fluid.state.source = Directions.RIGHT.value
+    fluid.state.flow = 2
+    fluid.state.position = Position(5000, 5000)
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(128, 128))]
+    mock_board.add([fluid])
+
+    version_before_splash = mock_board.static_version(layer)
+
+    # 1. Without a bridge, player submerges and gains rightward fluid current
+    player.elevation = 0
+    player.state.mutators.triggers.falling = False
+    player.state.mutators.triggers.submerged = False
+    player.state.position = Position(5000 - hb.position.x + 16, 5000 - hb.position.y + 16)
+    player.state.velocity = Velocity(0.0, 0.0)
+
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.submerged is True
+    assert player.state.velocity.vx == fluid.state.flow * settings.BASE_FLOW_SPEED
+    # Spawning passive splash effect does not churn static_version
+    assert mock_board.static_version(layer) == version_before_splash
+
+    # 2. Add bridge over fluid -> invalidates bridge bundle and suppresses submersion
+    bridge = mock_asset(AssetCategories.CRAFTS.value, AssetInstances.BRIDGES.value)
+    bridge.taxonomy.name = "cached-field-bridge"
+    bridge.state.name = "cached-field-bridge"
+    bridge.state.layer = layer
+    bridge.elevation = 0
+    bridge.state.position = Position(5000, 5000)
+    mock_board.add([bridge])
+
+    player.state.velocity = Velocity(0.0, 0.0)
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.submerged is False
+    assert player.state.velocity.vx == 0.0
+
+    # 3. Remove bridge -> rebuilds empty bridge bundle and restores fluid immersion
+    mock_board.remove([bridge])
+    fields.update([player], mock_board, 0.016)
+    assert player.state.mutators.triggers.submerged is True
+    assert player.state.velocity.vx == fluid.state.flow * settings.BASE_FLOW_SPEED
+
+
+@pytest.mark.physics_fields
+@pytest.mark.workflow_fluids
+def test_fields_board_switch_resets_sensor_cache(
+    mock_board,
+    mock_configurations_schema,
+    mock_equipment,
+    mock_asset,
+):
+    """
+    Verifies switching Board instances resets the module-level fields cache so
+    fluids cached from Board A do not submerge entities on Board B.
+    """
+    fields.clear_cache()
+    player_a = mock_board.player()
+    layer = player_a.state.layer
+    hb = player_a.hitboxes[0]
+
+    fluid = mock_asset(AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
+    fluid.taxonomy.name = "board-a-fluid"
+    fluid.state.name = "board-a-fluid"
+    fluid.state.layer = layer
+    fluid.elevation = 0
+    fluid.state.source = Directions.RIGHT.value
+    fluid.state.flow = 2
+    fluid.state.position = Position(5000, 5000)
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(128, 128))]
+    mock_board.add([fluid])
+
+    player_a.elevation = 0
+    player_a.state.mutators.triggers.falling = False
+    player_a.state.mutators.triggers.submerged = False
+    player_a.state.position = Position(5000 - hb.position.x + 16, 5000 - hb.position.y + 16)
+    player_a.state.velocity = Velocity(0.0, 0.0)
+
+    # Warm fields cache on mock_board
+    fields.update([player_a], mock_board, 0.016)
+    assert player_a.state.mutators.triggers.submerged is True
+
+    # Build a clean Board B with no fluids at (5000, 5000)
+    player_b = mock_asset(AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
+    player_b.taxonomy.name = "board-b-player"
+    player_b.state.name = "board-b-player"
+    player_b.state.layer = layer
+    player_b.elevation = 0
+    player_b.state.mutators.triggers.falling = False
+    player_b.state.mutators.triggers.submerged = False
+    player_b.state.position = Position(5000 - hb.position.x + 16, 5000 - hb.position.y + 16)
+    player_b.state.velocity = Velocity(0.0, 0.0)
+
+    board_b = Board(
+        assets=[player_b],
+        configurations=mock_configurations_schema,
+        equipment=mock_equipment,
+    )
+
+    fields.update([player_b], board_b, 0.016)
+    assert player_b.state.mutators.triggers.submerged is False
+    assert player_b.state.velocity.vx == 0.0

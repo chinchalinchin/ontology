@@ -1,5 +1,5 @@
 """
-@domain.logic
+@domain.system
 @app.service
 @workflow.generation
 @workflow.collisions
@@ -45,14 +45,18 @@ class Perimeter:
 
     @classmethod
     def extract(cls, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
+        """
+        Extracts world-space AABB rectangles (x1, y1, x2, y2) forming the
+        walkable footprint union for a layer and discrete elevation tier.
+        """
         rects = []
-        
+
         # 1. Map Tiles (Substrates belong to Tier 0)
         if elevation is None or elevation == 0:
             tiles = board.categories(AssetCategories.TILES, layer)
             for tile in tiles:
                 if tile.taxonomy.instance not in (
-                    AssetInstances.ENVIRON, 
+                    AssetInstances.ENVIRON,
                     AssetInstances.CANOPY
                 ):
                     continue
@@ -64,7 +68,7 @@ class Perimeter:
                 y1 = int(tile.state.position.y)
                 rects.append((x1, y1, x1 + (nx * w), y1 + (ny * l)))
 
-        # 2. Map Elevated Substrates (Platform decks and Stair inclines at E > base elevation)
+        # 2. Map Elevated Substrates (Platform decks, Bridges, and Stair inclines at E > base elevation)
         if elevation is not None and elevation > 0:
             crafts = board.categories(AssetCategories.CRAFTS, layer)
             for craft in crafts:
@@ -81,6 +85,18 @@ class Perimeter:
                                 rects.append((hx1, hy1, hx1 + hb.dimensions.w, hy1 + hb.dimensions.l))
                         else:
                             rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
+                elif craft.taxonomy.instance == AssetInstances.BRIDGES:
+                    if base_e == elevation:
+                        x1 = int(craft.state.position.x)
+                        y1 = int(craft.state.position.y)
+                        nx = craft.state.multiple.nx if craft.state.multiple else 1
+                        ny = craft.state.multiple.ny if craft.state.multiple else 1
+                        rects.append((
+                            x1,
+                            y1,
+                            x1 + (nx * craft.dimensions.w),
+                            y1 + (ny * craft.dimensions.l)
+                        ))
 
         # 3. Map Static Architecture
         objects = board.categories(AssetCategories.OBJECTS, layer)
@@ -88,7 +104,7 @@ class Perimeter:
         space = objects + crafts
         for obj in space:
             # Exclude movable bodies, dynamic crafts, and platforms from standard hulls
-            mass = getattr(obj.properties, 'mass', 0)
+            mass = obj.properties.mass
             if mass > 0 or obj.taxonomy.instance in (
                 AssetInstances.CRATES,
                 AssetInstances.CHESTS,
@@ -109,7 +125,7 @@ class Perimeter:
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))
-            
+
         return rects
 
     @classmethod

@@ -60,7 +60,7 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#component-board) hydration. Multiplication is executed by a dedicated Multiplier implementation dispatched by the [Decomposer](#service-decomposer).
 
 * `simple` (SimpleMultiplier): 2D grid tiling across $(x_0 + i_x \cdot w, y_0 + i_y \cdot l)$ for $i_x \in [0, n_x),\; i_y \in [0, n_y)$[cite: 1].
-- `oriented` (OrientedMultiplier): 1D axis-locked tiling across $(x_0 + i_x \cdot w, y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0, y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
+* `oriented` (OrientedMultiplier): 1D axis-locked tiling across $(x_0 + i_x \cdot w, y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0, y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
 * `expansion` (ExpansionMultiplier): Vertical column interpolation placing `crowns` at $(x_0 + i_x \cdot w, y_0)$, $n_y$ contiguous `shafts` at $(x_0 + i_x \cdot w, y_0 + (k + 1) \cdot l)$, and `bases` at $(x_0 + i_x \cdot w, y_0 + (n_y + 1) \cdot l)$, locking each segment's perspective `anchor` to the column's `base` ground line ($\text{base.y} + l$)[cite: 1].
 * `perimeter` (PerimeterMultiplier): Hollow 2D boundary of $2(n_x + n_y + 4)$ segments spanning $(n_x + 2)w \times (n_y + 2)l$ with superimposed `L`-corners, an open interior, and `north` baseline `anchor` adjustment[cite: 1].
 

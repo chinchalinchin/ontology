@@ -9,21 +9,24 @@ tools:
   views:
     # --------------------------------------------
     manager:
-      docs: false
-      templates: false
+      docs: true
     # --------------------------------------------
     metrics:
       pstats: true
     # --------------------------------------------
     source:
-      filter: false
+      filter: true
+      data: true
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
     manager:
+      board:
+        phase: 03-07
+        action: refactor
       docs:
         exclude:
           # - 00-overview
@@ -54,10 +57,23 @@ tools:
       filter:
         default: AND
         queries:
+          - title: 'Services - Injection'
+            scan:
+              domain: [ system ]
+              app: [ service ]
+              workflows: [ injection ]
           - title: 'Application - Core'
             scan:
               domain: [ system ]
               app: [ core, component ]
+          - title: 'Core - Board: Cache'
+            scan:
+              domain: [ system ]
+              app: [ board, module ]
+          - title: 'Module - Predicates'
+            scan:
+              domain: [ logic ]
+              app: [ module, semantics ]
           - title: 'Abstract - Asset'
             scan:
               domain: [ abstract ]
@@ -66,20 +82,56 @@ tools:
             scan:
               domain: [ abstract ]
               app: [ mechanic ]
-          - title: 'Implementation - Hitboxes'
+          - title: 'Implementation - Asset: Hitboxes'
             scan:
               domain: [ concrete ]
               app: [ asset ]
               asset: [ hitbox ]
-          - title: 'Workflow - Collisions'
+          - title: 'Implementation - Mechanic: Collisions'
             scan:
               domain: [ logic ]
+              app: [ mechanic]
               workflows: [ collisions ]
-          - title: 'Libraries - Rendering'
+          - title: 'Implementation - Mechanic: Navigation'
+            scan:
+              domain: [ logic ]
+              app: [ mechanic ]
+              workflows: [ navigation ]
+          - title: 'Mechanic - Motion'
+            scan:
+              domain: [ logic ]
+              app: [ mechanic ]
+              physics: [ motion ] 
+          - title: 'Application - Modules: Motion'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ motion ]
+          - title: 'Application - Modules: Fields'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ fields ]
+          - title: 'Module - Relation: Material'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              modality: [ material ]
+          - title: 'Service - Generator: Perimeter'
+            scan:
+              domain: [ system ]
+              app: [ service ]
+              workflows: [ collisions ]
+          - title: 'Libraries - Collisions'
             scan:
               domain: [ system ]
               app: [ library ]
-              workflows: [ rendering ]
+              workflows: [ collisions ]
+      data:
+        properties: [ ]
+        state: [  ]
+        configurations: [ assets/materials  ]
+        templates: [ ]
     # --------------------------------------------
     shell:
       directory: |

@@ -9,6 +9,8 @@ tools:
   views:
     manager:
       templates: true
+    metrics:
+      pstats: true
     tests:
       pipeline: false
 # ----------------------------------------------------
@@ -16,6 +18,13 @@ tools:
     manager:
       templates:
         - template-merge
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/docs/static/pstats/latest.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/docs/static/pstats/latest.pstats
+    
     tests:
       pipeline:
         command: pytest -m
