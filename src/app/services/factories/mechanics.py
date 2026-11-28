@@ -1,4 +1,4 @@
-"""
+""""
 @domain.system
 @app.service
 @app.mechanic
@@ -124,8 +124,11 @@ class MechanicFactory:
         executors: Optional[Dict[str, Any]] = None,
         relations: Optional[Dict[str, Any]] = None
     ) -> Mechanic:
+        """Instantiates a configured Mechanic and injects its executors and relations."""
         key = config.key
-        target_cls = cls.MECHANICS_MAP.get(key, AnimationMechanics)
+        if key not in cls.MECHANICS_MAP:
+            raise KeyError(f"Unknown mechanic key: '{key}'")
+        target_cls = cls.MECHANICS_MAP[key]
         mechanic_instance = target_cls()
 
         # 1. Resolve and inject executors

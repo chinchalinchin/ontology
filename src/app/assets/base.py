@@ -13,7 +13,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import (
     Dict,
-    List, 
+    List,
     Tuple,
     Optional,
 )
@@ -34,8 +34,9 @@ from app.models.state import (
 
 # Cython Libraries
 from libs.core.models import (
-    Dimensions, 
-    Hitbox, 
+    Dimensions,
+    Hitbox,
+    Position,
 )
 
 # -------------------------------------------------
@@ -121,6 +122,23 @@ class HitboxSchema(Singleton):
     """
     Foundational interface for Assets that participate in collisions and interactions.
     """
+    _DIMENSION_FALLBACKS: Dict[Tuple[int, int], List[Hitbox]] = {}
+
+    @classmethod
+    def _dimension_fallback(cls, dimensions: Optional[Dimensions]) -> List[Hitbox]:
+        """
+        Returns a cached full-frame Hitbox list keyed by (w, l) without
+        mutating immutable AssetProperties or allocating per-tick objects.
+        """
+        if not dimensions:
+            return []
+        key = (dimensions.w, dimensions.l)
+        cached = cls._DIMENSION_FALLBACKS.get(key)
+        if cached is None:
+            cached = [Hitbox(Position(0, 0), Dimensions(dimensions.w, dimensions.l))]
+            cls._DIMENSION_FALLBACKS[key] = cached
+        return cached
+
     @abstractmethod
     def elevations(
         self,

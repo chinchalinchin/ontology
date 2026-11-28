@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 # -------------------------------------------
 
+
 class Cache:
     """
     Encapsulates all categorical, instance, spatial grid, and layer-scoped caches.
@@ -48,6 +49,11 @@ class Cache:
     cached_layers: Dict[str, List[Asset]]
     cached_renderables: Dict[str, List[Asset]]
     cached_weights: Dict[str, List[Asset]]
+    cached_dynamics: Dict[str, List[Asset]]
+    cached_static_weights: Dict[str, List[Asset]]
+    cached_statics: Dict[str, Dict[int, List[Asset]]]
+    static_versions: Dict[str, int]
+    _statics_dirty: Set[str]
     cached_tilemap: Dict[str, Dict[str, Dict[Tuple[int, int], Asset]]]
     cached_fluidmap: Dict[str, Dict[Tuple[int, int], List[Asset]]]
     cached_characters: Dict[str, Any]
@@ -58,11 +64,28 @@ class Cache:
     all_categories: Dict[str, List[Asset]]
     all_instances: Dict[str, List[Asset]]
 
-
     def __init__(self) -> None:
         """Initializes all categorical, instance, spatial grid, and layer-scoped stores."""
         self.clear()
 
+    @staticmethod
+    def _affects_statics(asset: Asset) -> bool:
+        """
+        Returns True if adding, removing, or relayering this asset alters
+        static colliders, navigational obstacles, or static environmental sensors.
+        Excludes transient effects (splashes), projectiles, and dynamic bodies (m > 0).
+        """
+        if predicates.is_weight(asset):
+            return asset.properties.mass == 0
+        return (
+            asset.category in (
+                AssetCategories.CRAFTS,
+                AssetCategories.GEOGRAPHY,
+                AssetCategories.TILES,
+                AssetCategories.RESOURCES,
+            )
+            or asset.instance == AssetInstances.FLUIDS
+        )
 
     @staticmethod
     def _asset_extent(asset: Asset) -> Tuple[int, int]:
@@ -88,6 +111,43 @@ class Cache:
 
         return (0, 0)
 
+    def _index_static_elevations(self, layer: str, asset: Asset) -> None:
+        """Registers a single static weight (m == 0) into its normalized elevation tier lists."""
+        elevs = asset.hitbox.elevations(asset.properties, asset.state)
+        if not elevs:
+            return
+        tier_map = self.cached_statics.setdefault(layer, {})
+        if len(elevs) == 1:
+            tier = max(0, elevs[0])
+            tier_map.setdefault(tier, []).append(asset)
+            return
+
+        seen_tiers: Set[int] = set()
+        for t in elevs:
+            tier = max(0, t)
+            if tier not in seen_tiers:
+                seen_tiers.add(tier)
+                tier_map.setdefault(tier, []).append(asset)
+
+    def _rebuild_statics(self, layer: str) -> None:
+        """Re-indexes all static weights (m == 0) by normalized elevation tier for a layer."""
+        tier_map: Dict[int, List[Asset]] = {}
+        for asset in self.cached_static_weights.get(layer, ()):
+            elevs = asset.hitbox.elevations(asset.properties, asset.state)
+            if not elevs:
+                continue
+            if len(elevs) == 1:
+                tier = max(0, elevs[0])
+                tier_map.setdefault(tier, []).append(asset)
+            else:
+                seen_tiers: Set[int] = set()
+                for t in elevs:
+                    tier = max(0, t)
+                    if tier not in seen_tiers:
+                        seen_tiers.add(tier)
+                        tier_map.setdefault(tier, []).append(asset)
+        self.cached_statics[layer] = tier_map
+        self._statics_dirty.discard(layer)
 
     def init_layer(self, layer: str) -> None:
         """
@@ -101,6 +161,10 @@ class Cache:
         self.cached_layers.setdefault(layer, [])
         self.cached_renderables.setdefault(layer, [])
         self.cached_weights.setdefault(layer, [])
+        self.cached_dynamics.setdefault(layer, [])
+        self.cached_static_weights.setdefault(layer, [])
+        self.cached_statics.setdefault(layer, {})
+        self.static_versions.setdefault(layer, 0)
         self.cached_tilemap.setdefault(layer, {
             AssetInstances.ENVIRON: {},
             AssetInstances.CANOPY: {}
@@ -109,7 +173,6 @@ class Cache:
         self.cached_states.setdefault(layer, {})
         self.cached_sizes.setdefault(layer, Dimensions(w=0, l=0))
         self.shorelines.setdefault(layer, [])
-
 
     def map_fluid(self, layer: str, fluid: Asset) -> None:
         """
@@ -173,10 +236,10 @@ class Cache:
                 elif b_dir == Directions.LEFT:
                     _index_box(bx - branch.length, by, bx, by + fl)
 
-
     def rebuild_fluid(self, layer: str) -> None:
         """
-        Rebuilds the O(1) spatial fluid grid cache for the specified layer.
+        Rebuilds the O(1) spatial fluid grid cache for the specified layer and
+        increments the layer's static geometry version counter.
         """
         if layer not in self.cached_fluidmap:
             self.cached_fluidmap[layer] = {}
@@ -187,12 +250,28 @@ class Cache:
         for fluid in fluids:
             self.map_fluid(layer, fluid)
 
+        self.static_versions[layer] = self.static_versions.get(layer, 0) + 1
+
+    def invalidate_statics(self, layer: Optional[str] = None) -> None:
+        """
+        Marks static collider elevation buckets dirty and increments the
+        monotonic static_version counter for one layer or all layers.
+        """
+        if layer is None:
+            for l_key in self.cached_layers:
+                self._statics_dirty.add(l_key)
+                self.static_versions[l_key] = self.static_versions.get(l_key, 0) + 1
+            return
+
+        self._statics_dirty.add(layer)
+        self.static_versions[layer] = self.static_versions.get(layer, 0) + 1
 
     def index_batch(self, assets: List[Asset]) -> None:
         """
         Indexes a batch of assets across all multi-tier dictionaries and spatial grids.
         """
         affected_fluid_layers: Set[str] = set()
+        affected_static_layers: Set[str] = set()
         batch_extents: Dict[str, List[int]] = {}
 
         for asset in assets:
@@ -233,6 +312,15 @@ class Cache:
 
             if predicates.is_weight(asset):
                 self.cached_weights[layer].append(asset)
+                if asset.properties.mass > 0:
+                    self.cached_dynamics[layer].append(asset)
+                else:
+                    self.cached_static_weights[layer].append(asset)
+                    if layer not in self._statics_dirty:
+                        self._index_static_elevations(layer, asset)
+                    affected_static_layers.add(layer)
+            elif self._affects_statics(asset):
+                affected_static_layers.add(layer)
 
             if inst == AssetInstances.SHORELINES:
                 self.shorelines[layer].append(asset)
@@ -283,6 +371,8 @@ class Cache:
         for layer in affected_fluid_layers:
             self.rebuild_fluid(layer)
 
+        for layer in affected_static_layers - affected_fluid_layers:
+            self.static_versions[layer] = self.static_versions.get(layer, 0) + 1
 
     def evict_batch(self, removals: List[Asset]) -> None:
         """
@@ -299,6 +389,10 @@ class Cache:
         affected_layers = {
             a.state.layer for a in removals 
             if a.state and a.state.layer
+        }
+        affected_static_layers = {
+            a.state.layer for a in removals
+            if a.state and a.state.layer and self._affects_statics(a)
         }
         affected_categories = {
             a.category for a in removals 
@@ -345,6 +439,18 @@ class Cache:
                     if a not in removal_set
                 ]
 
+            if layer in self.cached_dynamics:
+                self.cached_dynamics[layer] = [
+                    a for a in self.cached_dynamics[layer]
+                    if a not in removal_set
+                ]
+
+            if layer in self.cached_static_weights:
+                self.cached_static_weights[layer] = [
+                    a for a in self.cached_static_weights[layer]
+                    if a not in removal_set
+                ]
+
             if layer in self.shorelines:
                 self.shorelines[layer] = [
                     a for a in self.shorelines[layer]
@@ -388,11 +494,17 @@ class Cache:
             if name in self.cached_characters:
                 del self.cached_characters[name]
 
-        # 4. Invalidate fluid cache if fluids removed
+        # 4. Invalidate fluid and static caches for modified layers
+        rebuilt_fluid_layers: Set[str] = set()
         if AssetInstances.FLUIDS in affected_instances:
             for layer in affected_layers:
                 self.rebuild_fluid(layer)
+                rebuilt_fluid_layers.add(layer)
 
+        for layer in affected_static_layers:
+            self._statics_dirty.add(layer)
+            if layer not in rebuilt_fluid_layers:
+                self.static_versions[layer] = self.static_versions.get(layer, 0) + 1
 
     def relayer(self, asset: Asset, new_layer: Optional[str]) -> None:
         """
@@ -406,6 +518,8 @@ class Cache:
 
         cat = asset.category
         inst = asset.instance
+        is_weight = predicates.is_weight(asset)
+        affects_static = self._affects_statics(asset)
 
         if old_layer is not None:
             if old_layer in self.cached_categories and cat in self.cached_categories[old_layer]:
@@ -425,6 +539,12 @@ class Cache:
             if old_layer in self.cached_weights and asset in self.cached_weights[old_layer]:
                 self.cached_weights[old_layer].remove(asset)
 
+            if old_layer in self.cached_dynamics and asset in self.cached_dynamics[old_layer]:
+                self.cached_dynamics[old_layer].remove(asset)
+
+            if old_layer in self.cached_static_weights and asset in self.cached_static_weights[old_layer]:
+                self.cached_static_weights[old_layer].remove(asset)
+
             if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
                 self.shorelines[old_layer].remove(asset)
 
@@ -436,6 +556,11 @@ class Cache:
                 del self.cached_states[old_layer][asset.name]
 
             self.cached_sizes.pop(old_layer, None)
+
+            if affects_static:
+                self._statics_dirty.add(old_layer)
+                if inst != AssetInstances.FLUIDS:
+                    self.static_versions[old_layer] = self.static_versions.get(old_layer, 0) + 1
 
         asset.state.layer = new_layer
 
@@ -458,8 +583,14 @@ class Cache:
         if cat != AssetCategories.TILES:
             self.cached_renderables[new_layer].append(asset)
 
-        if predicates.is_weight(asset):
+        if is_weight:
             self.cached_weights[new_layer].append(asset)
+            if asset.properties.mass > 0:
+                self.cached_dynamics[new_layer].append(asset)
+            else:
+                self.cached_static_weights[new_layer].append(asset)
+                if new_layer not in self._statics_dirty:
+                    self._index_static_elevations(new_layer, asset)
 
         if inst == AssetInstances.SHORELINES:
             self.shorelines[new_layer].append(asset)
@@ -477,7 +608,8 @@ class Cache:
             if old_layer is not None:
                 self.rebuild_fluid(old_layer)
             self.rebuild_fluid(new_layer)
-
+        elif affects_static:
+            self.static_versions[new_layer] = self.static_versions.get(new_layer, 0) + 1
 
     def clear(self) -> None:
         """
@@ -488,6 +620,11 @@ class Cache:
         self.cached_layers = {}
         self.cached_renderables = {}
         self.cached_weights = {}
+        self.cached_dynamics = {}
+        self.cached_static_weights = {}
+        self.cached_statics = {}
+        self.static_versions = {}
+        self._statics_dirty = set()
         self.cached_tilemap = {}
         self.cached_fluidmap = {}
         self.cached_characters = {}
@@ -570,17 +707,61 @@ class Cache:
             all_weights.extend(layer_list)
         return all_weights
 
-    def get_obstacles(self, layer: str) -> List[Asset]:
-        obstacles: List[Asset] = []
-        layer_inst = self.cached_instances.get(layer, {})
-        for inst_key in (
+    def get_dynamics(self, layer: Optional[str] = None) -> List[Asset]:
+        """Returns dynamic weight assets (m > 0) for a layer or across all layers."""
+        if layer is not None:
+            return self.cached_dynamics.get(layer, [])
+        all_dynamics: List[Asset] = []
+        for layer_list in self.cached_dynamics.values():
+            all_dynamics.extend(layer_list)
+        return all_dynamics
+
+    def get_statics(
+        self,
+        layer: Optional[str] = None,
+        elevation: Optional[int] = None
+    ) -> List[Asset]:
+        """Returns pre-indexed static weight assets (m == 0) for a layer and optional elevation."""
+        if layer is not None:
+            if layer in self._statics_dirty:
+                self._rebuild_statics(layer)
+            if elevation is not None:
+                return self.cached_statics.get(layer, {}).get(max(0, elevation), [])
+            return self.cached_static_weights.get(layer, [])
+
+        all_statics: List[Asset] = []
+        for l_key in self.cached_layers:
+            if l_key in self._statics_dirty:
+                self._rebuild_statics(l_key)
+            if elevation is not None:
+                all_statics.extend(self.cached_statics.get(l_key, {}).get(max(0, elevation), []))
+            else:
+                all_statics.extend(self.cached_static_weights.get(l_key, []))
+        return all_statics
+
+    def get_static_version(self, layer: str) -> int:
+        """Returns the monotonic static geometry version counter for a layer."""
+        return self.static_versions.get(layer, 0)
+
+    def get_obstacles(self, layer: Optional[str] = None) -> List[Asset]:
+        """Retrieves navigational obstacle assets for a specific layer or across all layers."""
+        obstacle_keys = (
             AssetInstances.CRATES,
             AssetInstances.GATES,
             AssetInstances.STRUTS,
             AssetInstances.SIGNS,
             AssetInstances.CHESTS
-        ):
-            obstacles.extend(layer_inst.get(inst_key, []))
+        )
+        obstacles: List[Asset] = []
+        if layer is not None:
+            layer_inst = self.cached_instances.get(layer, {})
+            for inst_key in obstacle_keys:
+                obstacles.extend(layer_inst.get(inst_key, []))
+            return obstacles
+
+        for layer_inst in self.cached_instances.values():
+            for inst_key in obstacle_keys:
+                obstacles.extend(layer_inst.get(inst_key, []))
         return obstacles
 
     def get_shorelines(self, layer: Optional[str] = None) -> List[Asset]:

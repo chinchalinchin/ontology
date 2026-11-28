@@ -10,6 +10,10 @@
 from __future__ import annotations
 
 # Standard Libraries
+from dataclasses import (
+    dataclass,
+    field,
+)
 import logging
 from typing import (
     List, 
@@ -23,6 +27,7 @@ from typing import (
 # Application Libraries
 import app.static.settings as settings
 from app.assets.base import Asset
+from app.assets.hitboxes.crafts import MaterialHitbox
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
@@ -55,6 +60,147 @@ SHORELINE_NORMALS = {
     Directions.LEFT: (1.0, 0.0),   # Land West  -> Inward water normal points East (+X)
     Directions.RIGHT: (-1.0, 0.0), # Land East  -> Inward water normal points West (-X)
 }
+
+# -----------------------------------------------------------------------------
+# VERSIONED STATIC SENSOR CACHES
+# -----------------------------------------------------------------------------
+
+
+@dataclass(slots=True)
+class _SensorBundle:
+    """Cached primitive tuples, parent lookup list, and pre-populated Space grid."""
+    primitives: List[Tuple]
+    lookup: List[Asset]
+    grid: Optional[Space]
+
+
+@dataclass(slots=True)
+class _LayerFieldCache:
+    """Per-layer static environmental sensor and elevated substrate support cache."""
+    version: int
+    bridges: Optional[_SensorBundle] = None
+    shorelines: Optional[_SensorBundle] = None
+    fluids: Optional[_SensorBundle] = None
+    support_aabbs: Dict[int, List[Tuple[int, int, int, int]]] = field(default_factory=dict)
+
+
+_CACHED_BOARD_REF: Optional[Board] = None
+_LAYER_CACHES: Dict[str, _LayerFieldCache] = {}
+
+
+def clear_cache() -> None:
+    """Clears all cached static field sensor bundles and elevated support tables."""
+    global _CACHED_BOARD_REF
+    _LAYER_CACHES.clear()
+    _CACHED_BOARD_REF = None
+
+
+def _get_layer_cache(board: Board, layer: str) -> _LayerFieldCache:
+    """
+    Retrieves or resets the per-layer static field cache when the active Board
+    or Board.static_version(layer) advances, preserving existing Space allocations.
+    """
+    global _CACHED_BOARD_REF
+    if _CACHED_BOARD_REF is not board:
+        _LAYER_CACHES.clear()
+        _CACHED_BOARD_REF = board
+
+    version = board.static_version(layer)
+    entry = _LAYER_CACHES.get(layer)
+    if entry is not None and entry.version == version:
+        return entry
+
+    # Retain prior Space instances for reuse on rebuild
+    fresh = _LayerFieldCache(version=version)
+    if entry is not None:
+        if entry.bridges is not None and entry.bridges.grid is not None:
+            fresh.bridges = _SensorBundle([], [], entry.bridges.grid)
+        if entry.shorelines is not None and entry.shorelines.grid is not None:
+            fresh.shorelines = _SensorBundle([], [], entry.shorelines.grid)
+        if entry.fluids is not None and entry.fluids.grid is not None:
+            fresh.fluids = _SensorBundle([], [], entry.fluids.grid)
+
+    _LAYER_CACHES[layer] = fresh
+    return fresh
+
+
+def _build_sensor_bundle(
+    sensors: List[Asset],
+    existing: Optional[_SensorBundle],
+    cell_size: int
+) -> _SensorBundle:
+    """Compiles compound sensor primitives and populates a persistent Space grid."""
+    if not sensors:
+        return _SensorBundle([], [], existing.grid if existing is not None else None)
+
+    primitives, lookup = _extract_compound_sensor_primitives(sensors)
+    if not primitives:
+        return _SensorBundle([], [], existing.grid if existing is not None else None)
+
+    sensor_grid = (
+        existing.grid
+        if existing is not None and existing.grid is not None
+        else Space(cell_size=cell_size, max_entities=max(256, len(primitives) + 64))
+    )
+    physics.populate_bounds(primitives, sensor_grid)
+    return _SensorBundle(primitives, lookup, sensor_grid)
+
+
+def _get_bridges_bundle(
+    layer_cache: _LayerFieldCache,
+    board: Board,
+    layer: str,
+    cell_size: int
+) -> _SensorBundle:
+    """Lazily builds and caches the Bridge sensor bundle for a layer version."""
+    bundle = layer_cache.bridges
+    if bundle is not None and (bundle.primitives or bundle.grid is None):
+        return bundle
+    # Empty list + non-None grid signals recycled Space awaiting rebuild
+    if bundle is not None and bundle.lookup:
+        return bundle
+    sensors = board.instances(AssetInstances.BRIDGES, layer)
+    built = _build_sensor_bundle(sensors, bundle, cell_size)
+    if not built.primitives:
+        built = _SensorBundle([], [], None)
+    layer_cache.bridges = built
+    return built
+
+
+def _get_shorelines_bundle(
+    layer_cache: _LayerFieldCache,
+    board: Board,
+    layer: str,
+    cell_size: int
+) -> _SensorBundle:
+    """Lazily builds and caches the Shoreline sensor bundle for a layer version."""
+    bundle = layer_cache.shorelines
+    if bundle is not None and (bundle.primitives or bundle.grid is None):
+        return bundle
+    sensors = board.instances(AssetInstances.SHORELINES, layer)
+    built = _build_sensor_bundle(sensors, bundle, cell_size)
+    if not built.primitives:
+        built = _SensorBundle([], [], None)
+    layer_cache.shorelines = built
+    return built
+
+
+def _get_fluids_bundle(
+    layer_cache: _LayerFieldCache,
+    board: Board,
+    layer: str,
+    cell_size: int
+) -> _SensorBundle:
+    """Lazily builds and caches the Fluid sensor bundle for a layer version."""
+    bundle = layer_cache.fluids
+    if bundle is not None and (bundle.primitives or bundle.grid is None):
+        return bundle
+    sensors = board.instances(AssetInstances.FLUIDS, layer)
+    built = _build_sensor_bundle(sensors, bundle, cell_size)
+    if not built.primitives:
+        built = _SensorBundle([], [], None)
+    layer_cache.fluids = built
+    return built
 
 
 def _direction_vector(source: Any) -> Tuple[float, float]:
@@ -108,6 +254,7 @@ def _extract_tier_support_aabbs(
     at discrete elevation tier E > 0.
     """
     aabbs: List[Tuple[int, int, int, int]] = []
+    materials: Optional[MaterialIndex] = None
 
     for craft in board.categories(AssetCategories.CRAFTS, layer):
         inst = craft.taxonomy.instance
@@ -134,17 +281,25 @@ def _extract_tier_support_aabbs(
 
         elif inst == AssetInstances.STRUTS:
             # Support sensor struts (mass < 0) and passable surface blueprints at tier E
-            if base_e == elevation and (
-                craft.properties.mass < 0
-                or not MaterialIndex().is_obstacle(craft.state.blueprint)
-                or not craft.hitbox.elevations(craft.properties, craft.state)
-            ):
-                aabbs.append((
-                    int(craft.state.position.x),
-                    int(craft.state.position.y),
-                    int(craft.dimensions.w),
-                    int(craft.dimensions.l)
-                ))
+            if base_e == elevation:
+                if craft.properties.mass < 0:
+                    walkable = True
+                elif isinstance(craft.hitbox, MaterialHitbox):
+                    walkable = not craft.hitbox.is_obstacle(craft.state.blueprint)
+                else:
+                    if materials is None:
+                        materials = MaterialIndex()
+                    walkable = (
+                        not materials.is_obstacle(craft.state.blueprint)
+                        or not craft.hitbox.elevations(craft.properties, craft.state)
+                    )
+                if walkable:
+                    aabbs.append((
+                        int(craft.state.position.x),
+                        int(craft.state.position.y),
+                        int(craft.dimensions.w),
+                        int(craft.dimensions.l)
+                    ))
 
     return aabbs
 
@@ -197,14 +352,16 @@ def _update_gravity(
     l_assets: List[Asset],
     board: Board,
     layer: str,
-    delta: float
+    delta: float,
+    support_cache: Optional[Dict[int, List[Tuple[int, int, int, int]]]] = None
 ) -> set[int]:
     """
     Evaluates elevated support, accelerates unsupported entities downward (+Y),
     and decrements elevation E -> E - 1 per geometric TIER_DROP_DISTANCE.
     """
     falling_indices: set[int] = set()
-    support_cache: Dict[int, List[Tuple[int, int, int, int]]] = {}
+    if support_cache is None:
+        support_cache = {}
 
     for i, asset in enumerate(l_assets):
         if asset.elevation <= 0 and not asset.state.mutators.triggers.falling:
@@ -289,23 +446,21 @@ def _update_rafts(rafts: List[Asset], board: Board, grid: Space) -> None:
         layer_rafts.setdefault(raft.state.layer, []).append(raft)
 
     for layer, l_rafts in layer_rafts.items():
-        fluids = board.instances(AssetInstances.FLUIDS, layer)
-        if not fluids:
+        layer_cache = _get_layer_cache(board, layer)
+        fluid_bundle = _get_fluids_bundle(layer_cache, board, layer, grid.cell_size)
+
+        if not fluid_bundle.primitives:
             for raft in l_rafts:
                 raft.state.velocity.vx = 0.0
                 raft.state.velocity.vy = 0.0
             continue
 
         raft_primitives = [r.primitive(i) for i, r in enumerate(l_rafts)]
-        fluid_primitives, fluid_lookup = _extract_compound_sensor_primitives(fluids)
-
-        if not fluid_primitives:
-            for raft in l_rafts:
-                raft.state.velocity.vx = 0.0
-                raft.state.velocity.vy = 0.0
-            continue
-
-        matches = physics.environment(raft_primitives, fluid_primitives, grid)
+        matches = physics.query_bounds(
+            raft_primitives,
+            fluid_bundle.primitives,
+            fluid_bundle.grid
+        )
 
         raft_flows: Dict[int, Tuple[float, float]] = {
             i: (0.0, 0.0) for i in range(len(l_rafts))
@@ -313,7 +468,7 @@ def _update_rafts(rafts: List[Asset], board: Board, grid: Space) -> None:
         intersected: set[int] = set()
 
         for r_idx, f_prim_idx in matches:
-            fluid = fluid_lookup[f_prim_idx]
+            fluid = fluid_bundle.lookup[f_prim_idx]
             fvx, fvy = _fluid_velocity(fluid)
             cvx, cvy = raft_flows[r_idx]
             raft_flows[r_idx] = (cvx + fvx, cvy + fvy)
@@ -337,7 +492,7 @@ def update(
 ) -> None:
     """
     Executes environmental field resolution pass across active mutable entities
-    using bipartite C-grid space hashing:
+    using versioned persistent static Space grids and bipartite queries:
     0. Geometric gravity evaluation and multi-tier freefall stepping.
     1. Passive hydrodynamic drift for Rafts.
     2. Surface Interception (Bridges & Rafts) suppressing submersion and shoreline edge checks.
@@ -369,11 +524,21 @@ def update(
     for asset in target_assets:
         layer_assets.setdefault(asset.state.layer, []).append(asset)
 
+    cell_size = grid.cell_size
+
     for layer, l_assets in layer_assets.items():
+        layer_cache = _get_layer_cache(board, layer)
+
         # -------------------------------------------------------------
         # 0. GRAVITY & ELEVATION TIER SUPPORT
         # -------------------------------------------------------------
-        falling_indices = _update_gravity(l_assets, board, layer, delta)
+        falling_indices = _update_gravity(
+            l_assets,
+            board,
+            layer,
+            delta,
+            support_cache=layer_cache.support_aabbs
+        )
         l_assets = [
             a for i, a in enumerate(l_assets)
             if i not in falling_indices
@@ -387,20 +552,22 @@ def update(
         # -------------------------------------------------------------
         # 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES & RAFTS)
         # -------------------------------------------------------------
-        layer_bridges = board.instances(AssetInstances.BRIDGES, layer)
-        if layer_bridges:
-            bridge_prims, _ = _extract_compound_sensor_primitives(layer_bridges)
-            if bridge_prims:
-                bridge_matches = physics.environment(asset_primitives, bridge_prims, grid)
-                for a_idx, _ in bridge_matches:
-                    on_surface_indices.add(a_idx)
-                    asset = l_assets[a_idx]
-                    asset.state.mutators.triggers.submerged = False
+        bridge_bundle = _get_bridges_bundle(layer_cache, board, layer, cell_size)
+        if bridge_bundle.primitives:
+            bridge_matches = physics.query_bounds(
+                asset_primitives,
+                bridge_bundle.primitives,
+                bridge_bundle.grid
+            )
+            for a_idx, _ in bridge_matches:
+                on_surface_indices.add(a_idx)
+                asset = l_assets[a_idx]
+                asset.state.mutators.triggers.submerged = False
 
         layer_rafts = board.instances(AssetInstances.RAFTS, layer)
         if layer_rafts:
             raft_prims = [r.primitive(i) for i, r in enumerate(layer_rafts)]
-            raft_matches = physics.environment(asset_primitives, raft_prims, grid)
+            raft_matches = physics.bipartite(asset_primitives, raft_prims, grid)
             for a_idx, r_idx in raft_matches:
                 if a_idx not in on_surface_indices:
                     on_surface_indices.add(a_idx)
@@ -415,68 +582,74 @@ def update(
         if not immersible_indices:
             continue
 
-        sub_to_orig = {sub_i: orig_i for sub_i, orig_i in enumerate(immersible_indices)}
         immersible_primitives = [
             l_assets[orig_i].primitive(sub_i) 
             for sub_i, orig_i in enumerate(immersible_indices)
         ]
+
         # -------------------------------------------------------------
         # 2. VIRTUAL EDGE CROSSING (SHORELINES)
         # -------------------------------------------------------------
         in_shoreline_indices: set[int] = set()
-        shorelines = board.instances(AssetInstances.SHORELINES, layer)
-        if shorelines:
-            shore_prims, shore_lookup = _extract_compound_sensor_primitives(shorelines)
-            if shore_prims:
-                shore_matches = physics.environment(immersible_primitives, shore_prims, grid)
-                for sub_idx, s_prim_idx in shore_matches:
-                    orig_idx = sub_to_orig[sub_idx]
-                    in_shoreline_indices.add(orig_idx)
-                    asset = l_assets[orig_idx]
-                    shore = shore_lookup[s_prim_idx]
+        shore_bundle = _get_shorelines_bundle(layer_cache, board, layer, cell_size)
+        if shore_bundle.primitives:
+            shore_matches = physics.query_bounds(
+                immersible_primitives,
+                shore_bundle.primitives,
+                shore_bundle.grid
+            )
+            for sub_idx, s_prim_idx in shore_matches:
+                orig_idx = immersible_indices[sub_idx]
+                in_shoreline_indices.add(orig_idx)
+                asset = l_assets[orig_idx]
+                shore = shore_bundle.lookup[s_prim_idx]
 
-                    nx, ny = _shoreline_normal(shore.state.orientation)
-                    vx = asset.state.velocity.vx
-                    vy = asset.state.velocity.vy
-                    v_dot = vx * nx + vy * ny
+                nx, ny = _shoreline_normal(shore.state.orientation)
+                vx = asset.state.velocity.vx
+                vy = asset.state.velocity.vy
+                v_dot = vx * nx + vy * ny
 
-                    if v_dot > 0 and not asset.state.mutators.triggers.submerged:
-                        t = shore.properties.thickness
-                        step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
-                        step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
-                        asset.state.position.x += step_x
-                        asset.state.position.y += step_y
-                        asset.state.mutators.triggers.submerged = True
+                if v_dot > 0 and not asset.state.mutators.triggers.submerged:
+                    t = shore.properties.thickness
+                    step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
+                    step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
+                    asset.state.position.x += step_x
+                    asset.state.position.y += step_y
+                    asset.state.mutators.triggers.submerged = True
 
-                        splash_pos = Position(
-                            int(asset.state.position.x),
-                            int(asset.state.position.y + (asset.dimensions.l // 2))
-                        )
-                        splash = board.cradle.spawn_passive(
-                            EffectsPalette.SPLASH, 
-                            layer, 
-                            splash_pos
-                        )
-                        board.add([splash])
+                    splash_pos = Position(
+                        int(asset.state.position.x),
+                        int(asset.state.position.y + (asset.dimensions.l // 2))
+                    )
+                    splash = board.cradle.spawn_passive(
+                        EffectsPalette.SPLASH, 
+                        layer, 
+                        splash_pos
+                    )
+                    board.add([splash])
 
         # -------------------------------------------------------------
         # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION
         # -------------------------------------------------------------
-        fluids = board.instances(AssetInstances.FLUIDS, layer)
         in_fluid_indices: set[int] = set()
-        fluid_flows: Dict[int, Tuple[float, float]] = {orig_idx: (0.0, 0.0) for orig_idx in immersible_indices}
+        fluid_flows: Dict[int, Tuple[float, float]] = {
+            orig_idx: (0.0, 0.0) for orig_idx in immersible_indices
+        }
 
-        if fluids:
-            fluid_prims, fluid_lookup = _extract_compound_sensor_primitives(fluids)
-            if fluid_prims:
-                fluid_matches = physics.environment(immersible_primitives, fluid_prims, grid)
-                for sub_idx, f_prim_idx in fluid_matches:
-                    orig_idx = sub_to_orig[sub_idx]
-                    in_fluid_indices.add(orig_idx)
-                    fluid = fluid_lookup[f_prim_idx]
-                    fvx, fvy = _fluid_velocity(fluid)
-                    cvx, cvy = fluid_flows[orig_idx]
-                    fluid_flows[orig_idx] = (cvx + fvx, cvy + fvy)
+        fluid_bundle = _get_fluids_bundle(layer_cache, board, layer, cell_size)
+        if fluid_bundle.primitives:
+            fluid_matches = physics.query_bounds(
+                immersible_primitives,
+                fluid_bundle.primitives,
+                fluid_bundle.grid
+            )
+            for sub_idx, f_prim_idx in fluid_matches:
+                orig_idx = immersible_indices[sub_idx]
+                in_fluid_indices.add(orig_idx)
+                fluid = fluid_bundle.lookup[f_prim_idx]
+                fvx, fvy = _fluid_velocity(fluid)
+                cvx, cvy = fluid_flows[orig_idx]
+                fluid_flows[orig_idx] = (cvx + fvx, cvy + fvy)
 
         for orig_idx in immersible_indices:
             asset = l_assets[orig_idx]

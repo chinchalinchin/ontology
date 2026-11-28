@@ -14,11 +14,17 @@ from __future__ import annotations
 
 # Standard Libraries
 import collections
+from dataclasses import (
+    dataclass,
+    field,
+)
 import logging
 import math
 from typing import (
     TYPE_CHECKING,
+    Any,
     Dict,
+    FrozenSet,
     List,
     Optional,
     Set,
@@ -58,7 +64,32 @@ HEADING_VECTORS: Dict[Directions, Tuple[float, float]] = {
     Directions.LEFT: (-1.0, 0.0),
     Directions.RIGHT: (1.0, 0.0),
 }
+
+MAX_INFLATED_PAD_VARIANTS = 64
+
 # -----------------------------------------------------
+
+
+@dataclass(slots=True)
+class _InflatedObstacles:
+    """Pre-inflated static obstacle AABBs for a specific padding signature."""
+    all_rects: List[Tuple[float, float, float, float]]
+    named_weights: List[Tuple[str, Tuple[float, float, float, float]]]
+    fixed_rects: List[Tuple[float, float, float, float]]
+
+
+@dataclass(slots=True)
+class _StaticObstacleCache:
+    """Versioned un-inflated static geometry and per-padding inflated cache for a tier."""
+    version: int
+    perimeters_ref: Optional[List[Any]]
+    perimeters_len: int
+    static_names: FrozenSet[str]
+    static_weights: List[Tuple[str, float, float, float, float]]
+    perimeter_rects: List[Tuple[float, float, float, float]]
+    fluid_rects: List[Tuple[float, float, float, float]]
+    inflated: Dict[Tuple[float, float, float, float], _InflatedObstacles] = field(default_factory=dict)
+
 
 class NavigationMechanics(Mechanic):
     """
@@ -69,10 +100,18 @@ class NavigationMechanics(Mechanic):
     waypoint progression, and impassable geometry stall handling.
     """
     _active_goals: Dict[str, GoalSignature]
+    _cached_board: Optional[Board] = None
+    _static_cache: Dict[Tuple[str, int], _StaticObstacleCache] = {}
 
     def __init__(self):
         super().__init__()
         self._active_goals = {}
+
+    @classmethod
+    def clear_cache(cls) -> None:
+        """Clears cached static navigational obstacle tables."""
+        cls._static_cache.clear()
+        cls._cached_board = None
 
     @staticmethod
     def corridor(
@@ -101,7 +140,6 @@ class NavigationMechanics(Mechanic):
 
         return None
 
-
     @staticmethod
     def anchor(asset: Asset) -> Position:
         """
@@ -119,7 +157,6 @@ class NavigationMechanics(Mechanic):
             y=asset.state.position.y + hb.position.y + hb.dimensions.l // 2,
         )
 
-
     @staticmethod
     def footprint(asset: Asset) -> Tuple[float, float]:
         """
@@ -130,7 +167,6 @@ class NavigationMechanics(Mechanic):
         if hbs:
             return (hbs[0].dimensions.w / 2.0, hbs[0].dimensions.l / 2.0)
         return (asset.dimensions.w / 2.0, asset.dimensions.l / 2.0)
-
 
     @classmethod
     def fluids(cls, fluid: Asset) -> List[Tuple[int, int, int, int]]:
@@ -186,8 +222,7 @@ class NavigationMechanics(Mechanic):
                 rects.append(rect)
 
         return rects
-    
-    
+
     @classmethod
     def padding(cls, asset: Asset) -> Tuple[float, float]:
         """
@@ -205,7 +240,6 @@ class NavigationMechanics(Mechanic):
             squeeze = float(asset.state.mutators.parameters.squeeze.radius)
 
         return (half_w + squeeze, half_l + squeeze)
-
 
     @staticmethod
     def subtract(
@@ -252,20 +286,17 @@ class NavigationMechanics(Mechanic):
             sprite.state.animation.direction,
             (0.0, 0.0)
         )
-    
+
     @classmethod
-    def _fluid_obstacles(
+    def _raw_fluid_obstacles(
         cls,
         layer: str,
         board: Board,
-        elevation: int,
-        pad_x: float,
-        pad_y: float
+        elevation: int
     ) -> List[Tuple[float, float, float, float]]:
         """
-        Builds Minkowski-inflated obstacle AABBs for same-elevation Fluid
-        corridors and pools, subtracting same-elevation Bridge footprints prior
-        to inflation so river crossings remain navigable.
+        Builds un-inflated (x, y, w, l) hazard AABBs for same-elevation Fluid
+        corridors and pools with same-elevation Bridge footprints subtracted.
         """
         fluids = board.instances(AssetInstances.FLUIDS, layer, elevation=elevation)
         if not fluids:
@@ -294,7 +325,7 @@ class NavigationMechanics(Mechanic):
                     by + bridge.dimensions.l,
                 ))
 
-        fluid_obstacles: List[Tuple[float, float, float, float]] = []
+        raw_obstacles: List[Tuple[float, float, float, float]] = []
         for fluid in fluids:
             if not predicates.is_hazard(fluid):
                 continue
@@ -312,16 +343,168 @@ class NavigationMechanics(Mechanic):
                     break
 
             for x1, y1, x2, y2 in rects:
-                fluid_obstacles.append((
-                    float(x1) - pad_x,
-                    float(y1) - pad_y,
-                    float(x2 - x1) + 2.0 * pad_x,
-                    float(y2 - y1) + 2.0 * pad_y,
+                raw_obstacles.append((
+                    float(x1),
+                    float(y1),
+                    float(x2 - x1),
+                    float(y2 - y1),
                 ))
 
-        return fluid_obstacles
+        return raw_obstacles
 
+    @classmethod
+    def _fluid_obstacles(
+        cls,
+        layer: str,
+        board: Board,
+        elevation: int,
+        pad_x: float,
+        pad_y: float
+    ) -> List[Tuple[float, float, float, float]]:
+        """
+        Builds Minkowski-inflated obstacle AABBs for same-elevation Fluid
+        corridors and pools, subtracting same-elevation Bridge footprints prior
+        to inflation so river crossings remain navigable.
+        """
+        raw_rects = cls._raw_fluid_obstacles(layer, board, elevation)
+        if not raw_rects:
+            return []
+        two_px = 2.0 * pad_x
+        two_py = 2.0 * pad_y
+        return [
+            (x - pad_x, y - pad_y, w + two_px, l + two_py)
+            for x, y, w, l in raw_rects
+        ]
 
+    @classmethod
+    def _get_static_obstacles(
+        cls,
+        board: Board,
+        layer: str,
+        elevation: int
+    ) -> _StaticObstacleCache:
+        """
+        Retrieves or compiles the un-inflated static obstacle cache for
+        (layer, elevation), invalidated lazily by Board.static_version(layer)
+        and perimeter reference changes.
+        """
+        if cls._cached_board is not board:
+            cls._static_cache.clear()
+            cls._cached_board = board
+
+        version = board.static_version(layer)
+        layer_perims = board.perimeters.get(layer)
+        perimeters = layer_perims.get(elevation) if layer_perims is not None else None
+        perimeters_len = len(perimeters) if perimeters is not None else 0
+
+        key = (layer, elevation)
+        cached = cls._static_cache.get(key)
+        if (
+            cached is not None
+            and cached.version == version
+            and cached.perimeters_ref is perimeters
+            and cached.perimeters_len == perimeters_len
+        ):
+            return cached
+
+        static_weights: List[Tuple[str, float, float, float, float]] = []
+        static_names_set: Set[str] = set()
+        for asset in board.statics(layer, elevation):
+            hbs = asset.hitbox.get(asset.properties, asset.state, elevation)
+            if not hbs:
+                continue
+            name = asset.name
+            if name:
+                static_names_set.add(name)
+            ax = asset.state.position.x
+            ay = asset.state.position.y
+            for hb in hbs:
+                static_weights.append((
+                    name,
+                    float(ax + hb.position.x),
+                    float(ay + hb.position.y),
+                    float(hb.dimensions.w),
+                    float(hb.dimensions.l),
+                ))
+
+        perimeter_rects: List[Tuple[float, float, float, float]] = (
+            [
+                (
+                    float(bound.position.x),
+                    float(bound.position.y),
+                    float(bound.dimensions.w),
+                    float(bound.dimensions.l),
+                )
+                for bound in perimeters
+            ]
+            if perimeters
+            else []
+        )
+
+        fluid_rects = cls._raw_fluid_obstacles(layer, board, elevation)
+
+        entry = _StaticObstacleCache(
+            version=version,
+            perimeters_ref=perimeters,
+            perimeters_len=perimeters_len,
+            static_names=frozenset(static_names_set),
+            static_weights=static_weights,
+            perimeter_rects=perimeter_rects,
+            fluid_rects=fluid_rects,
+        )
+        cls._static_cache[key] = entry
+        return entry
+
+    @staticmethod
+    def _get_inflated_statics(
+        base: _StaticObstacleCache,
+        pad_x: float,
+        pad_y: float,
+        fluid_pad_x: float,
+        fluid_pad_y: float
+    ) -> _InflatedObstacles:
+        """
+        Retrieves or builds the Minkowski-inflated static obstacle list for
+        the requested (pad_x, pad_y, fluid_pad_x, fluid_pad_y) signature.
+        """
+        pad_key = (pad_x, pad_y, fluid_pad_x, fluid_pad_y)
+        cached = base.inflated.get(pad_key)
+        if cached is not None:
+            return cached
+
+        if len(base.inflated) >= MAX_INFLATED_PAD_VARIANTS:
+            base.inflated.clear()
+
+        two_px = 2.0 * pad_x
+        two_py = 2.0 * pad_y
+        two_fpx = 2.0 * fluid_pad_x
+        two_fpy = 2.0 * fluid_pad_y
+
+        named_weights: List[Tuple[str, Tuple[float, float, float, float]]] = []
+        all_rects: List[Tuple[float, float, float, float]] = []
+        for name, x, y, w, l in base.static_weights:
+            rect = (x - pad_x, y - pad_y, w + two_px, l + two_py)
+            named_weights.append((name, rect))
+            all_rects.append(rect)
+
+        fixed_rects: List[Tuple[float, float, float, float]] = []
+        for x, y, w, l in base.perimeter_rects:
+            rect = (x - pad_x, y - pad_y, w + two_px, l + two_py)
+            fixed_rects.append(rect)
+            all_rects.append(rect)
+
+        for x, y, w, l in base.fluid_rects:
+            rect = (x - fluid_pad_x, y - fluid_pad_y, w + two_fpx, l + two_fpy)
+            fixed_rects.append(rect)
+            all_rects.append(rect)
+
+        inflated = _InflatedObstacles(
+            all_rects=all_rects,
+            named_weights=named_weights,
+            fixed_rects=fixed_rects,
+        )
+        base.inflated[pad_key] = inflated
+        return inflated
 
     @classmethod
     def obstacles(
@@ -338,41 +521,54 @@ class NavigationMechanics(Mechanic):
         """
         Transforms board weights, perimeters, and bridge-carved Fluid hazards
         for the specified elevation tier into flat C-primitive tuples,
-        optionally inflated by Minkowski padding.
+        optionally inflated by Minkowski padding. Reuses cached static obstacle
+        tables per (layer, elevation, static_version) and appends only live
+        dynamic bodies per call.
         """
-        obstacles = []
+        target_e = max(0, elevation)
+        eff_fluid_pad_x = pad_x if fluid_pad_x is None else fluid_pad_x
+        eff_fluid_pad_y = pad_y if fluid_pad_y is None else fluid_pad_y
 
-        for asset in board.weights(layer, elevation=elevation):
-            if asset.name in exclude:
-                continue
-            for hb in asset.hitbox.get(asset.properties, asset.state, elevation):
-                obstacles.append((
-                    float(asset.state.position.x + hb.position.x) - pad_x,
-                    float(asset.state.position.y + hb.position.y) - pad_y,
-                    float(hb.dimensions.w) + 2.0 * pad_x,
-                    float(hb.dimensions.l) + 2.0 * pad_y,
-                ))
-
-        for bound in board.perimeters.get(layer, {}).get(elevation, []):
-            obstacles.append((
-                float(bound.position.x) - pad_x,
-                float(bound.position.y) - pad_y,
-                float(bound.dimensions.w) + 2.0 * pad_x,
-                float(bound.dimensions.l) + 2.0 * pad_y,
-            ))
-
-        obstacles.extend(
-            cls._fluid_obstacles(
-                layer=layer,
-                board=board,
-                elevation=elevation,
-                pad_x=pad_x if fluid_pad_x is None else fluid_pad_x,
-                pad_y=pad_y if fluid_pad_y is None else fluid_pad_y,
-            )
+        base = cls._get_static_obstacles(board, layer, target_e)
+        inflated = cls._get_inflated_statics(
+            base,
+            pad_x,
+            pad_y,
+            eff_fluid_pad_x,
+            eff_fluid_pad_y,
         )
 
-        return obstacles
+        exclude_set = set(exclude) if exclude else set()
+        if not exclude_set or not (exclude_set & base.static_names):
+            obstacles = list(inflated.all_rects)
+        else:
+            obstacles = [
+                rect
+                for name, rect in inflated.named_weights
+                if name not in exclude_set
+            ]
+            obstacles.extend(inflated.fixed_rects)
 
+        # Append only live dynamic weights (m > 0) matching this elevation tier
+        two_px = 2.0 * pad_x
+        two_py = 2.0 * pad_y
+        for asset in board.dynamics(layer):
+            if asset.name in exclude_set:
+                continue
+            hbs = asset.hitbox.get(asset.properties, asset.state, target_e)
+            if not hbs:
+                continue
+            ax = asset.state.position.x
+            ay = asset.state.position.y
+            for hb in hbs:
+                obstacles.append((
+                    float(ax + hb.position.x) - pad_x,
+                    float(ay + hb.position.y) - pad_y,
+                    float(hb.dimensions.w) + two_px,
+                    float(hb.dimensions.l) + two_py,
+                ))
+
+        return obstacles
 
     @staticmethod
     def navigating(sprite: Asset) -> bool:
@@ -383,7 +579,6 @@ class NavigationMechanics(Mechanic):
             return False
         
         return sprite.state.intention in NavigationIntentions
-
 
     @staticmethod
     def _tracks(sprite: Asset) -> bool:
@@ -401,7 +596,6 @@ class NavigationMechanics(Mechanic):
 
         return True
 
-
     @staticmethod
     def _goal(sprite: Asset) -> Optional[GoalSignature]:
         """Builds an identity tuple for detecting Goal substitutions within an Intention."""
@@ -409,7 +603,6 @@ class NavigationMechanics(Mechanic):
         if not goal:
             return None
         return (goal.name, goal.category, goal.layer)
-
 
     @staticmethod
     def _contains(
@@ -424,7 +617,6 @@ class NavigationMechanics(Mechanic):
             (ox - eps) <= x <= (ox + ow + eps)
             and (oy - eps) <= y <= (oy + ol + eps)
         )
-
 
     @classmethod
     def _project(
@@ -497,7 +689,6 @@ class NavigationMechanics(Mechanic):
 
         return point
 
-
     def _clear(self, sprite: Asset) -> None:
         """
         Resets tactical trajectory buffers and stall cooldown when an entity
@@ -507,7 +698,6 @@ class NavigationMechanics(Mechanic):
         sprite.state.trajectory.vertices.clear()
         sprite.state.trajectory.stalled = False
         sprite.state.trajectory.cooldown = 0
-
 
     def _target(self, sprite: Asset, board: Board) -> Optional[Position]:
         """
@@ -537,7 +727,6 @@ class NavigationMechanics(Mechanic):
             x=goal.position.x + offset_x,
             y=goal.position.y + offset_y,
         )
-
 
     def _plan(self, 
         sprite: Asset, 
@@ -579,7 +768,6 @@ class NavigationMechanics(Mechanic):
         logger.info(f"Pathfinding stalled for {sprite.name}; no valid route found.")
         return False
 
-        
     def _navigate(self, sprite: Asset, board: Board) -> None:
         """
         Tactical trajectory update frequency for an individual sprite.
@@ -712,7 +900,6 @@ class NavigationMechanics(Mechanic):
 
                 planned = True
 
-                
             else:
                 # Active waypoints exist: validate LOS to immediate waypoint
                 if (
@@ -785,7 +972,6 @@ class NavigationMechanics(Mechanic):
                 
                 sprite.state.trajectory.target = goal_target
                 return
-
 
     def update(
         self,

@@ -12,9 +12,11 @@ CollisionMechanics implementation.
 from __future__ import annotations
 
 # Standard Libraries
-# Standard Libraries
 from typing import (
+    Dict,
     List,
+    Optional,
+    Tuple,
     TYPE_CHECKING
 )
 import collections
@@ -39,6 +41,7 @@ from app.models.state import (
 # Cython Libraries
 import libs.core.math.physics as physics
 import libs.core.math.geometry as geometry
+from libs.core.math.space import Space
 from libs.core.models import (
     Boundary,
     Hitbox,
@@ -63,6 +66,10 @@ class CollisionMechanics(SpatialMechanic):
 
     Mechanic responsible for resolving Asset collisions natively.
     """
+    _board_ref: Optional[Board]
+    _static_cache: Dict[Tuple[str, int], Tuple[int, List[Asset], List[Tuple], Space]]
+    _perimeter_cache: Dict[str, Tuple[Optional[List[Boundary]], int, List[Tuple], Space]]
+
     @staticmethod
     def _stair_hitboxes(stairs: Asset) -> List[Hitbox]:
         """
@@ -77,8 +84,82 @@ class CollisionMechanics(SpatialMechanic):
         return []
 
     def __init__(self, cell_size: int = 64, max_entities: int = 2000):
-        """Initializes the broad-phase spatial grid for collision resolution."""
+        """Initializes the broad-phase spatial grid and versioned static caches."""
         super().__init__(cell_size=cell_size, max_entities=max_entities)
+        self._board_ref = None
+        self._static_cache = {}
+        self._perimeter_cache = {}
+
+    def _static_tier(
+        self,
+        board: Board,
+        layer: str,
+        elevation: int
+    ) -> Tuple[List[Asset], List[Tuple], Space]:
+        """
+        Retrieves or builds the cached static asset list, Cython primitive buffer,
+        and pre-populated Space grid for a (layer, elevation) tier keyed by
+        Board.static_version(layer).
+        """
+        version = board.static_version(layer)
+        key = (layer, elevation)
+        cached = self._static_cache.get(key)
+        if cached is not None and cached[0] == version:
+            return cached[1], cached[2], cached[3]
+
+        tier_statics = board.statics(layer, elevation)
+        active_statics: List[Asset] = []
+        static_primitives: List[Tuple] = []
+        idx = 0
+        for asset in tier_statics:
+            hbs = asset.hitbox.get(asset.properties, asset.state, elevation)
+            if not hbs:
+                continue
+            static_primitives.append(asset.primitive(idx, hbs))
+            active_statics.append(asset)
+            idx += 1
+
+        static_grid = (
+            cached[3]
+            if cached is not None
+            else Space(
+                cell_size=self.grid.cell_size,
+                max_entities=max(self.grid.max_entities, len(active_statics) + 64)
+            )
+        )
+        physics.populate_statics(static_primitives, static_grid)
+        self._static_cache[key] = (version, active_statics, static_primitives, static_grid)
+        return active_statics, static_primitives, static_grid
+
+    def _perimeter_tier(
+        self,
+        layer: str,
+        perimeters: List[Boundary]
+    ) -> Tuple[List[Tuple], Space]:
+        """
+        Retrieves or builds the cached perimeter primitive buffer and pre-populated
+        Space grid for base terrain (elevation == 0) boundary constraints.
+        """
+        cached = self._perimeter_cache.get(layer)
+        perim_len = len(perimeters)
+        if cached is not None and cached[0] is perimeters and cached[1] == perim_len:
+            return cached[2], cached[3]
+
+        bound_primitives = [
+            (i, b.position.x, b.position.y, b.dimensions.w, b.dimensions.l)
+            for i, b in enumerate(perimeters)
+        ]
+        bound_grid = (
+            cached[3]
+            if cached is not None
+            else Space(
+                cell_size=self.grid.cell_size,
+                max_entities=max(256, perim_len + 32)
+            )
+        )
+        physics.populate_bounds(bound_primitives, bound_grid)
+        self._perimeter_cache[layer] = (perimeters, perim_len, bound_primitives, bound_grid)
+        return bound_primitives, bound_grid
 
     def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
         """
@@ -247,7 +328,8 @@ class CollisionMechanics(SpatialMechanic):
     def _resolve(self, asset_a: Asset, asset_b: Asset, elevation: int) -> None:
         """
         Extract variables logically and defer matrix shifts to Cython,
-        resolving hitboxes matching the active collision elevation tier.
+        resolving all intersecting hitbox pairs at the active collision elevation
+        tier so compound multi-hitbox obstacles resolve cleanly in a single tick.
         """
         m1 = asset_a.properties.mass
         m2 = asset_b.properties.mass
@@ -277,30 +359,54 @@ class CollisionMechanics(SpatialMechanic):
             else asset_b.hitboxes
         )
 
-        intersection = geometry.intersects(
+        pairs = geometry.intersections(
             asset_a.state.position,
             hitboxes_a,
             asset_b.state.position,
             hitboxes_b
         )
 
-        if not intersection:
+        if not pairs:
             return
 
-        hb_a, hb_b = intersection
+        # Resolve deepest overlap area first to prevent internal-seam ghost nudges
+        if len(pairs) > 1:
+            pos_a = asset_a.state.position
+            pos_b = asset_b.state.position
+            pairs.sort(
+                key=lambda pair: (
+                    min(
+                        pos_a.x + pair[0].position.x + pair[0].dimensions.w,
+                        pos_b.x + pair[1].position.x + pair[1].dimensions.w
+                    ) - max(
+                        pos_a.x + pair[0].position.x,
+                        pos_b.x + pair[1].position.x
+                    )
+                ) * (
+                    min(
+                        pos_a.y + pair[0].position.y + pair[0].dimensions.l,
+                        pos_b.y + pair[1].position.y + pair[1].dimensions.l
+                    ) - max(
+                        pos_a.y + pair[0].position.y,
+                        pos_b.y + pair[1].position.y
+                    )
+                ),
+                reverse=True
+            )
 
-        physics.collide(
-            asset_a.state.position,
-            hb_a,
-            vel1,
-            m1,
-            is_kinematic1,
-            asset_b.state.position,
-            hb_b,
-            vel2,
-            m2,
-            is_kinematic2
-        )
+        for hb_a, hb_b in pairs:
+            physics.collide(
+                asset_a.state.position,
+                hb_a,
+                vel1,
+                m1,
+                is_kinematic1,
+                asset_b.state.position,
+                hb_b,
+                vel2,
+                m2,
+                is_kinematic2
+            )
 
     def update(self,
         board: Board,
@@ -309,24 +415,33 @@ class CollisionMechanics(SpatialMechanic):
         payload: DevicePayload
     ) -> None:
         """
-        Executes the physics loop partitioned by discrete elevation tiers.
+        Executes the physics loop partitioned by active dynamic elevation tiers,
+        skipping layers and tiers without non-falling dynamic bodies and avoiding
+        static-vs-static hashing or resolution.
         """
+        if self._board_ref is not board:
+            self._static_cache.clear()
+            self._perimeter_cache.clear()
+            self._board_ref = board
+
         for layer in board.layers():
+            dynamics = [
+                d for d in board.dynamics(layer)
+                if not d.state.mutators.triggers.falling
+            ]
+            if not dynamics:
+                continue
+
             # -------------------------------------------------------------
             # PHASE 0: Incline Traversal & Elevation State Mutation
             # -------------------------------------------------------------
             stairs = board.instances(AssetInstances.STAIRS, layer)
             if stairs:
-                movers = [
-                    w for w in board.weights(layer)
-                    if w.properties.mass > 0
-                    and not w.state.mutators.triggers.falling
-                ]
                 for stair in stairs:
                     stair_hbs = self._stair_hitboxes(stair)
                     if not stair_hbs:
                         continue
-                    for mover in movers:
+                    for mover in dynamics:
                         if geometry.intersects(
                             mover.state.position,
                             mover.hitboxes,
@@ -336,30 +451,86 @@ class CollisionMechanics(SpatialMechanic):
                             self._traverse_stairs(mover, stair)
 
             # -------------------------------------------------------------
-            # TIER PARTITIONING
+            # ACTIVE-TIER PARTITIONING (Dynamic Bodies Only)
             # -------------------------------------------------------------
-            weights = [
-                w for w in board.weights(layer)
-                if not w.state.mutators.triggers.falling
-            ]
-            weights_by_elevation = collections.defaultdict(list)
-            for w in weights:
-                # Deduplicate tiers that collapse to <= 0
-                for tier in {max(0, t) for t in w.hitbox.elevations(w.properties, w.state)}:
-                    weights_by_elevation[tier].append(w)
+            dynamics_by_elevation: Dict[int, List[Asset]] = collections.defaultdict(list)
+            for dyn in dynamics:
+                elevs = dyn.hitbox.elevations(dyn.properties, dyn.state)
+                if len(elevs) == 1:
+                    dynamics_by_elevation[max(0, elevs[0])].append(dyn)
+                elif elevs:
+                    # Deduplicate tiers that collapse to <= 0
+                    for tier in {max(0, t) for t in elevs}:
+                        dynamics_by_elevation[tier].append(dyn)
 
-            for elevation, tier_weights in weights_by_elevation.items():
+            for elevation, tier_dynamics in dynamics_by_elevation.items():
+                tier_dyn_primitives = [
+                    asset.primitive(
+                        i,
+                        asset.hitbox.get(asset.properties, asset.state, elevation)
+                    )
+                    for i, asset in enumerate(tier_dynamics)
+                ]
+
                 # Phase 1: Boundary Constraints (restricted to base terrain elevation == 0)
                 if elevation == 0:
-                    perimeters = board.perimeters.get(layer, {}).get(elevation, [])
+                    layer_perims = board.perimeters.get(layer)
+                    perimeters = layer_perims.get(elevation) if layer_perims is not None else None
                     if perimeters:
-                        dynamics = [
-                            w for w in tier_weights
-                            if w.properties.mass > 0
-                        ]
-                        for asset, boundary in self.constrain(dynamics, perimeters, elevation=elevation):
-                            self._boundary(asset, boundary, elevation=elevation)
+                        bound_prims, bound_grid = self._perimeter_tier(layer, perimeters)
+                        bound_hits = physics.query_bounds(
+                            tier_dyn_primitives,
+                            bound_prims,
+                            bound_grid
+                        )
+                        if bound_hits:
+                            shifted = set()
+                            for dyn_idx, bound_idx in bound_hits:
+                                self._boundary(
+                                    tier_dynamics[dyn_idx],
+                                    perimeters[bound_idx],
+                                    elevation=elevation
+                                )
+                                shifted.add(dyn_idx)
+                            for dyn_idx in shifted:
+                                tier_dyn_primitives[dyn_idx] = tier_dynamics[dyn_idx].primitive(
+                                    dyn_idx,
+                                    tier_dyn_primitives[dyn_idx][5]
+                                )
 
-                # Phase 2: Dynamic Collisions
-                for asset_a, asset_b in self.collisions(tier_weights, elevation=elevation):
-                    self._resolve(asset_a, asset_b, elevation=elevation)
+                # Phase 2A: Dynamic-vs-Dynamic Collisions
+                if len(tier_dynamics) > 1:
+                    dyn_hits = physics.collisions(tier_dyn_primitives, self.grid)
+                    if dyn_hits:
+                        shifted = set()
+                        for id_a, id_b in dyn_hits:
+                            self._resolve(
+                                tier_dynamics[id_a],
+                                tier_dynamics[id_b],
+                                elevation=elevation
+                            )
+                            shifted.add(id_a)
+                            shifted.add(id_b)
+                        for dyn_idx in shifted:
+                            tier_dyn_primitives[dyn_idx] = tier_dynamics[dyn_idx].primitive(
+                                dyn_idx,
+                                tier_dyn_primitives[dyn_idx][5]
+                            )
+
+                # Phase 2B: Dynamic-vs-Static Bipartite Collisions (persistent static Space)
+                tier_statics, static_primitives, static_grid = self._static_tier(
+                    board,
+                    layer,
+                    elevation
+                )
+                if tier_statics:
+                    for dyn_idx, stat_idx in physics.query_statics(
+                        tier_dyn_primitives,
+                        static_primitives,
+                        static_grid
+                    ):
+                        self._resolve(
+                            tier_dynamics[dyn_idx],
+                            tier_statics[stat_idx],
+                            elevation=elevation
+                        )

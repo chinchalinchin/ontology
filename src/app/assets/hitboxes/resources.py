@@ -18,20 +18,19 @@ from app.models.properties import ResourceProperties
 from app.models.state import ResourceState
 
 # Cython Libraries
-from libs.core.models import (
-    Hitbox,
-    Position
-)
+from libs.core.models import Hitbox
 # ---------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------
 
+
 class StageHitbox(HitboxSchema):
     """
     Resolves biological/geological stage-indexed hitboxes from ResourceProperties.
     """
+
     def elevations(self, properties: ResourceProperties, state: ResourceState) -> List[int]:
         return [max(0, state.elevation if state.elevation is not None else 0)]
 
@@ -49,7 +48,5 @@ class StageHitbox(HitboxSchema):
         if max(0, elevation) != target_e:
             return []
         if properties.hitboxes is None:
-            if properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
-            return []
+            return self._dimension_fallback(properties.dimensions)
         return properties.hitboxes.get(state.stage, []) or []

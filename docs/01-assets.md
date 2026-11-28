@@ -1,6 +1,6 @@
 # Ontology Docs: Assets
 
-This document serves to specify the Asset architecture and provide key definition for [Application](./00-overview.md#application) terminology.
+This document serves to specify the Asset architecture and provide key definitions for [Application](./00-overview.md#application) terminology.
 
 !!! note "Definition"
     An Asset is an image file.
@@ -23,7 +23,7 @@ The Property indices are used to index each Asset file into the [Registry](./00-
 
 **IDs & Names**
 
-IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#library-registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not rendered entities.
+IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#library-registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered on [Screen](./00-overview.md#component-screen). In other words, IDs uniquely identify a physical Asset File, but not rendered entities.
 
 Names are used to uniquely identify a specific Instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the [Board](./00-overview.md#component-board). 
 
@@ -108,7 +108,7 @@ If an Asset's visual representation changes instantaneously as a direct function
 
 #### Concept: Physicality
 
-Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, an Asset's Mass determines its behavior within the physics of the game.
+Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, an Asset's Mass determines its behavior within the physics of the [Application](./00-overview.md#application).
  
 * $m > 0$: **Dynamic Body**. Participates in momentum calculations.
 * $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.
@@ -126,16 +126,16 @@ $$
 \text{sort_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground}(A),\; A.\text{properties.priority}\Big)
 $$
 
-1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological story or platform tier (`0`, `1`, `2`, ...).
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological tier (`0`, `1`, `2`, ...).
 2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within macro-elevation $E$.
 3. **Tertiary Key (`ground(A)` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground(A)} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
-4. **Quaternary Key (`A.properties.priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
+4. **Quaternary Key (`A.properties.priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on Asset Properties.
 
 See [Rendering documentation](./12-architecture.md#rendering-sort) for more information.
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their [rendering order](./12-architecture.md#rendering-sort). These values are hydrated onto the Asset directly via the[MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their [rendering order](./12-architecture.md#rendering-sort). These values are hydrated onto the Asset directly via the [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration).
 
 --8<-- "static/md/asset-substrates.md"
 

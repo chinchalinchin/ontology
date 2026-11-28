@@ -224,8 +224,29 @@ class Board:
         return weights
     
 
+    def dynamics(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        """Retrieves dynamic physical weights (m > 0), optionally filtered by layer and elevation."""
+        dynamics = self._cache.get_dynamics(layer)
+        if elevation is not None:
+            target_e = max(0, elevation)
+            return [d for d in dynamics if target_e in d.hitbox.elevations(d.properties, d.state)]
+        return dynamics
+
+    def statics(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        """Retrieves static physical weights (m == 0), pre-indexed by normalized elevation."""
+        return self._cache.get_statics(layer, elevation)
+
+    def static_version(self, layer: str) -> int:
+        """Returns the monotonic static geometry version counter for the specified layer."""
+        return self._cache.get_static_version(layer)
+
+    def invalidate_statics(self, layer: Optional[str] = None) -> None:
+        """Marks static collider indices dirty and increments the per-layer static version."""
+        self._cache.invalidate_statics(layer)
+
     def obstacles(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
-        obstacles = self._cache.get_obstacles(layer) if layer is not None else []
+        """Retrieves navigational obstacle candidates across one or all layers."""
+        obstacles = self._cache.get_obstacles(layer)
         if elevation is not None:
             target_e = max(0, elevation)
             return [o for o in obstacles if target_e in o.hitbox.elevations(o.properties, o.state)]

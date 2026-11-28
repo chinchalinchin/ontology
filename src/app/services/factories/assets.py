@@ -10,7 +10,10 @@
 Factory for instantiating Assets and flyweight Asset components.
 """
 # Standard Libraries
-from typing import Optional
+from typing import (
+    Dict,
+    Optional,
+)
 
 # Application Libraries
 from app.assets.base import (
@@ -59,6 +62,7 @@ from app.assets.hitboxes import (
     StaticHitbox,
     SwitchHitbox
 )
+from app.game.logic.relations import MaterialIndex
 from app.game.menus.bindings import Binding
 from app.game.menus.core import Widget
 from app.models.configurations import (
@@ -67,6 +71,7 @@ from app.models.configurations import (
 )
 from app.models.properties import (
     AssetProperties,
+    CursorProperties,
     WidgetProperties
 )
 from app.models.state import (
@@ -130,6 +135,23 @@ class AssetFactory:
     }
 
     @classmethod
+    def configure(
+        cls,
+        materials: Optional[MaterialIndex] = None,
+        projectiles: Optional[Dict[str, CursorProperties]] = None
+    ) -> None:
+        """
+        Injects compiled runtime relations and precomputes flyweight hitbox tables.
+        """
+        if materials is not None:
+            cls._HITBOXES[HitboxRecipe.MATERIAL].set_materials(materials)
+
+        if projectiles:
+            rotated = cls._HITBOXES[HitboxRecipe.ROTATED]
+            for props in projectiles.values():
+                rotated.precompute(props)
+
+    @classmethod
     def frame(cls, recipe: str) -> Frame:
         return cls._FRAMES.get(recipe, cls._FRAMES[FrameRecipe.NONE])
 
@@ -139,7 +161,10 @@ class AssetFactory:
 
     @classmethod
     def hitbox(cls, recipe: str) -> HitboxSchema:
-        return cls._HITBOXES.get(recipe, cls._HITBOXES[HitboxRecipe.STATIC])
+        """Resolves a flyweight HitboxSchema by recipe key, raising KeyError if unknown."""
+        if recipe not in cls._HITBOXES:
+            raise KeyError(f"Unknown hitbox recipe: '{recipe}'")
+        return cls._HITBOXES[recipe]
 
     @classmethod
     def asset(cls,

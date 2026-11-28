@@ -10,7 +10,6 @@ tools:
     # --------------------------------------------
     manager:
       docs: true
-      templates: true
     # --------------------------------------------
     metrics:
       pstats: true
@@ -25,6 +24,9 @@ tools:
   parameters:
     # --------------------------------------------
     manager:
+      board:
+        phase: 03-07
+        action: refactor
       docs:
         exclude:
           # - 00-overview
@@ -64,6 +66,14 @@ tools:
             scan:
               domain: [ system ]
               app: [ core, component ]
+          - title: 'Core - Board: Cache'
+            scan:
+              domain: [ system ]
+              app: [ board, module ]
+          - title: 'Module - Predicates'
+            scan:
+              domain: [ logic ]
+              app: [ module, semantics ]
           - title: 'Abstract - Asset'
             scan:
               domain: [ abstract ]
@@ -87,6 +97,21 @@ tools:
               domain: [ logic ]
               app: [ mechanic ]
               workflows: [ navigation ]
+          - title: 'Mechanic - Motion'
+            scan:
+              domain: [ logic ]
+              app: [ mechanic ]
+              physics: [ motion ] 
+          - title: 'Application - Modules: Motion'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ motion ]
+          - title: 'Application - Modules: Fields'
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              physics: [ fields ]
           - title: 'Module - Relation: Material'
             scan:
               domain: [ logic ]

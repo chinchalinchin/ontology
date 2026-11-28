@@ -17,10 +17,8 @@ from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
 # Cython Libraries
-from libs.core.models import (
-    Hitbox,
-    Position
-)
+from libs.core.models import Hitbox
+
 
 class StaticHitbox(HitboxSchema):
     """
@@ -43,9 +41,7 @@ class StaticHitbox(HitboxSchema):
         if max(0, elevation) != target_e:
             return []
         if properties.hitboxes is None:
-            if properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
-            return []
+            return self._dimension_fallback(properties.dimensions)
         return properties.hitboxes
 
     
@@ -71,9 +67,7 @@ class DynamicHitbox(HitboxSchema):
             return []
         if state.hitboxes is None:
             if properties.hitboxes is None:
-                if properties.dimensions:
-                    return [Hitbox(Position(0, 0), properties.dimensions)]
-                return []
+                return self._dimension_fallback(properties.dimensions)
             return properties.hitboxes
         return state.hitboxes
     
