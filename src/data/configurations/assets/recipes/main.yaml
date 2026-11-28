@@ -21,10 +21,6 @@ recipes:
       frame: single
       animation: none
       hitbox: static
-    platforms: 
-      frame: single
-      animation: none
-      hitbox: elevated
     struts:
       frame: material
       animation: none
