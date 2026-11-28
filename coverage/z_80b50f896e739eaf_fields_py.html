@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/app/game/logic/modules/motion/fields.py: 96%</title>
+    <title>Coverage for src/app/game/logic/modules/motion/fields.py: 98%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_4667309f.css" type="text/css">
     <script src="coverage_html_cb_54cfdca1.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src<span class="sep">/</span>app<span class="sep">/</span>game<span class="sep">/</span>logic<span class="sep">/</span>modules<span class="sep">/</span>motion<span class="sep">/</span>fields.py</b>:
-            <span class="pc_cov">96%</span>
+            <span class="pc_cov">98%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">252 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">241<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">11<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">246<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">6<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">3<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_80b50f896e739eaf_frictive_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.5">coverage.py v7.17.5</a>,
-            created at 2026-11-28 00:35 +0000
+            created at 2026-11-28 07:43 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -207,12 +207,12 @@
     <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">        <span class="key">elif</span> <span class="nam">inst</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">BRIDGES</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">            <span class="key">if</span> <span class="nam">base_e</span> <span class="op">==</span> <span class="nam">elevation</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">                <span class="nam">aabbs</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">x</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">y</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">w</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">l</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">                <span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">                <span class="nam">aabbs</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">x</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">y</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">w</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">                    <span class="nam">int</span><span class="op">(</span><span class="nam">craft</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">l</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">                <span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">        <span class="key">elif</span> <span class="nam">inst</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">STRUTS</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">            <span class="com"># Support sensor struts (mass &lt; 0) and passable surface blueprints at tier E</span>&nbsp;</span><span class="r"></span></p>
@@ -293,10 +293,10 @@
     <p class="run"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">            <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">        <span class="key">if</span> <span class="nam">asset</span><span class="op">.</span><span class="nam">elevation</span> <span class="op">&lt;=</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">elevation</span> <span class="op">=</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">mutators</span><span class="op">.</span><span class="nam">triggers</span><span class="op">.</span><span class="nam">falling</span> <span class="op">=</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">mutators</span><span class="op">.</span><span class="nam">parameters</span><span class="op">.</span><span class="nam">descension</span> <span class="op">=</span> <span class="num">0.0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t">            <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">elevation</span> <span class="op">=</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">mutators</span><span class="op">.</span><span class="nam">triggers</span><span class="op">.</span><span class="nam">falling</span> <span class="op">=</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t">            <span class="nam">asset</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">mutators</span><span class="op">.</span><span class="nam">parameters</span><span class="op">.</span><span class="nam">descension</span> <span class="op">=</span> <span class="num">0.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t">            <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t">        <span class="nam">is_falling</span> <span class="op">=</span> <span class="nam">asset</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">mutators</span><span class="op">.</span><span class="nam">triggers</span><span class="op">.</span><span class="nam">falling</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -597,7 +597,7 @@
             <a class="nav" href="z_80b50f896e739eaf_frictive_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.5">coverage.py v7.17.5</a>,
-            created at 2026-11-28 00:35 +0000
+            created at 2026-11-28 07:43 +0000
         </p>
     </div>
 </footer>
