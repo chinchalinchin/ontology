@@ -457,3 +457,165 @@ def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
     player.state.velocity = Velocity(20.0, 0.0)
     mechanics.update(mock_board, 0.016, mock_bus, payload)
     assert player.elevation == stairs.elevation
+
+def test_collision_mechanics_traverse_stairs_elevation_mismatch_and_falling_ignored(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies Phase 0 ignores movers whose elevation matches neither stair base nor summit
+    as well as movers currently in freefall (triggers.falling == True).
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 1
+    stairs.state.blueprint = Directions.UP.value
+    stairs.state.position = Position(500, 500)
+
+    player_hb = player.hitboxes[0]
+    stair_hb = stairs.hitboxes[0]
+    aligned_x = (
+        stairs.state.position.x
+        + stair_hb.position.x
+        + (stair_hb.dimensions.w // 2)
+        - player_hb.position.x
+        - (player_hb.dimensions.w // 2)
+    )
+    ascent_y = (
+        stairs.state.position.y
+        + stair_hb.position.y
+        - player.dimensions.l
+        + int(stair_hb.dimensions.l * 0.5)
+    )
+
+    # Elevation mismatch: entity at E = 2 on a 0 -> 1 stair remains at E = 2
+    player.elevation = stairs.elevation + stairs.state.delta + 1
+    player.state.mutators.triggers.falling = False
+    player.state.position = Position(aligned_x, ascent_y)
+    player.state.velocity = Velocity(0.0, -20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation + stairs.state.delta + 1
+
+    # Freefall exclusion: falling entity at E = 0 bypasses Phase 0 stair promotion
+    player.elevation = stairs.elevation
+    player.state.mutators.triggers.falling = True
+    player.state.position = Position(aligned_x, ascent_y)
+    player.state.velocity = Velocity(0.0, -20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation
+
+
+def test_collision_mechanics_traverse_stairs_directional_and_threshold_gating(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies Phase 0 enforces both directional velocity sign and tread_progress
+    thresholds before shifting elevation.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 1
+    stairs.state.blueprint = Directions.UP.value
+    stairs.state.position = Position(500, 500)
+
+    player_hb = player.hitboxes[0]
+    stair_hb = stairs.hitboxes[0]
+    aligned_x = (
+        stairs.state.position.x
+        + stair_hb.position.x
+        + (stair_hb.dimensions.w // 2)
+        - player_hb.position.x
+        - (player_hb.dimensions.w // 2)
+    )
+    mid_y = (
+        stairs.state.position.y
+        + stair_hb.position.y
+        - player.dimensions.l
+        + int(stair_hb.dimensions.l * 0.5)
+    )
+    bottom_y = (
+        stairs.state.position.y
+        + stair_hb.position.y
+        - player.dimensions.l
+        + int(stair_hb.dimensions.l * 0.9)
+    )
+
+    # Moving South at E = 0 mid-tread does not ascend
+    player.elevation = stairs.elevation
+    player.state.position = Position(aligned_x, mid_y)
+    player.state.velocity = Velocity(0.0, 20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation
+
+    # Moving North at E = 0 below the 0.85 threshold (tread_progress == 0.9) does not ascend yet
+    player.state.position = Position(aligned_x, bottom_y)
+    player.state.velocity = Velocity(0.0, -20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation
+
+    # Moving South at E = 1 above the 0.85 threshold (tread_progress == 0.5) does not descend yet
+    player.elevation = stairs.elevation + stairs.state.delta
+    player.state.position = Position(aligned_x, mid_y)
+    player.state.velocity = Velocity(0.0, 20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation + stairs.state.delta
+
+
+def test_collision_mechanics_traverse_stairs_multi_delta(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies Phase 0 shifts elevation by stairs.state.delta for multi-tier inclines.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 2
+    stairs.state.blueprint = Directions.UP.value
+    stairs.state.position = Position(500, 500)
+
+    player_hb = player.hitboxes[0]
+    stair_hb = stairs.hitboxes[0]
+    aligned_x = (
+        stairs.state.position.x
+        + stair_hb.position.x
+        + (stair_hb.dimensions.w // 2)
+        - player_hb.position.x
+        - (player_hb.dimensions.w // 2)
+    )
+
+    player.elevation = stairs.elevation
+    player.state.position = Position(
+        aligned_x,
+        stairs.state.position.y + stair_hb.position.y - player.dimensions.l + int(stair_hb.dimensions.l * 0.5),
+    )
+    player.state.velocity = Velocity(0.0, -20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation + stairs.state.delta
+
+    player.state.position = Position(
+        aligned_x,
+        stairs.state.position.y + stair_hb.position.y - player.dimensions.l + int(stair_hb.dimensions.l * 0.9),
+    )
+    player.state.velocity = Velocity(0.0, 20.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == stairs.elevation

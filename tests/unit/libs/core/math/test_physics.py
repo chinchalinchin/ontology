@@ -373,3 +373,57 @@ def test_physics_collide_single_pixel_and_unequal_mass_separation():
     )
 
     assert pos_light.x - pos_heavy.x == 32
+
+def test_physics_collisions_compound_hitboxes(mock_space_grid):
+    """
+    Verifies _insert_hitboxes hashes the union bounding span across compound hitboxes
+    so overlaps on secondary hitboxes outside the primary footprint are detected.
+    """
+    hb_a1 = Hitbox(Position(0, 0), Dimensions(10, 10))
+    hb_a2 = Hitbox(Position(100, 0), Dimensions(20, 20))
+    hb_b1 = Hitbox(Position(200, 0), Dimensions(10, 10))
+    hb_b2 = Hitbox(Position(110, 5), Dimensions(20, 20))
+
+    p1 = (0, 0, 0, 32, 32, [hb_a1, hb_a2])
+    p2 = (1, 0, 0, 32, 32, [hb_b1, hb_b2])
+
+    assert physics.collisions([p1, p2], mock_space_grid) == [(0, 1)]
+
+
+def test_physics_avoid_surrounded_returns_zero_velocity():
+    """
+    Verifies RVO falls back to Velocity(0.0, 0.0) when all sampled escape directions
+    are occluded by surrounding stationary obstacles.
+    """
+    agent = (0, 0, 0, 64, 64)
+    cx, cy = 32.0, 32.0
+    offsets = (
+        (30.0, 0.0),
+        (-30.0, 0.0),
+        (0.0, 30.0),
+        (0.0, -30.0),
+        (21.0, 21.0),
+        (-21.0, 21.0),
+        (21.0, -21.0),
+        (-21.0, -21.0),
+    )
+    neighbors = [(cx + ox, cy + oy, 0.0, 0.0, 32.0, True) for ox, oy in offsets]
+
+    result = physics.avoid(agent, Velocity(50.0, 0.0), neighbors, 0.016)
+    assert result.vx == 0.0
+    assert result.vy == 0.0
+
+
+def test_physics_constrain_coincident_center_fallback():
+    """
+    Verifies physics.constrain separates along X and inverts vx when entity and
+    boundary share identical centers (dx == 0, dy == 0).
+    """
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    pos = Position(10, 10)
+    vel = Velocity(20.0, 0.0)
+
+    physics.constrain(pos, hb, vel, False, 10, 10, 32, 32)
+
+    assert pos.x < 10
+    assert vel.vx == -20.0

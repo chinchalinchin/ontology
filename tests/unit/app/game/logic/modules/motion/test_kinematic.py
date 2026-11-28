@@ -103,3 +103,43 @@ def test_kinematic_axis_snap(
 
     assert mock_player.state.velocity.vx == speed
     assert mock_player.state.velocity.vy == 0.0
+
+@pytest.mark.workflow_gravity
+def test_kinematic_falling_preserves_velocity(
+    mock_board,
+    mock_payload,
+):
+    """Verifies airborne players bypass kinematic input overrides and preserve momentum."""
+    player = mock_board.player()
+    player.state.mutators.triggers.falling = True
+    player.state.velocity.vx = 35.0
+    player.state.velocity.vy = 12.0
+
+    payload = mock_payload(goals=[PlayerGoals.LEFT.value])
+    kinematic.update([player], payload, 1.0)
+
+    assert player.state.velocity.vx == 35.0
+    assert player.state.velocity.vy == 12.0
+
+
+def test_kinematic_opposing_inputs_cancel(
+    mock_board,
+    mock_payload,
+):
+    """Verifies opposing horizontal or vertical inputs cancel to zero velocity."""
+    player = mock_board.player()
+    player.state.velocity.vx = 25.0
+    player.state.velocity.vy = -25.0
+
+    payload = mock_payload(
+        goals=[
+            PlayerGoals.LEFT.value,
+            PlayerGoals.RIGHT.value,
+            PlayerGoals.UP.value,
+            PlayerGoals.DOWN.value,
+        ]
+    )
+    kinematic.update([player], payload, 1.0)
+
+    assert player.state.velocity.vx == 0.0
+    assert player.state.velocity.vy == 0.0

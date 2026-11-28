@@ -19,6 +19,7 @@ import pytest
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
+    Buildings,
     Mechanics,
 )
 
@@ -259,3 +260,74 @@ def test_spatial_mechanic_proximities_cross_cell_boundary(mock_mechanic, mock_as
 
     assert len(pairs) == 1
     assert (sprite_a, sprite_b) in pairs or (sprite_b, sprite_a) in pairs
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_intersections_elevation_isolation(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.intersections isolates assets occupying distinct elevation tiers.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate_a = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    crate_b = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+
+    crate_a.elevation = 0
+    crate_a.state.position = Position(10, 10)
+    crate_b.elevation = 1
+    crate_b.state.position = Position(10, 10)
+
+    assert mechanics.intersections([crate_a, crate_b]) == []
+
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_proximities_elevation_isolation(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.proximities filters out candidate pairs on distinct elevation tiers.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    sprite_a = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite_b = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+
+    sprite_a.elevation = 0
+    sprite_a.state.position = Position(10, 10)
+    sprite_b.elevation = 1
+    sprite_b.state.position = Position(20, 10)
+
+    assert mechanics.proximities([sprite_a, sprite_b]) == []
+
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_intersections_skips_empty_hitbox_assets(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.intersections excludes passable assets whose HitboxSchema
+    emits empty elevations and hitboxes (e.g., floor Struts).
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    strut = mock_asset(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
+
+    strut.state.blueprint = Buildings.FLOORS.value
+    sprite.state.position = Position(50, 50)
+    strut.state.position = Position(50, 50)
+
+    assert mechanics.intersections([sprite, strut]) == []

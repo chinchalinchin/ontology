@@ -19,8 +19,10 @@ from app.static.semantics import (
     AnnualStages,
     AssetCategories,
     AssetInstances,
+    Buildings,
     Directions,
     PerennialStages,
+    LayerProjections,
 )
 
 # Cython Libraries
@@ -250,19 +252,6 @@ def test_attack_hitbox_non_dict_hitboxes_returns_empty(mock_equipment, mock_asse
         AssetInstances.PLAYERS.value,
     )
 
-    player.state.elevation = 0
-    assert longbow.hitbox.get(longbow.properties, player.state, elevation=0) == []
-
-@pytest.mark.category_sheets
-@pytest.mark.workflow_combat
-def test_attack_hitbox_non_dict_hitboxes_returns_empty(mock_equipment, mock_asset):
-    """Verifies AttackHitbox returns an empty list when weapon hitboxes are None."""
-    longbow = mock_equipment.weapons["longbow"]
-    player = mock_asset(
-        AssetCategories.SHEETS.value,
-        AssetInstances.PLAYERS.value,
-    )
-
     longbow.properties.hitboxes = None
     player.state.elevation = 0
     player.state.animation.action = Actions.SHOOT.value
@@ -431,3 +420,58 @@ def test_rotated_hitbox_diagonal_projection(mock_asset):
     assert len(rotated) == 1
     assert (rotated[0].position.x, rotated[0].position.y) == (8, 8)
     assert (rotated[0].dimensions.w, rotated[0].dimensions.l) == (7, 7)
+
+@pytest.mark.category_crafts
+@pytest.mark.modality_material
+def test_material_hitbox_passable_blueprint_returns_empty(mock_asset):
+    """MaterialHitbox emits empty elevations and hitboxes for passable surface blueprints."""
+    strut = mock_asset(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
+    strut.state.elevation = 0
+    strut.state.blueprint = Buildings.FLOORS.value
+
+    assert strut.hitbox.elevations(strut.properties, strut.state) == []
+    assert strut.hitboxes == []
+    assert strut.hitbox.get(strut.properties, strut.state, elevation=0) == []
+
+
+@pytest.mark.category_objects
+def test_switch_hitbox_closed_and_open(mock_asset):
+    """SwitchHitbox emits active hitboxes when closed (switch=False) and [] when open."""
+    gate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.GATES.value,
+    )
+    gate.state.elevation = 0
+
+    gate.state.switch = False
+    assert gate.hitbox.elevations(gate.properties, gate.state) == [0]
+    assert len(gate.hitboxes) >= 1
+    assert gate.hitbox.get(gate.properties, gate.state, elevation=1) == []
+
+    gate.state.switch = True
+    assert gate.hitbox.elevations(gate.properties, gate.state) == []
+    assert gate.hitboxes == []
+    assert gate.hitbox.get(gate.properties, gate.state, elevation=0) == []
+
+
+@pytest.mark.category_objects
+def test_layered_hitbox_in_and_out_projections(mock_board):
+    """LayeredHitbox resolves active hitboxes across IN and OUT door projections and normalizes elevation."""
+    door = mock_board.instances(AssetInstances.DOORS.value)[0]
+    door.state.elevation = 0
+
+    door.state.projection = LayerProjections.IN.value
+    assert door.hitbox.elevations(door.properties, door.state) == [0]
+    assert len(door.hitboxes) >= 1
+    assert door.hitbox.get(door.properties, door.state, elevation=1) == []
+
+    door.state.projection = LayerProjections.OUT.value
+    assert door.hitbox.elevations(door.properties, door.state) == [0]
+    assert len(door.hitboxes) >= 1
+    assert door.hitbox.get(door.properties, door.state, elevation=1) == []
+
+    door.state.elevation = -1
+    assert door.hitbox.elevations(door.properties, door.state) == [0]

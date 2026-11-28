@@ -275,3 +275,113 @@ def test_gravity_freefall_preserves_horizontal_momentum_and_suppresses_air_contr
     assert player.state.mutators.triggers.falling is True
     assert player.state.velocity.vx == 50.0
     assert player.state.position.x >= 300
+
+def test_gravity_bridge_supports_elevated_entity(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies a Bridge deployed at elevation E = 1 supports an entity at E = 1
+    without triggering freefall.
+    """
+    payload = mock_payload()
+    motion = mock_mechanic(Mechanics.MOTION.value)
+    player = mock_board.player()
+    bridge = mock_board.instances(AssetInstances.BRIDGES.value)[0]
+    hb = player.hitboxes[0]
+
+    bridge.elevation = 1
+    bridge.state.position = Position(300, 100)
+
+    player.elevation = 1
+    player.state.mutators.triggers.falling = False
+    player.state.position = Position(
+        bridge.state.position.x - hb.position.x,
+        bridge.state.position.y - hb.position.y,
+    )
+    player.state.velocity = Velocity(0.0, 0.0)
+
+    motion.update(mock_board, 0.016, mock_bus, payload)
+
+    assert player.elevation == 1
+    assert player.state.mutators.triggers.falling is False
+
+
+def test_gravity_freefall_onset_clamps_upward_velocity(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies stepping off an elevated ledge with negative vertical velocity clamps
+    vy >= 0 before applying gravitational acceleration.
+    """
+    payload = mock_payload()
+    motion = mock_mechanic(Mechanics.MOTION.value)
+    player = mock_board.player()
+    delta = 0.016
+
+    player.elevation = 1
+    player.state.position = Position(300, 100)
+    player.state.velocity = Velocity(0.0, -50.0)
+    player.state.mutators.triggers.falling = False
+    player.state.mutators.parameters.descension = 0.0
+
+    motion.update(mock_board, delta, mock_bus, payload)
+
+    expected_vy = min(settings.TERMINAL_VELOCITY, settings.GRAVITY_ACCELERATION * delta)
+    assert player.state.mutators.triggers.falling is True
+    assert pytest.approx(player.state.velocity.vy, rel=1e-5) == expected_vy
+
+
+def test_gravity_freefall_clamps_to_terminal_velocity(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies vertical freefall speed never exceeds settings.TERMINAL_VELOCITY.
+    """
+    payload = mock_payload()
+    motion = mock_mechanic(Mechanics.MOTION.value)
+    player = mock_board.player()
+
+    player.elevation = 2
+    player.state.position = Position(300, 100)
+    player.state.velocity = Velocity(0.0, float(settings.TERMINAL_VELOCITY))
+    player.state.mutators.triggers.falling = True
+    player.state.mutators.parameters.descension = 0.0
+
+    motion.update(mock_board, 0.001, mock_bus, payload)
+
+    assert player.state.velocity.vy == settings.TERMINAL_VELOCITY
+
+
+def test_gravity_ground_tier_clears_stale_falling_state(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies an entity at elevation <= 0 with triggers.falling == True recovers cleanly
+    to elevation = 0, falling = False, and descension = 0.0.
+    """
+    payload = mock_payload()
+    motion = mock_mechanic(Mechanics.MOTION.value)
+    player = mock_board.player()
+
+    player.elevation = 0
+    player.state.position = Position(300, 100)
+    player.state.mutators.triggers.falling = True
+    player.state.mutators.parameters.descension = 25.0
+
+    motion.update(mock_board, 0.016, mock_bus, payload)
+
+    assert player.elevation == 0
+    assert player.state.mutators.triggers.falling is False
+    assert player.state.mutators.parameters.descension == 0.0

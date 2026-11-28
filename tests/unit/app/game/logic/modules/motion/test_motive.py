@@ -130,3 +130,102 @@ def test_motive_rvo_opposing_corridor_steering(mock_board):
 
     # RVO avoidance must cause lateral steering deviation or velocity adjustment
     assert mock_sprite.state.velocity.vx != 10.0 or mock_sprite.state.velocity.vy != 0.0
+
+@pytest.mark.workflow_gravity
+def test_motive_falling_preserves_velocity(mock_board):
+    """Verifies falling sprites bypass motive steering and idle velocity zeroing."""
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.intention = Intentions.IDLE.value
+    sprite.state.mutators.triggers.falling = True
+    sprite.state.velocity = Velocity(15.0, 25.0)
+
+    motive.update([sprite], mock_board, 1.0)
+
+    assert sprite.state.velocity.vx == 15.0
+    assert sprite.state.velocity.vy == 25.0
+
+
+def test_motive_no_goal_zeroes_velocity(mock_board):
+    """Verifies a sprite in a navigation intention with goal=None halts cleanly."""
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.goal = None
+    sprite.state.velocity = Velocity(10.0, 10.0)
+
+    motive.update([sprite], mock_board, 1.0)
+
+    assert sprite.state.velocity.vx == 0.0
+    assert sprite.state.velocity.vy == 0.0
+
+
+def test_motive_prefers_trajectory_target_over_goal(mock_board):
+    """Verifies trajectory.target takes precedence over goal.position during steering."""
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    speed = float(sprite.state.character.speed)
+
+    for name, char in mock_board.characters().items():
+        if name != sprite.name:
+            char.position = Position(600, 600)
+
+    sprite.state.layer = "0"
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.position = Position(0, 0)
+    sprite.state.goal = Goal(
+        name="waypoint",
+        category=Goals.POSITION.value,
+        layer="0",
+        position=Position(100, 0),
+    )
+    sprite.state.trajectory.target = Position(0, 100)
+
+    motive.update([sprite], mock_board, 1.0)
+
+    assert sprite.state.velocity.vx == 0.0
+    assert sprite.state.velocity.vy == speed
+
+
+def test_motive_missing_target_position_zeroes_velocity(mock_board):
+    """Verifies steering zeroes velocity when both trajectory.target and goal.position are None."""
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.trajectory.target = None
+    sprite.state.goal = Goal(
+        name="waypoint",
+        category=Goals.POSITION.value,
+        layer="0",
+        position=None,
+    )
+    sprite.state.velocity = Velocity(10.0, 5.0)
+
+    motive.update([sprite], mock_board, 1.0)
+
+    assert sprite.state.velocity.vx == 0.0
+    assert sprite.state.velocity.vy == 0.0
+
+
+def test_motive_rvo_ignores_characters_on_other_layers(mock_board):
+    """Verifies RVO excludes characters residing on different layers."""
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    speed = float(sprite.state.character.speed)
+
+    for name, char in mock_board.characters().items():
+        if name != sprite.name:
+            char.layer = "other-layer"
+            char.position = Position(50, 50)
+
+    sprite.state.layer = "0"
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.position = Position(0, 50)
+    sprite.state.mutators.parameters.squeeze.radius = 100
+    sprite.state.trajectory.target = None
+    sprite.state.goal = Goal(
+        name="waypoint",
+        category=Goals.POSITION.value,
+        layer="0",
+        position=Position(100, 50),
+    )
+
+    motive.update([sprite], mock_board, 1.0)
+
+    assert sprite.state.velocity.vx == speed
+    assert sprite.state.velocity.vy == 0.0
