@@ -213,8 +213,8 @@ def test_navigation_obstacles_queries_requested_elevation_tier(mock_board, monke
     Verifies Bug B030: obstacles() resolves hitboxes at the target elevation
     argument rather than the asset's base elevation.
     """
-    strut = [ 
-        s for s in mock_board.instances(AssetInstances.STRUTS.value, "0") 
+    strut = [
+        s for s in mock_board.instances(AssetInstances.STRUTS.value, "0")
         if s.state.blueprint == Buildings.WALLS
     ][0]
     hb_tier0 = Hitbox(Position(0, 0), Dimensions(10, 10))
@@ -238,6 +238,7 @@ def test_navigation_obstacles_queries_requested_elevation_tier(mock_board, monke
             else orig_get(props, state, elev)
         ),
     )
+    mock_board.invalidate_statics("0")
 
     sx, sy = strut.state.position.x, strut.state.position.y
     obs_tier1 = NavigationMechanics.obstacles(
