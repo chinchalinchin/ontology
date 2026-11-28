@@ -102,6 +102,10 @@ cpdef void collide(
     Position pos1, Hitbox hb1, Velocity vel1, float m1, bint is_kinematic1,
     Position pos2, Hitbox hb2, Velocity vel2, float m2, bint is_kinematic2
 ):
+    """
+    Resolves spatial overlap via inverse-mass separation and applies 1D elastic
+    momentum transfer along the collision normal only when bodies are approaching.
+    """
     cdef float cx_a = pos1.x + hb1.position.x + hb1.dimensions.w / 2.0
     cdef float cy_a = pos1.y + hb1.position.y + hb1.dimensions.l / 2.0
     cdef float cx_b = pos2.x + hb2.position.x + hb2.dimensions.w / 2.0
@@ -116,88 +120,111 @@ cpdef void collide(
     cdef float overlap_x = (hb1.dimensions.w / 2.0 + hb2.dimensions.w / 2.0) - abs(dx)
     cdef float overlap_y = (hb1.dimensions.l / 2.0 + hb2.dimensions.l / 2.0) - abs(dy)
 
-    cdef float inv_m1, inv_m2, inv_total, p1, p2
+    if overlap_x <= 0 or overlap_y <= 0:
+        return
+
+    cdef float inv_m1 = 1.0 / m1 if m1 > 0 else 0.0
+    cdef float inv_m2 = 1.0 / m2 if m2 > 0 else 0.0
+    cdef float inv_total = inv_m1 + inv_m2
+
+    if inv_total <= 0:
+        return
+
+    cdef float p1 = inv_m1 / inv_total
+    cdef float p2 = inv_m2 / inv_total
     cdef int total_shift, ishift_1, ishift_2
-    cdef float v1x, v1y, v2x, v2y, v1f_x, v1f_y, v2f_x, v2f_y
+    cdef float normal, v1, v2, v_rel, v1f, v2f
 
-    if overlap_x > 0 and overlap_y > 0:
-        inv_m1 = 1.0 / m1 if m1 > 0 else 0.0
-        inv_m2 = 1.0 / m2 if m2 > 0 else 0.0
-        inv_total = inv_m1 + inv_m2
+    if overlap_x < overlap_y:
+        total_shift = max(1, <int>overlap_x)
+        if p1 <= p2:
+            ishift_1 = <int>(total_shift * p1)
+            ishift_2 = total_shift - ishift_1
+        else:
+            ishift_2 = <int>(total_shift * p2)
+            ishift_1 = total_shift - ishift_2
 
-        if inv_total > 0:
-            p1 = inv_m1 / inv_total
-            p2 = inv_m2 / inv_total
+        if dx > 0:
+            normal = 1.0
+            pos1.x -= ishift_1
+            pos2.x += ishift_2
+        else:
+            normal = -1.0
+            pos1.x += ishift_1
+            pos2.x -= ishift_2
 
-            if overlap_x < overlap_y:
-                total_shift = max(1, <int>overlap_x)
-                if p1 <= p2:
-                    ishift_1 = <int>(total_shift * p1)
-                    ishift_2 = total_shift - ishift_1
-                else:
-                    ishift_2 = <int>(total_shift * p2)
-                    ishift_1 = total_shift - ishift_2
+        # Clear stale sub-pixel carry along the resolved collision axis
+        if ishift_1 > 0:
+            pos1.rx = 0.0
+        if ishift_2 > 0:
+            pos2.rx = 0.0
 
-                if dx > 0:
-                    pos1.x -= ishift_1
-                    pos2.x += ishift_2
-                else:
-                    pos1.x += ishift_1
-                    pos2.x -= ishift_2
+        # Guard momentum transfer: only resolve when bodies are approaching along normal
+        v1 = vel1.vx if (vel1 is not None and m1 > 0) else 0.0
+        v2 = vel2.vx if (vel2 is not None and m2 > 0) else 0.0
+        v_rel = (v2 - v1) * normal
+        if v_rel >= 0.0:
+            return
 
-                if m1 == 0 and m2 == 0:
-                    pass
-                elif m1 == 0:
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vx = -vel2.vx
-                elif m2 == 0:
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vx = -vel1.vx
-                else:
-                    v1x = vel1.vx if vel1 is not None else 0.0
-                    v2x = vel2.vx if vel2 is not None else 0.0
-                    v1f_x = (v1x * (m1 - m2) + 2 * m2 * v2x) / (m1 + m2)
-                    v2f_x = (v2x * (m2 - m1) + 2 * m1 * v1x) / (m1 + m2)
-                    
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vx = v1f_x
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vx = v2f_x
+        if m1 == 0:
+            if vel2 is not None and not is_kinematic2:
+                vel2.vx = -v2
+        elif m2 == 0:
+            if vel1 is not None and not is_kinematic1:
+                vel1.vx = -v1
+        else:
+            v1f = (v1 * (m1 - m2) + 2.0 * m2 * v2) / (m1 + m2)
+            v2f = (v2 * (m2 - m1) + 2.0 * m1 * v1) / (m1 + m2)
 
-            else:
-                total_shift = max(1, <int>overlap_y)
-                if p1 <= p2:
-                    ishift_1 = <int>(total_shift * p1)
-                    ishift_2 = total_shift - ishift_1
-                else:
-                    ishift_2 = <int>(total_shift * p2)
-                    ishift_1 = total_shift - ishift_2
+            if vel1 is not None and not is_kinematic1:
+                vel1.vx = v1f
+            if vel2 is not None and not is_kinematic2:
+                vel2.vx = v2f
+    else:
+        total_shift = max(1, <int>overlap_y)
+        if p1 <= p2:
+            ishift_1 = <int>(total_shift * p1)
+            ishift_2 = total_shift - ishift_1
+        else:
+            ishift_2 = <int>(total_shift * p2)
+            ishift_1 = total_shift - ishift_2
 
-                if dy > 0:
-                    pos1.y -= ishift_1
-                    pos2.y += ishift_2
-                else:
-                    pos1.y += ishift_1
-                    pos2.y -= ishift_2
+        if dy > 0:
+            normal = 1.0
+            pos1.y -= ishift_1
+            pos2.y += ishift_2
+        else:
+            normal = -1.0
+            pos1.y += ishift_1
+            pos2.y -= ishift_2
 
-                if m1 == 0 and m2 == 0:
-                    pass
-                elif m1 == 0:
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vy = -vel2.vy
-                elif m2 == 0:
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vy = -vel1.vy
-                else:
-                    v1y = vel1.vy if vel1 is not None else 0.0
-                    v2y = vel2.vy if vel2 is not None else 0.0
-                    v1f_y = (v1y * (m1 - m2) + 2 * m2 * v2y) / (m1 + m2)
-                    v2f_y = (v2y * (m2 - m1) + 2 * m1 * v1y) / (m1 + m2)
-                    
-                    if vel1 is not None and not is_kinematic1:
-                        vel1.vy = v1f_y
-                    if vel2 is not None and not is_kinematic2:
-                        vel2.vy = v2f_y
+        # Clear stale sub-pixel carry along the resolved collision axis
+        if ishift_1 > 0:
+            pos1.ry = 0.0
+        if ishift_2 > 0:
+            pos2.ry = 0.0
+
+        # Guard momentum transfer: only resolve when bodies are approaching along normal
+        v1 = vel1.vy if (vel1 is not None and m1 > 0) else 0.0
+        v2 = vel2.vy if (vel2 is not None and m2 > 0) else 0.0
+        v_rel = (v2 - v1) * normal
+        if v_rel >= 0.0:
+            return
+
+        if m1 == 0:
+            if vel2 is not None and not is_kinematic2:
+                vel2.vy = -v2
+        elif m2 == 0:
+            if vel1 is not None and not is_kinematic1:
+                vel1.vy = -v1
+        else:
+            v1f = (v1 * (m1 - m2) + 2.0 * m2 * v2) / (m1 + m2)
+            v2f = (v2 * (m2 - m1) + 2.0 * m1 * v1) / (m1 + m2)
+
+            if vel1 is not None and not is_kinematic1:
+                vel1.vy = v1f
+            if vel2 is not None and not is_kinematic2:
+                vel2.vy = v2f
 
 
 cpdef void integrate(list assets, float delta):
