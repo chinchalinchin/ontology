@@ -3,10 +3,8 @@ from libs.core.models cimport Position, Dimensions, Hitbox
 
 cpdef tuple intersects(
     Position pos1, 
-    Dimensions dim1, 
     list hitboxes1,
     Position pos2, 
-    Dimensions dim2, 
     list hitboxes2
 )
 

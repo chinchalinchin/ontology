@@ -2,8 +2,6 @@ from app.assets.hitboxes.core import (
     StaticHitbox,
     NoHitbox,
     DynamicHitbox,
-    OrientedHitbox,
-    DirectedHitbox,
 )
 from app.assets.hitboxes.crafts import (
     ElevatedHitbox,
@@ -31,8 +29,6 @@ __all__ = [
     "StageHitbox",
     "LayeredHitbox",
     "SwitchHitbox",
-    "OrientedHitbox",
-    "DirectedHitbox",
     'ElevatedHitbox',
     'MaterialHitbox',
     'RotatedHitbox'

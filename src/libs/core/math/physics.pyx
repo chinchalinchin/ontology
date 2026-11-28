@@ -77,9 +77,7 @@ cpdef list collisions(list primitive_data, Space grid):
     cdef tuple data_a, data_b
     
     cdef Position pos_a = Position(0, 0)
-    cdef Dimensions dim_a = Dimensions(0, 0)
     cdef Position pos_b = Position(0, 0)
-    cdef Dimensions dim_b = Dimensions(0, 0)
     cdef tuple pair
     
     for pair in candidate_pairs:
@@ -90,15 +88,11 @@ cpdef list collisions(list primitive_data, Space grid):
         
         pos_a.x = data_a[1]
         pos_a.y = data_a[2]
-        dim_a.w = data_a[3]
-        dim_a.l = data_a[4]
 
         pos_b.x = data_b[1]
         pos_b.y = data_b[2]
-        dim_b.w = data_b[3]
-        dim_b.l = data_b[4]
 
-        if intersects(pos_a, dim_a, data_a[5], pos_b, dim_b, data_b[5]) is not None:
+        if intersects(pos_a, data_a[5], pos_b, data_b[5]) is not None:
             colliding_pairs.append(pair)
             
     return colliding_pairs

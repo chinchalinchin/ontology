@@ -56,6 +56,7 @@ class CollisionMechanics(SpatialMechanic):
 
     Mechanic responsible for resolving Asset collisions natively.
     """
+
     @staticmethod
     def _stair_hitboxes(stairs: Asset) -> List[Hitbox]:
         """
@@ -72,7 +73,6 @@ class CollisionMechanics(SpatialMechanic):
     
     def __init__(self, cell_size : int = 64, max_entities : int = 200):
         super().__init__(cell_size=cell_size, max_entities=max_entities)
-
 
 
     def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
@@ -129,6 +129,7 @@ class CollisionMechanics(SpatialMechanic):
         # VERTICAL STAIRS (UP)
         # -----------------------------------------------------------------
         # NOTE: DOWN is impossible due to LPC perspective specification.
+        #       This is a hard dependency on the particular specification adopted.
         if direction == Directions.UP:
             if stair_l == 0:
                 return
@@ -174,6 +175,7 @@ class CollisionMechanics(SpatialMechanic):
                 f"foot=({foot_x},{foot_y}) vel=({vx:.1f},{vy:.1f}) "
                 f"elevation: {prev_e} -> {sprite.elevation}"
             )
+
 
     def _boundary(self, asset: Asset, boundary: Boundary, elevation: int) -> None:
         """
@@ -246,10 +248,8 @@ class CollisionMechanics(SpatialMechanic):
 
         intersection = geometry.intersects(
             asset_a.state.position, 
-            asset_a.dimensions, 
             hitboxes_a,
             asset_b.state.position, 
-            asset_b.dimensions, 
             hitboxes_b
         )
 
@@ -298,10 +298,8 @@ class CollisionMechanics(SpatialMechanic):
                     for mover in movers:
                         if geometry.intersects(
                             mover.state.position,
-                            mover.dimensions,
                             mover.hitboxes,
                             stair.state.position,
-                            stair.dimensions,
                             stair_hbs,
                         ):
                             self._traverse_stairs(mover, stair)

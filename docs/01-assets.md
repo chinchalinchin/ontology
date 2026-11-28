@@ -411,7 +411,7 @@ During hydration, each Door automatically projects a reciprocal shadow footprint
 
 **Hitbox: LayeredHitbox**
 
-- `elevations(properties, state): returns [] if state.projection == LayerProjection.OUT.value else [max(0, state.elevation or 0)]`
+- `elevations(properties, state): returns [max(0, state.elevation or 0)]`
 * `get(properties, state, elevation, frame): returns properties.hitboxes[state.layer] if LayerProjection.IN.value else properties.hitboxes[state.outlayer]`
 
 #### Object: Gates
@@ -975,7 +975,6 @@ For example, the `src/assets/sheets/sprites/features/hair-blonde-bangs.png` migh
 
 * `dimensions: Dimensions`
 * `stack: List[str]`
-* `attackboxes: Dict[str, List[Hitbox]]`
 * `hitboxes: List[Hitbox]`
 * `actions: Actions`
 * `mass: int`

@@ -62,13 +62,6 @@ class Screen:
 
     # ------------------------------------------------ STATIC METHODS
 
-    @staticmethod
-    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
-        dim_l = asset.dimensions.l if asset.dimensions else 0
-        ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
-        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
-
-
     def release(self, menu: Menu) -> None:
         """Explicitly destroys hardware canvas textures held by a Menu's panes."""
         if not menu.widgets:
@@ -109,35 +102,6 @@ class Screen:
         render.construct(self.fg_canvas, fore_tiles)
 
     # ------------------------------------------------ PRIVATE METHODS
-
-    def _in_viewport(
-        self,
-        asset: Asset,
-        min_x: int,
-        min_y: int,
-        max_x: int,
-        max_y: int,
-    ) -> bool:
-        """
-        Broad-phase viewport AABB check. Bypasses unit-tile bounds for procedural
-        multi-tile assets (Fluids, Shorelines) whose geometry extends beyond asset.dimensions.
-        """
-        if asset.instance in (
-            AssetInstances.FLUIDS,
-            AssetInstances.SHORELINES,
-        ):
-            return True
-
-        px = asset.state.position.x
-        py = asset.state.position.y
-        dw = asset.dimensions.w if asset.dimensions else 0
-        dl = asset.dimensions.l if asset.dimensions else 0
-
-        return (
-            px + dw >= min_x and px <= max_x and
-            py + dl >= min_y and py <= max_y
-        )
-
     
     def _prerender(
         self,

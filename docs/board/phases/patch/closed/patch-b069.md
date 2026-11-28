@@ -1,6 +1,6 @@
 ##### Bug B069: Silent Conjunct Dropping on ISL Compilation Failure
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

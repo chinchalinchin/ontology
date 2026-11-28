@@ -76,69 +76,7 @@ class DynamicHitbox(HitboxSchema):
                 return []
             return properties.hitboxes
         return state.hitboxes
-
-
-class OrientedHitbox(HitboxSchema):
-    """
-    Resolves orientation-indexed hitboxes declared on immutable AssetProperties.
-    """
-
-    def elevations(self, 
-        properties: AssetProperties, 
-        state: AssetState
-    ) -> List[int]:
-        return [max(0, state.elevation if state.elevation is not None else 0)]
-        
-    def get(
-        self,
-        properties: AssetProperties,
-        state: AssetState,
-        elevation: int
-    ) -> List[Hitbox]:
-        """
-        Resolves active hitboxes matching state.orientation at the requested elevation.
-        Falls back to full frame dimensions when properties.hitboxes is None.
-        """
-        target_e = max(0, state.elevation if state.elevation is not None else 0)
-        if max(0, elevation) != target_e:
-            return []
-        if properties.hitboxes is None:
-            if properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
-            return []
-        return properties.hitboxes.get(state.orientation, []) or []
-
-
-class DirectedHitbox(HitboxSchema):
-    """
-    Resolves direction-indexed hitboxes declared on immutable AssetProperties.
-    """
-
-    def elevations(self, 
-        properties: AssetProperties, 
-        state: AssetState
-    ) -> List[int]:
-        return [max(0, state.elevation if state.elevation is not None else 0)]
-
-    def get(
-        self,
-        properties: AssetProperties,
-        state: AssetState,
-        elevation: int
-    ) -> List[Hitbox]:
-        """
-        Resolves active hitboxes matching state.direction at the requested elevation.
-        Falls back to full frame dimensions when properties.hitboxes is None.
-        """
-        target_e = max(0, state.elevation if state.elevation is not None else 0)
-        if max(0, elevation) != target_e:
-            return []
-        if properties.hitboxes is None:
-            if properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
-            return []
-        return properties.hitboxes.get(state.direction, []) or []
-
+    
     
 class NoHitbox(HitboxSchema):
     """

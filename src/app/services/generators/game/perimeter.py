@@ -1,5 +1,5 @@
 """
-@domain.logic
+@domain.system
 @app.service
 @workflow.generation
 @workflow.collisions
